@@ -23,25 +23,6 @@ export async function getPostBySlug(slug: string) {
   return posts[0];
 }
 
-// Fetch all pages
-// export async function getAllPages() {
-//   const res = await fetch(`${API_URL}/pages?_embed&per_page=15`);
-//   if (!res.ok) {
-//     throw new Error('Failed to fetch pages');
-//   }
-//   return res.json();
-// }
-
-// Fetch a single page by slug
-export async function getPageBySlug(slug: string) {
-  const res = await fetch(`${API_URL}/pages?slug=${slug}&_embed`);
-  if (!res.ok) {
-    throw new Error('Failed to fetch page');
-  }
-  const pages = await res.json();
-  return pages[0];
-}
-
 // Fetch categories
 export async function getCategories() {
   const res = await fetch(`${API_URL}/categories`);
@@ -74,7 +55,6 @@ export function getPostCategories(post: any) {
   }));
 }
 
-// Fetch media
 export async function getMedia() {
   const res = await fetch(`${API_URL}/media`);
   if (!res.ok) {
@@ -83,7 +63,6 @@ export async function getMedia() {
   return res.json();
 }
 
-// Helper function to extract featured image
 export function getFeaturedImage(post: any) {
   const featuredMedia = post._embedded?.['wp:featuredmedia']?.[0];
   if (!featuredMedia) return null;

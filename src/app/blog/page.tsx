@@ -1,8 +1,9 @@
 import PostCard from "@/components/Posts";
 import { getAllPosts } from "@/lib/wordpress";
 
-export default async function BlogPage({ searchParams }: { searchParams: { search?: string } }) {
-    const searchQuery = searchParams?.search || "";
+export default async function BlogPage({ searchParams }: { searchParams: Promise<{ search?: string }> }) {
+    const { search } = await searchParams;
+    const searchQuery = search || "";
     const posts = await getAllPosts(8, searchQuery);
     return (
         <main className="container mx-auto px-4 py-8 ">

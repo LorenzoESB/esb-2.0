@@ -1,8 +1,3 @@
-// utils/wordpress-formatter.ts
-
-/**
- * Sanitizes and formats WordPress HTML content
- */
 export function formatWordPressContent(htmlContent: string): string {
     if (!htmlContent) return '';
 
@@ -22,9 +17,6 @@ export function formatWordPressContent(htmlContent: string): string {
         .trim();
 }
 
-/**
- * Strips HTML tags and returns plain text
- */
 export function stripHtmlTags(htmlContent: string): string {
     if (!htmlContent) return '';
 
@@ -40,9 +32,6 @@ export function stripHtmlTags(htmlContent: string): string {
         .trim();
 }
 
-/**
- * Creates a clean excerpt from WordPress content
- */
 export function createExcerpt(content: string, maxLength: number = 150): string {
     const plainText = stripHtmlTags(content);
 
@@ -59,9 +48,6 @@ export function createExcerpt(content: string, maxLength: number = 150): string 
         : truncated + '...';
 }
 
-/**
- * Formats WordPress excerpt specifically (removes [&hellip;] and cleans up)
- */
 export function formatWordPressExcerpt(excerpt: string): string {
     if (!excerpt) return '';
 
@@ -80,9 +66,6 @@ export function formatWordPressExcerpt(excerpt: string): string {
         .trim();
 }
 
-/**
- * Calculates estimated reading time
- */
 export function calculateReadingTime(content: string, wordsPerMinute: number = 200): string {
     const plainText = stripHtmlTags(content);
     const wordCount = plainText.split(/\s+/).filter(word => word.length > 0).length;
@@ -91,9 +74,6 @@ export function calculateReadingTime(content: string, wordsPerMinute: number = 2
     return `${minutes} min leitura`;
 }
 
-/**
- * Formats post date in Brazilian Portuguese
- */
 export function formatPostDate(dateString: string): string {
     const date = new Date(dateString);
 
@@ -104,9 +84,6 @@ export function formatPostDate(dateString: string): string {
     });
 }
 
-/**
- * Formats post date in short format
- */
 export function formatPostDateShort(dateString: string): string {
     const date = new Date(dateString);
 
@@ -117,35 +94,26 @@ export function formatPostDateShort(dateString: string): string {
     });
 }
 
-/**
- * Advanced content formatter for full post content
- * Handles WordPress blocks, embeds, and maintains semantic structure
- */
 export function formatFullPostContent(content: string): string {
     if (!content) return '';
 
     return content
-        // Convert WordPress blocks to proper HTML
         .replace(/<!-- wp:paragraph -->/g, '')
         .replace(/<!-- \/wp:paragraph -->/g, '')
         .replace(/<!-- wp:heading {"level":([1-6])} -->/g, '')
         .replace(/<!-- \/wp:heading -->/g, '')
 
-        // Handle WordPress galleries (convert to proper image tags)
         .replace(/\[gallery ids="([^"]+)"\]/g, (match, ids) => {
             return `<div class="wp-gallery">${ids.split(',').map((id: string) =>
                 `<img src="your-media-endpoint/${id.trim()}" alt="Gallery image" class="gallery-image" />`
             ).join('')}</div>`;
         })
 
-        // Clean up WordPress-specific attributes but keep semantic HTML
         .replace(/class="wp-block-[^"]*"/g, '')
         .replace(/class="has-[^"]*"/g, '')
 
-        // Ensure proper paragraph spacing
         .replace(/<\/p>\s*<p>/g, '</p>\n\n<p>')
 
-        // Clean up extra whitespace
         .replace(/\n\s*\n\s*\n/g, '\n\n')
         .trim();
 }
