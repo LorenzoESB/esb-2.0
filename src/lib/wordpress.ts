@@ -1,11 +1,12 @@
 const API_URL = process.env.WORDPRESS_API_URL;
 
 // Fetch all posts
-export async function getAllPosts(maxPosts: number) {
+export async function getAllPosts(maxPosts: number, search?: string) {
+  const searchParam = search ? `&search=${encodeURIComponent(search)}` : "";
   if (!maxPosts || maxPosts <= 0) {
     maxPosts = 10;
   }
-  const res = await fetch(`${API_URL}/posts?_embed&per_page=${maxPosts}`);
+  const res = await fetch(`${API_URL}/posts?_embed&per_page=${maxPosts}${searchParam}&_embed`);
   if (!res.ok) {
     throw new Error('Failed to fetch posts');
   }
@@ -62,7 +63,7 @@ export async function getPostsByCategory(categoryId: number) {
 export function getPostCategories(post: any) {
   const categories = post._embedded?.['wp:term']?.[0];
   if (!categories || !Array.isArray(categories)) return [];
-  
+
   return categories.map((category: any) => ({
     id: category.id,
     name: category.name,
@@ -86,7 +87,7 @@ export async function getMedia() {
 export function getFeaturedImage(post: any) {
   const featuredMedia = post._embedded?.['wp:featuredmedia']?.[0];
   if (!featuredMedia) return null;
-  
+
   return {
     url: featuredMedia.source_url,
     alt: featuredMedia.alt_text || post.title.rendered,
@@ -99,7 +100,7 @@ export function getFeaturedImage(post: any) {
 export function getAuthor(post: any) {
   const author = post._embedded?.author?.[0];
   if (!author) return null;
-  
+
   return {
     name: author.name,
     avatar: author.avatar_urls?.['96'],
