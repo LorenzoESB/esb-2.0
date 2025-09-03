@@ -1,8 +1,22 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { Menu, Search } from "lucide-react";
 
-export default async function Header() {
+export default function Header() {
+    const [query, setQuery] = useState("");
+    const router = useRouter();
+
+    function handleSearch(e: React.FormEvent) {
+        e.preventDefault();
+        if (!query.trim()) return;
+        // Redireciona para a página do blog com query
+        router.push(`/blog?search=${encodeURIComponent(query)}`);
+    }
+
     return (
         <header className="bg-white/95 backdrop-blur-md border-b border-border/50 sticky top-0 z-50">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -23,30 +37,33 @@ export default async function Header() {
                         <Link href="/" className="text-foreground hover:text-primary transition-colors duration-200">
                             Início
                         </Link>
-                        <Link
-                            href="#blog"
-                            className="text-foreground hover:text-primary transition-colors duration-200"
-                        >
+                        <Link href="#blog" className="text-foreground hover:text-primary transition-colors duration-200">
                             Blog
                         </Link>
-                        <Link
-                            href="#sobre"
-                            className="text-foreground hover:text-primary transition-colors duration-200"
-                        >
+                        <Link href="#sobre" className="text-foreground hover:text-primary transition-colors duration-200">
                             Sobre
                         </Link>
                     </nav>
 
                     {/* Search and CTA */}
                     <div className="flex items-center space-x-4">
-                        <div className="hidden sm:flex items-center space-x-2 bg-muted rounded-lg px-3 py-2">
+                        <form
+                            onSubmit={handleSearch}
+                            className="hidden sm:flex items-center space-x-2 bg-muted rounded-lg px-3 py-2"
+                        >
                             <Search className="w-4 h-4 text-muted-foreground" />
                             <input
                                 type="text"
                                 placeholder="Buscar..."
+                                value={query}
+                                onChange={(e) => setQuery(e.target.value)}
                                 className="bg-transparent border-none outline-none text-sm text-foreground placeholder-muted-foreground"
                             />
-                        </div>
+                            <Button type="submit" variant="default" size="sm" className="hidden md:inline-flex">
+                                Buscar
+                            </Button>
+                        </form>
+
                         <Button variant="default" size="sm" className="hidden md:inline-flex">
                             Começar agora
                         </Button>
