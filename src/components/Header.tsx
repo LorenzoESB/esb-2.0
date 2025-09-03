@@ -32,8 +32,27 @@ export default function Header() {
                         </div>
                     </div>
 
-                    {/* Navigation */}
+                    {/* Search */}
                     <nav className="hidden md:flex items-center space-x-8">
+                        <form
+                            onSubmit={handleSearch}
+                            className="hidden sm:flex items-center space-x-2 bg-muted rounded-lg px-3 py-2"
+                        >
+                            <input
+                                type="text"
+                                placeholder="Buscar..."
+                                value={query}
+                                onChange={(e) => setQuery(e.target.value)}
+                                className="bg-transparent border-none outline-none text-sm text-foreground placeholder-muted-foreground"
+                            />
+                            <Button type="submit" variant="default" size="sm" className="hidden md:inline-flex">
+                                <Search className="w-4 h-4 text-muted-foreground text-white" />
+                            </Button>
+                        </form>
+                    </nav>
+
+                    {/* Navigation and CTA */}
+                    <div className="flex items-center space-x-4">
                         <Link href="/" className="text-foreground hover:text-primary transition-colors duration-200">
                             Início
                         </Link>
@@ -43,26 +62,6 @@ export default function Header() {
                         <Link href="#sobre" className="text-foreground hover:text-primary transition-colors duration-200">
                             Sobre
                         </Link>
-                    </nav>
-
-                    {/* Search and CTA */}
-                    <div className="flex items-center space-x-4">
-                        <form
-                            onSubmit={handleSearch}
-                            className="hidden sm:flex items-center space-x-2 bg-muted rounded-lg px-3 py-2"
-                        >
-                            <Search className="w-4 h-4 text-muted-foreground" />
-                            <input
-                                type="text"
-                                placeholder="Buscar..."
-                                value={query}
-                                onChange={(e) => setQuery(e.target.value)}
-                                className="bg-transparent border-none outline-none text-sm text-foreground placeholder-muted-foreground"
-                            />
-                            <Button type="submit" variant="default" size="sm" className="hidden md:inline-flex">
-                                Buscar
-                            </Button>
-                        </form>
 
                         <Button variant="default" size="sm" className="hidden md:inline-flex">
                             Começar agora
