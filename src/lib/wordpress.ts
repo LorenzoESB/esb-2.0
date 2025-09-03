@@ -1,8 +1,8 @@
 const API_URL = process.env.WORDPRESS_API_URL;
 
 // Fetch all posts
-export async function getAllPosts() {
-  const res = await fetch(`${API_URL}/posts?_embed&per_page=15`);
+export async function getAllPosts(maxPosts: number) {
+  const res = await fetch(`${API_URL}/posts?_embed&per_page=${maxPosts}`);
   if (!res.ok) {
     throw new Error('Failed to fetch posts');
   }
@@ -54,6 +54,20 @@ export async function getPostsByCategory(categoryId: number) {
     throw new Error('Failed to fetch posts');
   }
   return res.json();
+}
+
+export function getPostCategories(post: any) {
+  const categories = post._embedded?.['wp:term']?.[0];
+  if (!categories || !Array.isArray(categories)) return [];
+  
+  return categories.map((category: any) => ({
+    id: category.id,
+    name: category.name,
+    slug: category.slug,
+    description: category.description,
+    count: category.count,
+    link: category.link
+  }));
 }
 
 // Fetch media
