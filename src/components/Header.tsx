@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Button } from "./ui/button";
 import { Menu, Search } from "lucide-react";
 
@@ -19,27 +20,21 @@ export default async function Header() {
 
                     {/* Navigation */}
                     <nav className="hidden md:flex items-center space-x-8">
-                        <a href="/" className="text-foreground hover:text-primary transition-colors duration-200">
+                        <Link href="/" className="text-foreground hover:text-primary transition-colors duration-200">
                             Início
-                        </a>
-                        <a
-                            href="/simuladores"
+                        </Link>
+                        <Link
+                            href="#blog"
                             className="text-foreground hover:text-primary transition-colors duration-200"
                         >
-                            Simuladores
-                        </a>
-                        <a
-                            href="/simulador-aposentadoria"
-                            className="text-foreground hover:text-primary transition-colors duration-200"
-                        >
-                            Aposentadoria
-                        </a>
-                        <a href="#blog" className="text-foreground hover:text-primary transition-colors duration-200">
                             Blog
-                        </a>
-                        <a href="#sobre" className="text-foreground hover:text-primary transition-colors duration-200">
+                        </Link>
+                        <Link
+                            href="#sobre"
+                            className="text-foreground hover:text-primary transition-colors duration-200"
+                        >
                             Sobre
-                        </a>
+                        </Link>
                     </nav>
 
                     {/* Search and CTA */}

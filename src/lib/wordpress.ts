@@ -2,6 +2,9 @@ const API_URL = process.env.WORDPRESS_API_URL;
 
 // Fetch all posts
 export async function getAllPosts(maxPosts: number) {
+  if (!maxPosts || maxPosts <= 0) {
+    maxPosts = 10;
+  }
   const res = await fetch(`${API_URL}/posts?_embed&per_page=${maxPosts}`);
   if (!res.ok) {
     throw new Error('Failed to fetch posts');
