@@ -1,32 +1,23 @@
-import { getPageBySlug } from "@/lib/wordpress";
-import { notFound } from "next/navigation";
+import PostCard from "@/components/Posts";
+import { getAllPosts } from "@/lib/wordpress";
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
-    const page = await getPageBySlug((await params).slug);
-
-    if (!page) {
-        return {
-            title: "Page Not Found",
-        };
-    }
-
-    return {
-        title: page.title.rendered.replace(/<[^>]*>/g, ""),
-    };
-}
-
-export default async function BlogPage({ params }: { params: Promise<{ slug: string }> }) {
-    const page = await getPageBySlug((await params).slug);
-
-    if (!page) {
-        notFound();
-    }
-
+export default async function BlogPage({ searchParams }: { searchParams: { search?: string } }) {
+    const searchQuery = searchParams?.search || "";
+    const posts = await getAllPosts(10, searchQuery);
     return (
-        <main className="container mx-auto px-4 py-8 max-w-4xl">
-            <h1 className="text-4xl font-bold mb-8" dangerouslySetInnerHTML={{ __html: page.title.rendered }} />
-
-            <div className="prose prose-lg max-w-none" dangerouslySetInnerHTML={{ __html: page.content.rendered }} />
+        <main className="container mx-auto px-4 py-8 ">
+            <h1 className="text-2xl font-bold mb-4">Resultados para: {searchQuery}</h1>
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {posts.map((post: any, index: number) => {
+                    return (
+                        <PostCard
+                            key={post.id}
+                            post={post}
+                            index={index}
+                        />
+                    );
+                })}
+            </div>
         </main>
     );
 }
