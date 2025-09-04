@@ -8,11 +8,12 @@ import {
     formatPostDate,
 } from "@/utils/wordpress-formatter";
 import { getAllAdGroups } from "@/lib/ads";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {
     const post = await getPostBySlug((await params).slug);
     const adGroups = await getAllAdGroups();
-
 
     if (!post) {
         notFound();
@@ -45,7 +46,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
 
     return (
         <div>
-            <article className="container mx-auto px-4 py-8 max-w-4xl">
+            <article className="container mx-auto px-4 py-8 max-w-6xl">
                 {/* Navigation */}
                 <Link href="/blog" className="text-blue-600 hover:underline mb-6 inline-flex items-center gap-2">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -122,8 +123,91 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
                 </header>
 
                 {/* Article Content */}
-                <div className="prose prose-lg prose-gray max-w-none">
-                    <div className="formatted-content" dangerouslySetInnerHTML={{ __html: formattedContent }} />
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    {/* Coluna do conteúdo */}
+                    <div className="lg:col-span-8">
+                        <div className="prose prose-lg prose-gray max-w-none">
+                            <div className="formatted-content" dangerouslySetInnerHTML={{ __html: formattedContent }} />
+                        </div>
+                    </div>
+
+                    {/* Sidebar à direita */}
+                    <aside className="lg:col-span-4 space-y-6 lg:sticky lg:top-24 h-fit">
+                        {/* Sponsor Space 1 */}
+                        <Card className="financial-card">
+                            <CardContent className="p-4">
+                                <div className="text-center">
+                                    <div className="w-full h-32 bg-gradient-to-br from-primary/10 to-primary/5 rounded-lg flex items-center justify-center mb-3">
+                                        <span className="text-muted-foreground text-sm">Espaço Publicitário</span>
+                                    </div>
+                                    <p className="text-xs text-muted-foreground">Anuncie aqui</p>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        {/* Newsletter */}
+                        {/* <Card className="financial-card">
+                            <CardContent className="p-4">
+                                <h3 className="font-semibold mb-2">Newsletter</h3>
+                                <p className="text-sm text-muted-foreground mb-3">Receba dicas financeiras semanais</p>
+                                <div className="space-y-2">
+                                    <input
+                                        type="email"
+                                        placeholder="Seu e-mail"
+                                        className="w-full px-3 py-2 bg-background border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                                    />
+                                    <Button size="sm" className="w-full">
+                                        Inscrever-se
+                                    </Button>
+                                </div>
+                            </CardContent>
+                        </Card> */}
+
+                        {/* Sponsor Space 2 */}
+                        <Card className="financial-card">
+                            <CardContent className="p-4">
+                                <div className="text-center">
+                                    <div className="w-full h-40 bg-gradient-to-br from-secondary/10 to-secondary/5 rounded-lg flex items-center justify-center mb-3">
+                                        <span className="text-muted-foreground text-sm">Patrocinador Premium</span>
+                                    </div>
+                                    <p className="text-xs text-muted-foreground">Seja nosso parceiro</p>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        {/* Ferramentas Relacionadas */}
+                        {/* <Card className="financial-card">
+                            <CardContent className="p-4">
+                                <h3 className="font-semibold mb-3">Ferramentas Relacionadas</h3>
+                                <div className="space-y-2">
+                                    <a
+                                        href="/simulador-amortizacao"
+                                        className="block p-2 bg-primary/5 hover:bg-primary/10 rounded-md transition-colors"
+                                    >
+                                        <span className="text-sm font-medium">Simulador de Amortização</span>
+                                    </a>
+                                    <a
+                                        href="/simulador-financiamento"
+                                        className="block p-2 bg-primary/5 hover:bg-primary/10 rounded-md transition-colors"
+                                    >
+                                        <span className="text-sm font-medium">Simulador de Financiamento</span>
+                                    </a>
+                                </div>
+                            </CardContent>
+                        </Card> */}
+
+                        {/* Sponsor Space 3 - Banner */}
+                        <Card className="financial-card">
+                            <CardContent className="p-4">
+                                <div className="text-center">
+                                    <div className="w-full h-24 bg-gradient-to-r from-accent/10 to-accent/5 rounded-lg flex items-center justify-center mb-2">
+                                        <span className="text-muted-foreground text-xs">Banner 300x120</span>
+                                    </div>
+                                    <p className="text-xs text-muted-foreground">Seu anúncio aqui</p>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </aside>
                 </div>
             </article>
         </div>
