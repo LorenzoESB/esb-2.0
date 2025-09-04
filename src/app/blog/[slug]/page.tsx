@@ -7,13 +7,12 @@ import {
     calculateReadingTime,
     formatPostDate,
 } from "@/utils/wordpress-formatter";
-import { getAllAdGroups } from "@/lib/ads";
+import { getAllAds } from "@/lib/ads";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 
 export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {
     const post = await getPostBySlug((await params).slug);
-    const adGroups = await getAllAdGroups();
+    const adGroups = await getAllAds();
 
     if (!post) {
         notFound();
