@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "./ui/button";
-import { Menu, Search } from "lucide-react";
+import { Menu, Search, User } from "lucide-react";
 
 export default function Header() {
     const [query, setQuery] = useState("");
@@ -55,21 +55,8 @@ export default function Header() {
 
                     {/* Navigation and CTA */}
                     <div className="flex items-center space-x-4">
-                        <Link
-                            href="#blog"
-                            className="text-foreground hover:text-primary transition-colors duration-200"
-                        >
-                            Blog
-                        </Link>
-                        <Link
-                            href="#sobre"
-                            className="text-foreground hover:text-primary transition-colors duration-200"
-                        >
-                            Sobre
-                        </Link>
-
                         <Button variant="default" size="sm" className="hidden md:inline-flex">
-                            Começar agora
+                            <User className="w-4 h-4" />
                         </Button>
                         <Button variant="ghost" size="icon" className="md:hidden">
                             <Menu className="w-5 h-5" />
