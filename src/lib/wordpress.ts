@@ -1,23 +1,47 @@
 const API_URL = process.env.WORDPRESS_API_URL;
 
 // Fetch all posts
-export async function getAllPosts(maxPosts: number, search?: string) {
+export async function getAllPosts(
+  maxPosts: number,
+  search?: string,
+  currentPage?: number
+) {
   const searchParam = search ? `&search=${encodeURIComponent(search)}` : "";
   if (!maxPosts || maxPosts <= 0) {
     maxPosts = 10;
   }
-  const res = await fetch(`${API_URL}/posts?_embed&per_page=${maxPosts}${searchParam}&_embed`);
-  if (!res.ok) {
-    throw new Error('Failed to fetch posts');
+  const currentPageParam = search
+    ? `&page=${encodeURIComponent(currentPage)}`
+    : "";
+
+  if (!maxPosts || maxPosts <= 0) {
+    maxPosts = 10;
   }
-  return res.json();
+  const res = await fetch(
+    `${API_URL}/posts?_embed&per_page=${maxPosts}${searchParam}${currentPageParam}`
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch posts");
+  }
+
+  const totalPages = parseInt(res.headers.get("X-WP-TotalPages") || "1", 10);
+  const totalPosts = parseInt(res.headers.get("X-WP-Total") || "0", 10);
+
+  const posts = await res.json();
+
+  return {
+    posts,
+    totalPages,
+    totalPosts, // Now it is correctly defined and returned
+  };
 }
 
 // Fetch a single post by slug
 export async function getPostBySlug(slug: string) {
   const res = await fetch(`${API_URL}/posts?slug=${slug}&_embed`);
   if (!res.ok) {
-    throw new Error('Failed to fetch post');
+    throw new Error("Failed to fetch post");
   }
   const posts = await res.json();
   return posts[0];
@@ -36,7 +60,7 @@ export async function getPostBySlug(slug: string) {
 export async function getPageBySlug(slug: string) {
   const res = await fetch(`${API_URL}/pages?slug=${slug}&_embed`);
   if (!res.ok) {
-    throw new Error('Failed to fetch page');
+    throw new Error("Failed to fetch page");
   }
   const pages = await res.json();
   return pages[0];
@@ -46,7 +70,7 @@ export async function getPageBySlug(slug: string) {
 export async function getCategories() {
   const res = await fetch(`${API_URL}/categories`);
   if (!res.ok) {
-    throw new Error('Failed to fetch categories');
+    throw new Error("Failed to fetch categories");
   }
   return res.json();
 }
@@ -55,13 +79,13 @@ export async function getCategories() {
 export async function getPostsByCategory(categoryId: number) {
   const res = await fetch(`${API_URL}/posts?categories=${categoryId}&_embed`);
   if (!res.ok) {
-    throw new Error('Failed to fetch posts');
+    throw new Error("Failed to fetch posts");
   }
   return res.json();
 }
 
 export function getPostCategories(post: any) {
-  const categories = post._embedded?.['wp:term']?.[0];
+  const categories = post._embedded?.["wp:term"]?.[0];
   if (!categories || !Array.isArray(categories)) return [];
 
   return categories.map((category: any) => ({
@@ -70,7 +94,7 @@ export function getPostCategories(post: any) {
     slug: category.slug,
     description: category.description,
     count: category.count,
-    link: category.link
+    link: category.link,
   }));
 }
 
@@ -78,21 +102,21 @@ export function getPostCategories(post: any) {
 export async function getMedia() {
   const res = await fetch(`${API_URL}/media`);
   if (!res.ok) {
-    throw new Error('Failed to fetch media');
+    throw new Error("Failed to fetch media");
   }
   return res.json();
 }
 
 // Helper function to extract featured image
 export function getFeaturedImage(post: any) {
-  const featuredMedia = post._embedded?.['wp:featuredmedia']?.[0];
+  const featuredMedia = post._embedded?.["wp:featuredmedia"]?.[0];
   if (!featuredMedia) return null;
 
   return {
     url: featuredMedia.source_url,
     alt: featuredMedia.alt_text || post.title.rendered,
     width: featuredMedia.media_details?.width,
-    height: featuredMedia.media_details?.height
+    height: featuredMedia.media_details?.height,
   };
 }
 
@@ -103,7 +127,7 @@ export function getAuthor(post: any) {
 
   return {
     name: author.name,
-    avatar: author.avatar_urls?.['96'],
-    description: author.description
+    avatar: author.avatar_urls?.["96"],
+    description: author.description,
   };
 }
