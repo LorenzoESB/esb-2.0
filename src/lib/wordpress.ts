@@ -98,7 +98,6 @@ export function getPostCategories(post: any) {
   }));
 }
 
-// Fetch media
 export async function getMedia() {
   const res = await fetch(`${API_URL}/media`);
   if (!res.ok) {
@@ -107,7 +106,6 @@ export async function getMedia() {
   return res.json();
 }
 
-// Helper function to extract featured image
 export function getFeaturedImage(post: any) {
   const featuredMedia = post._embedded?.["wp:featuredmedia"]?.[0];
   if (!featuredMedia) return null;
