@@ -7,13 +7,12 @@ import {
     calculateReadingTime,
     formatPostDate,
 } from "@/utils/wordpress-formatter";
-import { getAllAdGroups } from "@/lib/ads";
+import { getAllAds } from "@/lib/ads";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 
 export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {
-    const post = await getPostBySlug((await params).slug);
-    const adGroups = await getAllAdGroups();
+    const { slug } = await params;
+    const [post, adGroups] = await Promise.all([getPostBySlug(slug), getAllAds()]);
 
     if (!post) {
         notFound();
@@ -21,28 +20,33 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
 
     const featuredImage = getFeaturedImage(post);
     const author = getAuthor(post);
-    const categories = getPostCategories(post);
+    const categories = getPostCategories(post) ?? [];
 
-    const formattedTitle = stripHtmlTags(post.title.rendered);
-    const formattedContent = formatFullPostContent(post.content.rendered);
-    const readingTime = calculateReadingTime(post.content.rendered);
-    const formattedDate = formatPostDate(post.date);
+    const rawTitle = post.title?.rendered ?? "";
+    const rawContent = post.content?.rendered ?? "";
+    const rawDate = post.date ?? "";
 
-    const getCategoryColor = (categoryName: string) => {
-        const colorMap: { [key: string]: string } = {
-            "Planejamento Financeiro": "bg-blue-500",
-            "Empréstimos e Financiamentos": "bg-blue-600",
-            "Finanças Pessoais": "bg-gray-700",
-            Aposentadoria: "bg-blue-400",
-            "Carro por Assinatura": "bg-blue-500",
-            "Ferramentas e Serviços": "bg-blue-600",
-            DET: "bg-orange-500",
-            Crédito: "bg-green-500",
-            Saúde: "bg-purple-500",
-            default: "bg-blue-600",
-        };
-        return colorMap[categoryName] || colorMap.default;
+    const formattedTitle = stripHtmlTags(rawTitle);
+    const formattedContent = formatFullPostContent(rawContent);
+    const readingTime = calculateReadingTime(rawContent);
+    const formattedDate = formatPostDate(rawDate);
+
+    const CATEGORY_COLOR_MAP: Record<string, string> = {
+        "Planejamento Financeiro": "bg-blue-500",
+        "Empréstimos e Financiamentos": "bg-blue-600",
+        "Finanças Pessoais": "bg-gray-700",
+        Aposentadoria: "bg-blue-400",
+        "Carro por Assinatura": "bg-blue-500",
+        "Ferramentas e Serviços": "bg-blue-600",
+        DET: "bg-orange-500",
+        Crédito: "bg-green-500",
+        Saúde: "bg-purple-500",
+        default: "bg-blue-600",
     };
+
+    const getCategoryColor = (categoryName: string) => CATEGORY_COLOR_MAP[categoryName] ?? CATEGORY_COLOR_MAP.default;
+
+    console.log(formattedContent);
 
     return (
         <div>
