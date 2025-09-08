@@ -4,21 +4,22 @@ const API_URL = process.env.WORDPRESS_API_URL;
 export async function getAllPosts(
   maxPosts: number,
   search?: string,
-  currentPage?: number
+  currentPage: number = 1
 ) {
-  const searchParam = search ? `&search=${encodeURIComponent(search)}` : "";
+  // garante valor padrão
   if (!maxPosts || maxPosts <= 0) {
     maxPosts = 10;
   }
-  const currentPageParam = search
-    ? `&page=${encodeURIComponent(currentPage)}`
-    : "";
 
-  if (!maxPosts || maxPosts <= 0) {
-    maxPosts = 10;
-  }
+  const searchParam = search ? `&search=${encodeURIComponent(search)}` : "";
+  const pageParam = `&page=${encodeURIComponent(currentPage)}`;
+
   const res = await fetch(
-    `${API_URL}/posts?_embed&per_page=${maxPosts}${searchParam}${currentPageParam}`
+    `${API_URL}/posts?_embed&per_page=${maxPosts}${searchParam}${pageParam}`,
+    {
+      cache: "no-store",
+      // ou: next: { revalidate: 60 } // cache controlado de 60s
+    }
   );
 
   if (!res.ok) {
@@ -33,7 +34,7 @@ export async function getAllPosts(
   return {
     posts,
     totalPages,
-    totalPosts, // Now it is correctly defined and returned
+    totalPosts,
   };
 }
 
