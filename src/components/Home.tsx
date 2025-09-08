@@ -5,7 +5,7 @@ import { ArrowRight } from "lucide-react";
 import PostCard from "./Posts";
 
 export default async function Home() {
-    const posts = await getAllPosts(4);
+    const { posts } = await getAllPosts(4);
     return (
         <section className="py-20 bg-background" id="blog">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
