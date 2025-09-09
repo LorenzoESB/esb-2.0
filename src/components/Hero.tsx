@@ -34,7 +34,7 @@ export default async function Hero() {
                             melhores decisões financeiras com confiança.
                         </p>
 
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start animate-in slide-in-from-bottom-16 duration-1200">
+                        {/* <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start animate-in slide-in-from-bottom-16 duration-1200">
                             <Button
                                 size="lg"
                                 className="group bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-6 text-lg"
@@ -45,7 +45,7 @@ export default async function Hero() {
                             <Button variant="outline" size="lg" className="px-8 py-6 text-lg">
                                 Ver rankings
                             </Button>
-                        </div>
+                        </div> */}
 
                         {/* Stats */}
                         {/* <div className="grid grid-cols-3 gap-8 mt-12 pt-8 border-t border-border/30 animate-in fade-in duration-1500">
