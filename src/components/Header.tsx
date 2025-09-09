@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { Menu, Search, User } from "lucide-react";
+import Image from "next/image";
 
 export default function Header() {
     const [query, setQuery] = useState("");
@@ -24,8 +25,8 @@ export default function Header() {
                     {/* Logo */}
                     <div className="flex items-center space-x-4">
                         <Link href={"/"} className="flex items-center space-x-2">
-                            <div className="bg-gradient-primary rounded-lg p-2">
-                                <span className="text-primary-foreground font-bold text-xl">EB</span>
+                            <div className="rounded-lg p-2">
+                                <Image src="./bolsito.svg" alt="Logo" width={70} height={70} />
                             </div>
                             <div>
                                 <h1 className="gradient-text text-xl font-bold">Educando Seu Bolso</h1>

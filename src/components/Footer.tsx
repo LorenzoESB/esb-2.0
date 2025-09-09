@@ -57,6 +57,11 @@ export default async function Footer() {
                             </p>
                             <div className="flex space-x-3">
                                 <Button variant="secondary" size="icon" className="hover:text-white">
+                                    <Link href="https://x.com/bolsito_">
+                                        <Twitter className="w-5 h-5" />
+                                    </Link>
+                                </Button>
+                                <Button variant="secondary" size="icon" className="hover:text-white">
                                     <Link href="https://www.facebook.com/profile.php?id=100063976607899&locale=pt_BR">
                                         <Facebook className="w-5 h-5" />
                                     </Link>

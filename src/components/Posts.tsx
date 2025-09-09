@@ -10,10 +10,7 @@ interface PostCardProps {
     index?: number;
 }
 
-export default function PostCard({
-    post,
-    index = 0,
-}: PostCardProps) {
+export default function PostCard({ post, index = 0 }: PostCardProps) {
     const featuredImage = getFeaturedImage(post);
     const author = getAuthor(post);
     const categories = getPostCategories(post);
@@ -43,13 +40,13 @@ export default function PostCard({
                     </div>
                 </div>
 
-                <CardHeader className="pb-3">
+                <CardHeader className="pb-1">
                     <CardTitle className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors duration-300 line-clamp-2">
                         <span dangerouslySetInnerHTML={{ __html: post.title.rendered }} />
                     </CardTitle>
                 </CardHeader>
 
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-2">
                     <CardDescription className="text-muted-foreground leading-relaxed line-clamp-3">
                         <span dangerouslySetInnerHTML={{ __html: post.excerpt.rendered }} />
                     </CardDescription>
@@ -61,8 +58,8 @@ export default function PostCard({
                         </div>
                     </div>
 
-                    <div className="flex items-center justify-between pt-3 border-t border-border/30">
-                        <div className="flex items-center space-x-2">
+                    <div className="flex items-center justify-between pt-3 border-t border-border/30 pb-2">
+                        <div className="flex items-center space-x-2 ">
                             <User className="w-4 h-4 text-muted-foreground" />
                             <span className="text-sm text-muted-foreground">
                                 {author?.name || "Autor desconhecido"}

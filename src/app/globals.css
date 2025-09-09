@@ -1,10 +1,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-/* shadcn: permite usar .dark em qualquer container */
 @custom-variant dark (&:is(.dark *));
 
-/* shadcn: mapeia os tokens CSS para as cores do Tailwind */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -54,7 +52,6 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
-/* ===== PALETA ESB (HSL) ===== */
 :root {
   --radius: 0.625rem;
 
@@ -78,7 +75,7 @@
   --muted: hsl(220 15% 96%);
   --muted-foreground: hsl(220 15% 45%);
 
-  --accent: hsl(260 100% 70%);
+  --accent: hsl(192, 69%, 43%);
   --accent-foreground: hsl(0 0% 100%);
 
   --destructive: hsl(0 84.2% 60.2%);
@@ -97,7 +94,7 @@
   /* blue */
   --chart-2: hsl(150 60% 50%);
   /* green */
-  --chart-3: hsl(260 100% 70%);
+  --chart-3: hsl(192, 69%, 43%);
   /* purple */
   --chart-4: hsl(45 100% 55%);
   /* yellow */
@@ -150,7 +147,7 @@
   --muted: hsl(220 25% 15%);
   --muted-foreground: hsl(220 15% 65%);
 
-  --accent: hsl(260 100% 75%);
+  --accent: hsl(192, 69%, 43%);
   --accent-foreground: hsl(220 25% 8%);
 
   --destructive: hsl(0 70% 50%);
@@ -162,7 +159,7 @@
   /* Charts em dark */
   --chart-1: hsl(220 90% 65%);
   --chart-2: hsl(150 55% 55%);
-  --chart-3: hsl(260 90% 75%);
+  --chart-3: hsl(192, 69%, 43%);
   --chart-4: hsl(45 95% 60%);
   --chart-5: hsl(200 90% 65%);
 
@@ -177,7 +174,6 @@
   --sidebar-ring: hsl(217.2 91.2% 59.8%);
 }
 
-/* ===== Base ===== */
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -283,7 +279,6 @@
   }
 }
 
-/* keyframes */
 @keyframes float {
 
   0%,

@@ -9,6 +9,7 @@ import {
 } from "@/utils/wordpress-formatter";
 import { getAllAds } from "@/lib/ads";
 import { Card, CardContent } from "@/components/ui/card";
+import Footer from "@/components/Footer";
 
 export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = await params;
@@ -45,8 +46,6 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
     };
 
     const getCategoryColor = (categoryName: string) => CATEGORY_COLOR_MAP[categoryName] ?? CATEGORY_COLOR_MAP.default;
-
-    console.log(formattedContent);
 
     return (
         <div>
@@ -214,6 +213,8 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
                     </aside>
                 </div>
             </article>
+
+            <Footer />
         </div>
     );
 }

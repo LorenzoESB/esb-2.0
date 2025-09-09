@@ -11,9 +11,7 @@ export default async function Home() {
     return (
         <div className="min-h-screen bg-background" id="blog">
             <Hero />
-
             <Tools />
-
             <div className="container mx-auto p-5 px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-16">
                     <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
