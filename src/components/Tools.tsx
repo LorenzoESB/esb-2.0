@@ -1,5 +1,4 @@
 "use client";
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CalculatorIcon, Car, CreditCard, Landmark } from "lucide-react";
@@ -35,7 +34,7 @@ const features = [
     },
 ];
 
-export default function Features() {
+export default function Tools() {
     return (
         <section className="py-20 bg-muted/30" id="rankings">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">

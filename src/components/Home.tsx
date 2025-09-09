@@ -4,7 +4,7 @@ import { Button } from "./ui/button";
 import { ArrowRight } from "lucide-react";
 import PostCard from "./Posts";
 import Hero from "./Hero";
-import Ferramentas from "./Ferramentas";
+import Tools from "./Tools";
 
 export default async function Home() {
     const { posts } = await getAllPosts(4);
@@ -12,7 +12,7 @@ export default async function Home() {
         <div className="min-h-screen bg-background" id="blog">
             <Hero />
 
-            <Ferramentas />
+            <Tools />
 
             <div className="container mx-auto p-5 px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-16">
