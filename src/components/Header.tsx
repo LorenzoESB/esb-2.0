@@ -15,7 +15,6 @@ export default function Header() {
     function handleSearch(e: React.FormEvent) {
         e.preventDefault();
         if (!query.trim()) return;
-        // Redireciona para a página do blog com query
         router.push(`/blog?search=${encodeURIComponent(query)}`);
     }
 
@@ -55,7 +54,7 @@ export default function Header() {
                         </form>
                     </nav>
 
-                    <div className="flex items-center space-x-4 gradient-text font-bold">                        
+                    <div className="flex items-center space-x-4 gradient-text font-bold">
                         <Link href={"/rankings"} className="flex items-center space-x-2">
                             <span>Rankings</span>
                         </Link>

@@ -1,7 +1,7 @@
-export default function Amortizacao() {
-    return (
+export default function AmortizacaoSimulator() {
+    return ( 
         <div>
-            <h1>Amortização </h1>
-        </div>
+            Amortização Simulator
+        </div>     
     );
 }
