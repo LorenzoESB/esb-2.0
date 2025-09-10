@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Bolsito from "../../public/bolsito.svg";
 import { Button } from "./ui/button";
 import { Menu, Search, User } from "lucide-react";
 import Image from "next/image";
@@ -26,7 +27,7 @@ export default function Header() {
                     <div className="flex items-center space-x-4">
                         <Link href={"/"} className="flex items-center space-x-2">
                             <div className="rounded-lg p-2">
-                                <Image src="./bolsito.svg" alt="Logo" width={70} height={70} />
+                                <Image src={Bolsito} alt="Logo" width={70} height={70} />
                             </div>
                             <div>
                                 <h1 className="gradient-text text-xl font-bold">Educando Seu Bolso</h1>
@@ -49,16 +50,18 @@ export default function Header() {
                                 className="bg-transparent border-none outline-none text-sm text-foreground placeholder-muted-foreground"
                             />
                             <Button type="submit" variant="default" size="sm" className="hidden md:inline-flex">
-                                <Search className="w-4 h-4 text-muted-foreground text-white" />
+                                <Search className="w-4 h-4 text-white" />
                             </Button>
                         </form>
                     </nav>
 
-                    {/* Navigation and CTA */}
-                    <div className="flex items-center space-x-4">
-                        <Button variant="default" size="sm" className="hidden md:inline-flex">
-                            <User className="w-4 h-4" />
-                        </Button>
+                    <div className="flex items-center space-x-4 gradient-text font-bold">                        
+                        <Link href={"/rankings"} className="flex items-center space-x-2">
+                            <span>Rankings</span>
+                        </Link>
+                        <Link href={"/simulators"} className="flex items-center space-x-2">
+                            <span>Simuladores</span>
+                        </Link>
                         <Button variant="ghost" size="icon" className="md:hidden">
                             <Menu className="w-5 h-5" />
                         </Button>
