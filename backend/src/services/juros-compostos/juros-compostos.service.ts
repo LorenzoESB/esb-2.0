@@ -37,7 +37,7 @@ function calcularJurosCompostosMesAMes(
 	console.log(`Taxa anual: ${taxaJurosAnual}%`);
 	console.log(`Taxa mensal equivalente: ${(taxaMensal * 100).toFixed(4)}%`);
 	console.log(`Período: ${periodoMeses} meses\n`);
-
+	
 	for (let mes = 1; mes <= periodoMeses; mes++) {
 		const saldoAnterior = saldo;
 		
@@ -92,13 +92,7 @@ export default async function calculaJurosCompostos({
 	const rendimentoBruto = calculo.rendimentoTotalBruto;
 	const impostoRenda = rendimentoBruto * aliquotaIR;
 	const rendimentoLiquido = rendimentoBruto - impostoRenda;
-	const valorFinalLiquido = calculo.totalAportado + rendimentoLiquido;
-	
-	console.log(`\n=== RESUMO FINAL ===`);
-	console.log(`Total investido: R$ ${calculo.totalAportado.toFixed(2)}`);
-	console.log(`Rendimento bruto: R$ ${rendimentoBruto.toFixed(2)}`);
-	// console.log(`Imposto de Renda: R$ ${impostoRenda.toFixed(2)}`);
-	console.log(`Valor final Bruto: R$ ${calculo.saldoFinal.toFixed(2)}`);
+	// const valorFinalLiquido = calculo.totalAportado + rendimentoLiquido;
 	
 	const detalhesMensaisFormatados = calculo.detalhesMensais.map(detalhe => ({
 		mes: detalhe.mes,
@@ -110,13 +104,9 @@ export default async function calculaJurosCompostos({
 
 	return {
 		resumo: {
-			// valorTotalFinal: parseFloat(valorFinalLiquido.toFixed(2)),
 			valorTotalFinalBruto: parseFloat(calculo.saldoFinal.toFixed(2)),
 			totalInvestido: parseFloat(calculo.totalAportado.toFixed(2)),
-			// totalEmJuros: parseFloat(rendimentoLiquido.toFixed(2)),
 			totalEmJurosBruto: parseFloat(rendimentoBruto.toFixed(2)),
-			// impostoRenda: parseFloat(impostoRenda.toFixed(2)),
-			// aliquotaIR: parseFloat((aliquotaIR * 100).toFixed(1))
 		},
 		detalhesMensais: detalhesMensaisFormatados,
 	};
