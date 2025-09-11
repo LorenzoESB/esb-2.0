@@ -34,10 +34,6 @@ function calcularJurosCompostosMesAMes(
 	let rendimentoAcumulado = 0;
 	const detalhesMensais: DetalhesMensal[] = [];
 
-	console.log(`Taxa anual: ${taxaJurosAnual}%`);
-	console.log(`Taxa mensal equivalente: ${(taxaMensal * 100).toFixed(4)}%`);
-	console.log(`Período: ${periodoMeses} meses\n`);
-	
 	for (let mes = 1; mes <= periodoMeses; mes++) {
 		const saldoAnterior = saldo;
 		
