@@ -6,7 +6,7 @@ const port = process.env.PORT || 3000;
 
 app.use(express.json());
 
-app.use("/simulators", router)
+app.use("/simulators", router);
 
 app.listen(port, () => {
 	console.log(`Server is running on http://localhost:${port}`);
