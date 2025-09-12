@@ -1,13 +1,12 @@
-// app/blog/page.tsx
-export const dynamic = "force-dynamic"; // ou: export const revalidate = 0;
+export const dynamic = "force-dynamic";
 
 import PostCard from "@/components/Posts";
 import { PaginationPosts } from "@/components/Pagination";
 import { getAllPosts } from "@/lib/wordpress";
-import FiltersBlog from "@/components/Filters";
 import { Card, CardContent } from "@/components/ui/card";
+import FiltersBlog from "@/components/Filters";
 
-export default async function BlogPage({searchParams}: {searchParams: Promise<{ search?: string; page?: string }>;}) {
+export default async function BlogPage({ searchParams }: { searchParams: Promise<{ search?: string; page?: string }>; }) {
     const searchParameter = await searchParams;
 
     const currentPage = Number.isNaN(parseInt(searchParameter?.page ?? "", 10))
