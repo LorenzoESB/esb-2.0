@@ -3,10 +3,8 @@ import { AmortizacaoController } from './amortizacao.controller';
 import { AmortizacaoService } from './amortizacao.service';
 
 @Module({
-  imports: [],
   controllers: [AmortizacaoController],
   providers: [AmortizacaoService],
   exports: [AmortizacaoService],
 })
-export class AmortizacaoModule {
-}
+export class AmortizacaoModule {}

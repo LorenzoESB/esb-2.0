@@ -1,12 +1,10 @@
 const API_URL = process.env.WORDPRESS_API_URL;
 
-// Fetch all posts
 export async function getAllPosts(
   maxPosts: number,
   search?: string,
   currentPage: number = 1
 ) {
-  // garante valor padrão
   if (!maxPosts || maxPosts <= 0) {
     maxPosts = 10;
   }
@@ -38,7 +36,6 @@ export async function getAllPosts(
   };
 }
 
-// Fetch a single post by slug
 export async function getPostBySlug(slug: string) {
   const res = await fetch(`${API_URL}/posts?slug=${slug}&_embed`);
   if (!res.ok) {
@@ -48,16 +45,6 @@ export async function getPostBySlug(slug: string) {
   return posts[0];
 }
 
-// Fetch all pages
-// export async function getAllPages() {
-//   const res = await fetch(`${API_URL}/pages?_embed&per_page=15`);
-//   if (!res.ok) {
-//     throw new Error('Failed to fetch pages');
-//   }
-//   return res.json();
-// }
-
-// Fetch a single page by slug
 export async function getPageBySlug(slug: string) {
   const res = await fetch(`${API_URL}/pages?slug=${slug}&_embed`);
   if (!res.ok) {
@@ -67,7 +54,6 @@ export async function getPageBySlug(slug: string) {
   return pages[0];
 }
 
-// Fetch categories
 export async function getCategories() {
   const res = await fetch(`${API_URL}/categories`);
   if (!res.ok) {
@@ -76,7 +62,6 @@ export async function getCategories() {
   return res.json();
 }
 
-// Fetch posts by category
 export async function getPostsByCategory(categoryId: number) {
   const res = await fetch(`${API_URL}/posts?categories=${categoryId}&_embed`);
   if (!res.ok) {
@@ -119,7 +104,6 @@ export function getFeaturedImage(post: any) {
   };
 }
 
-// Helper function to extract author
 export function getAuthor(post: any) {
   const author = post._embedded?.author?.[0];
   if (!author) return null;

@@ -21,7 +21,7 @@ const simulators = [
         title: "Calculadora de Juros Compostos",
         description: "Calcule os juros compostos de forma gratuita",
         icon: TrendingUp,
-        href: "/juros-compostos",
+        href: "/simulators/juros-compostos",
         status: "Disponível",
         color: "bg-green-50 text-green-600 border-green-200",
         features: ["Aporte Mensal", "Evolução", "Gráficos", "Projeções"],
@@ -30,7 +30,7 @@ const simulators = [
         title: "Simulador de Máquinas de Cartão",
         description: "Descubra a maquininha ideal para o seu negócio",
         icon: CreditCard,
-        href: "/taxa-maquininha",
+        href: "/simulators/taxa-maquininha",
         status: "Disponível",
         color: "bg-green-50 text-green-600 border-green-200",
         features: ["Taxas", "Volume", "Recebimento", "Economia"],
@@ -39,7 +39,7 @@ const simulators = [
         title: "Simulador de Amortização",
         description: "É melhor amortizar por prazo ou parcela",
         icon: Calculator,
-        href: "/amortizacao",
+        href: "/simulators/amortizacao",
         status: "Disponível",
         color: "bg-green-50 text-green-600 border-green-200",
         features: ["Prazo vs Parcela", "Economia", "Comparativo", "Recomendação"],
@@ -48,7 +48,7 @@ const simulators = [
         title: "Simulador de Contas Digitais",
         description: "Descubra a conta digital ideal para a sua necessidade",
         icon: Building2,
-        href: "/conta-digital",
+        href: "/simulators/conta-digital",
         status: "Disponível",
         color: "bg-green-50 text-green-600 border-green-200",
         features: ["Gratuidade", "Benefícios", "Reviews", "Pontuação"],
@@ -57,7 +57,7 @@ const simulators = [
         title: "Comparador de Maquininha de Cartão",
         description: "Compare as várias máquinas do mercado",
         icon: CreditCard,
-        href: "/comparador-maquininha",
+        href: "/simulators/comparador-maquininha",
         status: "Disponível",
         color: "bg-green-50 text-green-600 border-green-200",
         features: ["Comparativo", "Taxas", "Funcionalidades", "Custo"],
@@ -66,7 +66,7 @@ const simulators = [
         title: "Simulador de Aposentadoria Privada",
         description: "Veja quanto precisa poupar para ter tranquilidade",
         icon: Users,
-        href: "/aposentadoria-privada",
+        href: "/simulators/aposentadoria-privada",
         status: "Disponível",
         color: "bg-green-50 text-green-600 border-green-200",
         features: ["Previdência", "Expectativa", "Meta de Renda", "Projeções"],
@@ -75,7 +75,7 @@ const simulators = [
         title: "Simulador de Empréstimo",
         description: "Descubra a melhor opção de empréstimo para você",
         icon: DollarSign,
-        href: "/emprestimo",
+        href: "/simulators/emprestimo",
         status: "Disponível",
         color: "bg-green-50 text-green-600 border-green-200",
         features: ["Múltiplas Modalidades", "Comparativo", "Cronograma", "Economia"],
@@ -84,7 +84,7 @@ const simulators = [
         title: "Simulador de Investimentos",
         description: "Simule investimentos em renda fixa",
         icon: TrendingUp,
-        href: "/investimentos",
+        href: "/simulators/investimentos",
         status: "Disponível",
         color: "bg-green-50 text-green-600 border-green-200",
         features: ["Renda Fixa", "Tributação", "Comparativo", "Rentabilidade"],
@@ -93,7 +93,7 @@ const simulators = [
         title: "Simulador de Financiamento Imobiliário",
         description: "Veja quanto vai pagar pela sua casa própria",
         icon: Home,
-        href: "/financiamento-imobiliario",
+        href: "/simulators/financiamento-imobiliario",
         status: "Disponível",
         color: "bg-green-50 text-green-600 border-green-200",
         features: ["SAC vs PRICE", "Amortização", "Gráficos", "Planilha"],
@@ -102,7 +102,7 @@ const simulators = [
         title: "Simulador de Financiamento de Veículos",
         description: "Descubra quanto vai pagar pelo seu carro",
         icon: Car,
-        href: "/financiamento-veiculo",
+        href: "/simulators/financiamento-veiculo",
         status: "Disponível",
         color: "bg-green-50 text-green-600 border-green-200",
         features: ["Novo/Usado", "Amortização", "Taxas", "Entrada"],
@@ -111,7 +111,7 @@ const simulators = [
         title: "Simulador de Combustível",
         description: "Gasolina ou etanol?",
         icon: Fuel,
-        href: "/combustivel",
+        href: "/simulators/combustivel",
         status: "Disponível",
         color: "bg-green-50 text-green-600 border-green-200",
         features: ["Flex", "Economia", "Consumo", "Comparativo"],
@@ -120,7 +120,7 @@ const simulators = [
         title: "Comparador de Carros por Assinatura",
         description: "Descubra qual a melhor opção entre comprar ou alugar um veículo",
         icon: Car,
-        href: "/carros-assinatura",
+        href: "/simulators/carros-assinatura",
         status: "Disponível",
         color: "bg-green-50 text-green-600 border-green-200",
         features: ["Custo Total", "Break-even", "Assinatura", "Recomendação"],
@@ -154,11 +154,10 @@ export default function SimuladoresHub() {
                                     return (
                                         <Card
                                             key={simulator.title}
-                                            className={`group transition-all duration-300 ${
-                                                isAvailable
-                                                    ? "hover:scale-105 hover:shadow-lg cursor-pointer"
-                                                    : "opacity-75"
-                                            }`}
+                                            className={`group transition-all duration-300 ${isAvailable
+                                                ? "hover:scale-105 hover:shadow-lg cursor-pointer"
+                                                : "opacity-75"
+                                                }`}
                                             style={{
                                                 animationDelay: `${index * 0.1}s`,
                                                 animation: "fadeInUp 0.6s ease-out forwards",
