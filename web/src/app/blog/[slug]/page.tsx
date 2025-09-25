@@ -1,4 +1,4 @@
-import { getPostBySlug, getFeaturedImage, getAuthor, getPostCategories } from "@/lib/wordpress";
+import { getPostBySlug, getFeaturedImage, getAuthor, getPostCategories } from "@/lib/api/wordpress";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import {
@@ -7,13 +7,13 @@ import {
     calculateReadingTime,
     formatPostDate,
 } from "@/utils/wordpress-formatter";
-import { getAllAds } from "@/lib/ads";
+
 import { Card, CardContent } from "@/components/ui/card";
 import Footer from "@/components/Footer";
 
 export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = await params;
-    const [post, adGroups] = await Promise.all([getPostBySlug(slug), getAllAds()]);
+    const [post,] = await Promise.all([getPostBySlug(slug)]);
 
     if (!post) {
         notFound();

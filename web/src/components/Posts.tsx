@@ -1,5 +1,5 @@
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "./ui/card";
-import { getAuthor, getFeaturedImage, getPostCategories } from "@/lib/wordpress";
+import { getAuthor, getFeaturedImage, getPostCategories } from "@/lib/api/wordpress";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Calendar, User, ArrowRight } from "lucide-react";

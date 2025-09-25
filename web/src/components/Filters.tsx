@@ -8,7 +8,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { getCategories } from "@/lib/wordpress";
+import { getCategories } from "@/lib/api/wordpress";
 
 const FiltersBlog = async () => {
     const categories = await getCategories();

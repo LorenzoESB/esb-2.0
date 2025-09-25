@@ -1,4 +1,4 @@
-import { getAllPosts } from "@/lib/wordpress";
+import { getAllPosts } from "@/lib/api/wordpress";
 import Link from "next/dist/client/link";
 import { Button } from "./ui/button";
 import { ArrowRight } from "lucide-react";

@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 
 import PostCard from "@/components/Posts";
 import { PaginationPosts } from "@/components/Pagination";
-import { getAllPosts } from "@/lib/wordpress";
+import { getAllPosts } from "@/lib/api/wordpress";
 import { Card, CardContent } from "@/components/ui/card";
 import FiltersBlog from "@/components/Filters";
 

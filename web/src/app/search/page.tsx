@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getFeaturedImage } from "@/lib/wordpress";
+import { getFeaturedImage } from "@/lib/api/wordpress";
 
 async function searchPosts(query: string) {
     const res = await fetch(`${process.env.WORDPRESS_API_URL}/posts?search=${encodeURIComponent(query)}&_embed`);

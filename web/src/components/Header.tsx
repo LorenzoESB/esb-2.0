@@ -58,7 +58,7 @@ export default function Header() {
                         <Link href={"/rankings"} className="flex items-center space-x-2">
                             <span>Rankings</span>
                         </Link>
-                        <Link href={"/simulators"} className="flex items-center space-x-2">
+                        <Link href={"/simuladores"} className="flex items-center space-x-2">
                             <span>Simuladores</span>
                         </Link>
                         <Button variant="ghost" size="icon" className="md:hidden">
