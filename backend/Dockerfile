@@ -18,6 +18,10 @@ RUN pnpm install --frozen-lockfile
 # Copia o restante do código
 COPY . .
 
+# CORREÇÃO: Criar diretório dist e ajustar permissões
+RUN mkdir -p /app/dist && \
+    chown -R node:node /app
+
 # (Opcional) Apenas gera o client do Prisma se DATABASE_URL estiver presente.
 # Isso evita erro de build quando não há DB acessível durante a build.
 ARG DATABASE_URL
