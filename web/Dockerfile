@@ -1,31 +1,27 @@
-# Dockerfile.dev -- para desenvolvimento (hot-reload)
+# Dockerfile.dev - Next.js em desenvolvimento com hot-reload
 FROM node:18-alpine
 
-# Preparações
 ENV NODE_ENV=development
 ENV PORT=3001
 WORKDIR /app
 
-
+# Ativa corepack + pnpm
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
-RUN addgroup -g 1000 devgroup \
- && adduser -u 1000 -G devgroup -s /bin/sh -D devuser
-
-
+# Copia manifests e instala dependências (usa cache)
 COPY package.json pnpm-lock.yaml* ./
-
-# Instala dependências (inclui devDependencies)
 RUN pnpm install --frozen-lockfile
 
-# Copia o resto do projeto
+# Copia o restante do código
 COPY . .
 
-# Garante permissões corretas para o usuário não-root
-RUN chown -R devuser:devgroup /app
+# Define permissões (garante que o usuário 'node' consiga rodar e escrever arquivos)
+RUN chown -R node:node /app
 
-USER devuser
+# Usa o usuário 'node' já presente na imagem (evita criar UID/GID fixos)
+USER node
 
 EXPOSE 3001
 
+# Roda next em dev e escuta 0.0.0.0 para hot-reload funcionar fora do container
 CMD ["pnpm", "dev", "--", "-H", "0.0.0.0", "-p", "3001"]
