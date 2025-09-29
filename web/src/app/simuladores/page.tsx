@@ -50,7 +50,7 @@ const simulators = [
         icon: Building2,
         href: "/simuladores/conta-digital",
         status: "Indisponível",
-        color: "bg-green-50 text-green-600 border-green-200",
+        color: "bg-red-50 text-red-600 border-red-200",
         features: ["Gratuidade", "Benefícios", "Reviews", "Pontuação"],
     },
     {
@@ -59,7 +59,7 @@ const simulators = [
         icon: CreditCard,
         href: "/simuladores/comparador-maquininha",
         status: "Indisponível",
-        color: "bg-green-50 text-green-600 border-green-200",
+        color: "bg-red-50 text-red-600 border-red-200",
         features: ["Comparativo", "Taxas", "Funcionalidades", "Custo"],
     },
     {
@@ -68,7 +68,7 @@ const simulators = [
         icon: Users,
         href: "/simuladores/aposentadoria-privada",
         status: "Indisponível",
-        color: "bg-green-50 text-green-600 border-green-200",
+        color: "bg-red-50 text-red-600 border-red-200",
         features: ["Previdência", "Expectativa", "Meta de Renda", "Projeções"],
     },
     {
@@ -77,7 +77,7 @@ const simulators = [
         icon: DollarSign,
         href: "/simuladores/emprestimo",
         status: "Indisponível",
-        color: "bg-green-50 text-green-600 border-green-200",
+        color: "bg-red-50 text-red-600 border-red-200",
         features: ["Múltiplas Modalidades", "Comparativo", "Cronograma", "Economia"],
     },
     {
@@ -86,7 +86,7 @@ const simulators = [
         icon: TrendingUp,
         href: "/simuladores/investimentos",
         status: "Indisponível",
-        color: "bg-green-50 text-green-600 border-green-200",
+        color: "bg-red-50 text-red-600 border-red-200",
         features: ["Renda Fixa", "Tributação", "Comparativo", "Rentabilidade"],
     },
     {
@@ -95,7 +95,7 @@ const simulators = [
         icon: Home,
         href: "/simuladores/financiamento-imobiliario",
         status: "Indisponível",
-        color: "bg-green-50 text-green-600 border-green-200",
+        color: "bg-red-50 text-red-600 border-red-200",
         features: ["SAC vs PRICE", "Amortização", "Gráficos", "Planilha"],
     },
     {
@@ -104,7 +104,7 @@ const simulators = [
         icon: Car,
         href: "/simuladores/financiamento-veiculo",
         status: "Indisponível",
-        color: "bg-green-50 text-green-600 border-green-200",
+        color: "bg-red-50 text-red-600 border-red-200",
         features: ["Novo/Usado", "Amortização", "Taxas", "Entrada"],
     },
     {
@@ -113,7 +113,7 @@ const simulators = [
         icon: Fuel,
         href: "/simuladores/combustivel",
         status: "Indisponível",
-        color: "bg-green-50 text-green-600 border-green-200",
+        color: "bg-red-50 text-red-600 border-red-200",
         features: ["Flex", "Economia", "Consumo", "Comparativo"],
     },
     {
@@ -122,7 +122,7 @@ const simulators = [
         icon: Car,
         href: "/simuladores/carros-assinatura",
         status: "Indisponível",
-        color: "bg-green-50 text-green-600 border-green-200",
+        color: "bg-red-50 text-red-600 border-red-200",
         features: ["Custo Total", "Break-even", "Assinatura", "Recomendação"],
     },
 ];
