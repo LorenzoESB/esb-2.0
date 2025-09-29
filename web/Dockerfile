@@ -2,6 +2,7 @@
 FROM node:18-alpine
 
 ENV NODE_ENV=development
+ENV NEXT_PUBLIC_API_URL=https://dev.educandoseubolso.blog.br
 ENV PORT=3001
 WORKDIR /app
 
