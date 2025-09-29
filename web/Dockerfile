@@ -24,4 +24,4 @@ USER node
 EXPOSE 3001
 
 # Roda next em dev e escuta 0.0.0.0 para hot-reload funcionar fora do container
-CMD ["pnpm", "dev", "--", "-H", "0.0.0.0", "-p", "3001"]
+CMD ["pnpm", "dev", "-H", "0.0.0.0", "-p", "3001"]
