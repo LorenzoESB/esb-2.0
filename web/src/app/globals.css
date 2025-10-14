@@ -190,7 +190,14 @@
 
   /* utilitárias do seu design */
   .gradient-text {
-    background: var(--gradient-primary);
+    background: linear-gradient(90deg, #0E87C6 0%, #0E87C6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .header-gradient-text {
+    background: linear-gradient(90deg, #0E87C6 0%, #0E87C6 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;

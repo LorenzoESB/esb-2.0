@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Button } from "./ui/button";
-import { Menu, Search, User, X } from "lucide-react";
 import Image from "next/image";
+import { Button } from "./ui/button";
+import { Menu, Search, X} from "lucide-react";
 
 export default function Header() {
     const [query, setQuery] = useState("");
@@ -43,8 +43,8 @@ export default function Header() {
                     <div className="flex items-center space-x-2 md:space-x-4">
                         <Link href={"/"} className="flex items-center space-x-2">
                             <div className="rounded-lg p-1 md:p-2">
-                                <div className="w-8 h-8 md:w-[70px] md:h-[70px] bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                                    <span className="text-white font-bold text-sm md:text-xl">B</span>
+                                <div className="w-8 h-8 md:w-[70px] md:h-[70px] rounded-lg flex items-center justify-center">
+                                    <Image src="/bolsito_new.svg" alt="Logo" width={70} height={70} />
                                 </div>
                             </div>
                             <div className="hidden sm:block">
@@ -147,15 +147,6 @@ export default function Header() {
                     </div>
                 )}
             </div>
-
-            <style jsx>{`
-                .gradient-text {
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                    -webkit-background-clip: text;
-                    -webkit-text-fill-color: transparent;
-                    background-clip: text;
-                }
-            `}</style>
         </header>
     );
 }

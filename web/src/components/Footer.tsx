@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Mail, Phone, MapPin } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import {
     FaFacebookF as Facebook,
     FaTwitter as Twitter,
@@ -42,8 +43,8 @@ export default async function Footer() {
                         {/* Brand */}
                         <div className="space-y-4">
                             <div className="flex items-center space-x-3">
-                                <div className="bg-gradient-primary rounded-lg p-2">
-                                    <span className="text-primary-foreground font-bold text-xl">EB</span>
+                                <div className="w-8 h-8 md:w-[70px] md:h-[70px] rounded-lg flex items-center justify-center">
+                                    <Image src="/bolsito_new.svg" alt="Logo" width={70} height={70} />
                                 </div>
                                 <div>
                                     <h3 className="gradient-text text-lg font-bold">Educando Seu Bolso</h3>
