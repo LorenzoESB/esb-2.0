@@ -110,52 +110,54 @@ export function JurosCompostosForm({ onSubmit, isLoading }: JurosCompostosFormPr
                                 )}
                             />
 
-                            <FormField
-                                control={form.control}
-                                name="tempoAplicacao"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Tempo de Aplicação</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                type="number"
-                                                placeholder="3"
-                                                {...field}
-                                                onChange={(e) => field.onChange(parseInt(e.target.value))}
-                                            />
-                                        </FormControl>
-                                        <FormDescription>
-                                            Período do investimento
-                                        </FormDescription>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-
-                            <FormField
-                                control={form.control}
-                                name="tempoAplicacaoUnidade"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Unidade de Tempo</FormLabel>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <div className="grid grid-cols-2 gap-2 md:col-span-2">
+                                <FormField
+                                    control={form.control}
+                                    name="tempoAplicacao"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Tempo de Aplicação</FormLabel>
                                             <FormControl>
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Selecione a unidade" />
-                                                </SelectTrigger>
+                                                <Input
+                                                    type="number"
+                                                    placeholder="3"
+                                                    {...field}
+                                                    onChange={(e) => field.onChange(parseInt(e.target.value))}
+                                                />
                                             </FormControl>
-                                            <SelectContent>
-                                                <SelectItem value="meses">Meses</SelectItem>
-                                                <SelectItem value="anos">Anos</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                        <FormDescription>
-                                            Unidade do período
-                                        </FormDescription>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+                                            <FormDescription>
+                                                Período do investimento
+                                            </FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="tempoAplicacaoUnidade"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Unidade de Tempo</FormLabel>
+                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                <FormControl>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Selecione a unidade" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    <SelectItem value="meses">Meses</SelectItem>
+                                                    <SelectItem value="anos">Anos</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                            <FormDescription>
+                                                Unidade do período
+                                            </FormDescription>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
 
                             <FormField
                                 control={form.control}
