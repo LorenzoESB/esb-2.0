@@ -68,10 +68,13 @@ export function JurosCompostosForm({ onSubmit, isLoading }: JurosCompostosFormPr
                                         <FormLabel>Valor Inicial (R$)</FormLabel>
                                         <FormControl>
                                             <Input
-                                                type="number"
-                                                placeholder="10000"
-                                                {...field}
-                                                onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                                                type="text"
+                                                placeholder="R$ 10.000,00"
+                                                value={field.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                                                onChange={(e) => {
+                                                    const numericValue = e.target.value.replace(/\D/g, '');
+                                                    field.onChange(parseFloat(numericValue) / 100 || 0);
+                                                }}
                                             />
                                         </FormControl>
                                         <FormDescription>
@@ -90,10 +93,13 @@ export function JurosCompostosForm({ onSubmit, isLoading }: JurosCompostosFormPr
                                         <FormLabel>Aporte Mensal (R$)</FormLabel>
                                         <FormControl>
                                             <Input
-                                                type="number"
-                                                placeholder="500"
-                                                {...field}
-                                                onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                                                type="text"
+                                                placeholder="R$ 500,00"
+                                                value={field.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                                                onChange={(e) => {
+                                                    const numericValue = e.target.value.replace(/\D/g, '');
+                                                    field.onChange(parseFloat(numericValue) / 100 || 0);
+                                                }}
                                             />
                                         </FormControl>
                                         <FormDescription>
