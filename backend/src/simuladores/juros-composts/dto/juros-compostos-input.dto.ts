@@ -1,5 +1,5 @@
-import { IsNumber, IsEnum, IsNotEmpty, Min } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { IsNumber, IsEnum, IsNotEmpty, Min, IsOptional } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
 export enum TempoAplicacaoUnidade {
@@ -60,4 +60,11 @@ export class JurosCompostosInputDto {
   @Min(0)
   @Type(() => Number)
   taxaJuros: number;
+
+  @ApiPropertyOptional({
+    description: 'User email (optional)',
+    example: 'user@example.com',
+  })
+  @IsOptional()
+  email?: string;
 }

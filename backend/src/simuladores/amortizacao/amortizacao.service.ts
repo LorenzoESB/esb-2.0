@@ -13,10 +13,14 @@ import {
   CalculoParcela,
   TabelaAmortizacao,
 } from './interfaces/amortizacao.interface';
+import { PrismaService } from '../../prisma/prisma.service';
+import { SimulatorType } from '../../../generated/prisma';
 
 @Injectable()
 export class AmortizacaoService {
   private readonly logger = new Logger(AmortizacaoService.name);
+
+  constructor(private readonly prisma: PrismaService) {}
 
   async calcularAmortizacao(
     input: AmortizacaoInputDto,
@@ -55,7 +59,32 @@ export class AmortizacaoService {
       );
     }
 
-    return this.formatarSaida(tabela, input);
+    const output = this.formatarSaida(tabela, input);
+
+    // Save to database
+    try {
+      await this.salvarSimulacao(input, output);
+    } catch (error) {
+      this.logger.error('Error saving simulation to database', error.stack);
+      // Don't throw - we still want to return the calculation result
+    }
+
+    return output;
+  }
+
+  private async salvarSimulacao(
+    input: AmortizacaoInputDto,
+    output: AmortizacaoOutputDto,
+  ): Promise<void> {
+    await this.prisma.simulation.create({
+      data: {
+        simulatorType: SimulatorType.AMORTIZACAO,
+        email: input.email,
+        inputData: input as any,
+        outputData: output as any,
+      },
+    });
+    this.logger.log('Simulation saved to database');
   }
 
   private calcularTaxaJurosMensal(taxaAnual: number): number {

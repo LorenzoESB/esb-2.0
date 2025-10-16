@@ -9,10 +9,14 @@ import {
   DetalhesMensal,
   AliquotasIR,
 } from './interfaces/juros-compostos.interface';
+import { PrismaService } from '../../prisma/prisma.service';
+import { SimulatorType } from '../../../generated/prisma';
 
 @Injectable()
 export class JurosCompostosService {
   private readonly logger = new Logger(JurosCompostosService.name);
+
+  constructor(private readonly prisma: PrismaService) {}
 
   private readonly aliquotasIR: AliquotasIR = {
     ate180: 0.225, // 22.5%
@@ -71,7 +75,30 @@ export class JurosCompostosService {
       totalFinal: result.resumo.valorTotalFinalBruto,
     });
 
+    // Save to database
+    try {
+      await this.salvarSimulacao(input, result);
+    } catch (error) {
+      this.logger.error('Error saving simulation to database', error.stack);
+      // Don't throw - we still want to return the calculation result
+    }
+
     return result;
+  }
+
+  private async salvarSimulacao(
+    input: JurosCompostosInputDto,
+    output: JurosCompostosDetalhadoOutputDto,
+  ): Promise<void> {
+    await this.prisma.simulation.create({
+      data: {
+        simulatorType: SimulatorType.JUROS_COMPOSTOS,
+        email: input.email,
+        inputData: input as any,
+        outputData: output as any,
+      },
+    });
+    this.logger.log('Simulation saved to database');
   }
 
   private getAliquotaIR(dias: number): number {

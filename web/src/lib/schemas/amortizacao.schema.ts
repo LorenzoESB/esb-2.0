@@ -9,6 +9,7 @@ export const AmortizacaoSacInputSchema = z.object({
     valorSeguroMensal: z.number().min(0, 'Valor do seguro deve ser positivo'),
     taxaAdministracaoMensal: z.number().min(0, 'Taxa de administração deve ser positiva'),
     amortizacaoExtraordinaria: z.number().min(0, 'Amortização extraordinária deve ser positiva'),
+    email: z.string().email('Email inválido').optional().or(z.literal('')),
 });
 
 export const GraficoProgressaoSchema = z.object({

@@ -8,4 +8,20 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum SimulatorType {
+  AMORTIZACAO
+  JUROS_COMPOSTOS
+  EMPRESTIMO
+  INVESTIMENTOS
+}
 
+model Simulation {
+  id            Int           @id @default(autoincrement())
+  createdAt     DateTime      @default(now())
+  simulatorType SimulatorType
+  email         String?
+  inputData     Json
+  outputData    Json
+
+  @@map("simulations")
+}

@@ -152,4 +152,11 @@ export class AmortizacaoInputDto {
   @ValidateNested({ each: true })
   @Type(() => AmortizacaoExtraordinariaDto)
   amortizacoesExtraordinarias?: AmortizacaoExtraordinariaDto[];
+
+  @ApiPropertyOptional({
+    description: 'User email (optional)',
+    example: 'user@example.com',
+  })
+  @IsOptional()
+  email?: string;
 }
