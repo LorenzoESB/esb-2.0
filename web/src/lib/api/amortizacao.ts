@@ -4,7 +4,7 @@ import { apiClient } from './client';
 
 export const amortizacaoSacApi = {
     simular: async (data: AmortizacaoSacInput): Promise<AmortizacaoSacOutput> => {
-        const response = await apiClient.post('/simuladores/amortizacao/simular', data);
+        const response = await apiClient.post('/simuladores/amortizacao', data);
         return AmortizacaoSacOutputSchema.parse(response.data);
     },
 };

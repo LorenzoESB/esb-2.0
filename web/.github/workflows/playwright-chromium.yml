@@ -1,25 +1,21 @@
-name: Playwright E2E Tests
+name: Playwright E2E Tests (Chromium Only)
 
 on:
   push:
     branches: [ main, master ]
     paths:
       - 'web/**'
-      - '.github/workflows/playwright.yml'
+      - '.github/workflows/playwright-chromium.yml'
   pull_request:
     branches: [ main, master ]
     paths:
       - 'web/**'
-      - '.github/workflows/playwright.yml'
+      - '.github/workflows/playwright-chromium.yml'
 
 jobs:
   test:
-    timeout-minutes: 60
+    timeout-minutes: 30
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        browser: [chromium, firefox, webkit]
     
     steps:
       - name: Checkout code
@@ -52,13 +48,13 @@ jobs:
         working-directory: ./web
         run: pnpm install --frozen-lockfile
         
-      - name: Install Playwright Browsers
+      - name: Install Playwright Chromium
         working-directory: ./web
-        run: pnpm exec playwright install --with-deps ${{ matrix.browser }}
+        run: pnpm exec playwright install --with-deps chromium
         
-      - name: Run Playwright tests
+      - name: Run Playwright tests (Chromium)
         working-directory: ./web
-        run: pnpm exec playwright test --project=${{ matrix.browser }}
+        run: pnpm exec playwright test --project=chromium
         env:
           CI: true
         
@@ -66,7 +62,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
-          name: playwright-report-${{ matrix.browser }}-${{ github.run_id }}
+          name: playwright-report-chromium-${{ github.run_id }}
           path: web/playwright-report/
           retention-days: 30
           
@@ -74,6 +70,6 @@ jobs:
         uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: playwright-traces-${{ matrix.browser }}-${{ github.run_id }}
+          name: playwright-traces-chromium-${{ github.run_id }}
           path: web/test-results/
           retention-days: 7

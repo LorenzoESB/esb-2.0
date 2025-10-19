@@ -7,15 +7,12 @@ import {
   Logger,
   UsePipes,
   ValidationPipe,
-  Get,
-  Query,
 } from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
   ApiResponse,
   ApiBody,
-  ApiQuery,
 } from '@nestjs/swagger';
 import { AmortizacaoService } from './amortizacao.service';
 import { AmortizacaoInputDto } from './dto/amortizacao-input.dto';
@@ -25,11 +22,11 @@ import {
 } from './dto/amortizacao-output.dto';
 
 @ApiTags('Amortization')
-@Controller('simulators/amortizacao')
+@Controller('simuladores/amortizacao')
 export class AmortizacaoController {
   private readonly logger = new Logger(AmortizacaoController.name);
 
-  constructor(private readonly amortizacaoService: AmortizacaoService) {}
+  constructor(private readonly amortizacaoService: AmortizacaoService) { }
 
   @Post()
   @HttpCode(HttpStatus.OK)
