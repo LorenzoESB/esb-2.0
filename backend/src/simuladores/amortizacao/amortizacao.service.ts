@@ -76,15 +76,29 @@ export class AmortizacaoService {
     input: AmortizacaoInputDto,
     output: AmortizacaoOutputDto,
   ): Promise<void> {
-    await this.prisma.simulation.create({
-      data: {
-        simulatorType: SimulatorType.AMORTIZACAO,
-        email: input.email,
-        inputData: input as any,
-        outputData: output as any,
-      },
+    const simulationData = {
+      simulatorType: SimulatorType.AMORTIZACAO,
+      email: input.email || null,
+      inputData: JSON.parse(JSON.stringify(input)),
+      outputData: JSON.parse(JSON.stringify(output)),
+    };
+
+    this.logger.debug('Saving simulation to database', {
+      hasInputData: !!simulationData.inputData,
+      hasOutputData: !!simulationData.outputData,
+      outputDataKeys: Object.keys(simulationData.outputData),
+      outputDataSize: JSON.stringify(simulationData.outputData).length,
     });
-    this.logger.log('Simulation saved to database');
+
+    const saved = await this.prisma.simulation.create({
+      data: simulationData,
+    });
+
+    this.logger.log('Simulation saved to database', {
+      id: saved.id,
+      hasOutputData: !!saved.outputData,
+      parcelasCount: (saved.outputData as any)?.parcelas?.length,
+    });
   }
 
   private calcularTaxaJurosMensal(taxaAnual: number): number {

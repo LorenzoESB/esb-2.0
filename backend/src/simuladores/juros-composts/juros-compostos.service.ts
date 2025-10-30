@@ -75,12 +75,10 @@ export class JurosCompostosService {
       totalFinal: result.resumo.valorTotalFinalBruto,
     });
 
-    // Save to database
     try {
       await this.salvarSimulacao(input, result);
     } catch (error) {
       this.logger.error('Error saving simulation to database', error.stack);
-      // Don't throw - we still want to return the calculation result
     }
 
     return result;
@@ -90,15 +88,27 @@ export class JurosCompostosService {
     input: JurosCompostosInputDto,
     output: JurosCompostosDetalhadoOutputDto,
   ): Promise<void> {
-    await this.prisma.simulation.create({
-      data: {
-        simulatorType: SimulatorType.JUROS_COMPOSTOS,
-        email: input.email,
-        inputData: input as any,
-        outputData: output as any,
-      },
+    const simulationData = {
+      simulatorType: SimulatorType.JUROS_COMPOSTOS,
+      email: input.email || null,
+      inputData: JSON.parse(JSON.stringify(input)),
+      outputData: JSON.parse(JSON.stringify(output)),
+    };
+
+    this.logger.debug('Saving simulation to database', {
+      hasInputData: !!simulationData.inputData,
+      hasOutputData: !!simulationData.outputData,
+      outputDataKeys: Object.keys(simulationData.outputData),
     });
-    this.logger.log('Simulation saved to database');
+
+    const saved = await this.prisma.simulation.create({
+      data: simulationData,
+    });
+
+    this.logger.log('Simulation saved to database', {
+      id: saved.id,
+      hasOutputData: !!saved.outputData,
+    });
   }
 
   private getAliquotaIR(dias: number): number {
