@@ -91,9 +91,6 @@ export function AmortizacaoSacForm({ onSubmit, isLoading }: AmortizacaoSacFormPr
                                                 onChange={(e) => field.onChange(parseFloat(e.target.value))}
                                             />
                                         </FormControl>
-                                        <FormDescription>
-                                            Valor extra a ser amortizado
-                                        </FormDescription>
                                         <FormMessage />
                                     </FormItem>
                                 )}

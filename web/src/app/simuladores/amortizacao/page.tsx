@@ -17,31 +17,27 @@ export default function AmortizacaoSacPage() {
                 </p>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div>
-                    <AmortizacaoSacForm
-                        onSubmit={async (input) => {
-                            await simular(input);
-                        }}
-                        isLoading={isLoading}
-                    />
-                </div>
+            <div className="max-w-3xl mx-auto space-y-8">
+                <AmortizacaoSacForm
+                    onSubmit={async (input) => {
+                        await simular(input);
+                    }}
+                    isLoading={isLoading}
+                />
 
-                <div className="space-y-6">
-                    {isLoading && (
-                        <div className="space-y-4">
-                            <Skeleton className="h-48 w-full" />
-                            <Skeleton className="h-96 w-full" />
-                        </div>
-                    )}
+                {isLoading && (
+                    <div className="space-y-4">
+                        <Skeleton className="h-48 w-full" />
+                        <Skeleton className="h-96 w-full" />
+                    </div>
+                )}
 
-                    {data && !isLoading && (
-                        <>
-                            <AmortizacaoSacResults data={data} />
-                            <AmortizacaoSacChart data={data} />
-                        </>
-                    )}
-                </div>
+                {data && !isLoading && (
+                    <div className="space-y-6">
+                        <AmortizacaoSacResults data={data} />
+                        <AmortizacaoSacChart data={data} />
+                    </div>
+                )}
             </div>
         </div>
     );
