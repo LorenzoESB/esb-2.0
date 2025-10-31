@@ -117,14 +117,47 @@ export class AmortizacaoOutputDto {
 }
 
 export class SimulacaoComparativaDto {
-  @ApiProperty({ type: [AmortizacaoOutputDto] })
-  simulacoes: AmortizacaoOutputDto[];
+  @ApiProperty({ type: () => AmortizacaoSimplesOutputDto, isArray: true })
+  simulacoes: AmortizacaoSimplesOutputDto[];
 
   @ApiProperty({ description: 'Comparative analysis' })
   analiseComparativa: {
-    sistemaComMenorJurosTotal: string;
-    sistemaComMenorPrestacaoInicial: string;
-    sistemaComMaiorAmortizacaoInicial: string;
-    economiaMaximaJuros: number;
+    sistemaComMenorPrestacao: string;
+    sistemaComMenorPrazo: string;
+    diferencaPrestacao: number;
   };
+}
+
+export class ResumoSimplesDto {
+  @ApiProperty({ description: 'Amortization system used' })
+  sistemaAmortizacao: string;
+
+  @ApiProperty({ description: 'New (next) payment amount' })
+  novaPrestacao: number;
+
+  @ApiProperty({ description: 'Remaining term in months' })
+  prazoRestante: number;
+
+  @ApiProperty({ description: 'Current outstanding balance' })
+  saldoDevedor: number;
+  
+  @ApiProperty({ description: 'New monthly amortization amount', required: false })
+  novaAmortizacaoMensal?: number;
+
+  @ApiProperty({ description: 'Reduction in term (months) compared to original remaining term', required: false })
+  reducaoPrazo?: number;
+
+  @ApiProperty({ description: 'Reduction in installment amount (if applicable)', required: false })
+  reducaoPrestacao?: number;
+  
+  @ApiProperty({ description: 'Interest savings compared to the original schedule', required: false })
+  economiaJuros?: number;
+}
+
+export class AmortizacaoSimplesOutputDto {
+  @ApiProperty({ type: ResumoSimplesDto })
+  resumo: ResumoSimplesDto;
+
+  @ApiProperty({ description: 'Optional short message', required: false })
+  mensagem?: string;
 }

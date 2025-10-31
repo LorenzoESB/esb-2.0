@@ -6,7 +6,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useAmortizacaoSac } from '@/lib/hooks/use-amortizacao';
 
 export default function AmortizacaoSacPage() {
-    const { data, isLoading, simular } = useAmortizacaoSac();
+    const { data, isLoading, comparar } = useAmortizacaoSac();
 
     return (
         <div className="container mx-auto py-8 space-y-8">
@@ -20,7 +20,7 @@ export default function AmortizacaoSacPage() {
             <div className="max-w-3xl mx-auto space-y-8">
                 <AmortizacaoSacForm
                     onSubmit={async (input) => {
-                        await simular(input);
+                        await comparar(input);
                     }}
                     isLoading={isLoading}
                 />
@@ -35,7 +35,6 @@ export default function AmortizacaoSacPage() {
                 {data && !isLoading && (
                     <div className="space-y-6">
                         <AmortizacaoSacResults data={data} />
-                        <AmortizacaoSacChart data={data} />
                     </div>
                 )}
             </div>

@@ -15,33 +15,6 @@ export function AmortizacaoSacResults({ data }: AmortizacaoSacResultsProps) {
 
     return (
         <div className="space-y-6">
-            {/* Current Situation */}
-            <Card>
-                <CardHeader>
-                    <CardTitle>Situação Atual</CardTitle>
-                    <CardDescription>
-                        Informações do seu financiamento sem amortização extraordinária
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                            <p className="text-sm text-gray-500">Prestação Atual</p>
-                            <p className="text-xl font-bold">{formatCurrency(situacaoAtual.prestacaoAtual)}</p>
-                        </div>
-                        <div>
-                            <p className="text-sm text-gray-500">Prazo Restante</p>
-                            <p className="text-xl font-bold">{situacaoAtual.prazoRestanteAtual} meses</p>
-                        </div>
-                        <div>
-                            <p className="text-sm text-gray-500">Saldo Devedor</p>
-                            <p className="text-xl font-bold">{formatCurrency(situacaoAtual.saldoDevedorAtual)}</p>
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
-
-            {/* Amortization Options */}
             {(amortizacaoPorPrazo || amortizacaoPorPrestacao) && (
                 <Tabs defaultValue="prazo" className="w-full">
                     <TabsList className="grid w-full grid-cols-2">

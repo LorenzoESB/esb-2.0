@@ -18,7 +18,7 @@ import { JurosCompostosDetalhadoOutputDto } from './dto/juros-compostos-output.d
 export class JurosCompostosController {
   private readonly logger = new Logger(JurosCompostosController.name);
 
-  constructor(private readonly jurosCompostosService: JurosCompostosService) { }
+  constructor(private readonly jurosCompostosService: JurosCompostosService) {}
 
   @Post()
   @HttpCode(HttpStatus.OK)
@@ -48,7 +48,8 @@ export class JurosCompostosController {
     try {
       this.logger.log('Received compound interest calculation request');
 
-      const data = await this.jurosCompostosService.calculaJurosCompostos(input);
+      const data =
+        await this.jurosCompostosService.calculaJurosCompostos(input);
 
       return {
         message: 'Compound interest calculation received',

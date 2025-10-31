@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
@@ -35,7 +34,7 @@ export function AmortizacaoSacForm({ onSubmit, isLoading }: AmortizacaoSacFormPr
             numeroParcela: 28,
             valorSeguroMensal: 40,
             taxaAdministracaoMensal: 25,
-            amortizacaoExtraordinaria: 0,
+            amortizacaoExtraordinaria: 22000,
         },
     });
 
@@ -48,7 +47,7 @@ export function AmortizacaoSacForm({ onSubmit, isLoading }: AmortizacaoSacFormPr
             <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                     <Home className="h-5 w-5" />
-                    Simulador de Amortização SAC
+                    Simulador de Amortização
                 </CardTitle>
                 <CardDescription>
                     Calcule o impacto de amortizações extraordinárias no seu financiamento
@@ -56,7 +55,13 @@ export function AmortizacaoSacForm({ onSubmit, isLoading }: AmortizacaoSacFormPr
             </CardHeader>
             <CardContent>
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+                    <form
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            form.handleSubmit(handleSubmit)(e);
+                        }}
+                        className="space-y-6"
+                    >
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <FormField
                                 control={form.control}
@@ -66,10 +71,13 @@ export function AmortizacaoSacForm({ onSubmit, isLoading }: AmortizacaoSacFormPr
                                         <FormLabel>Saldo Devedor Atual (R$)</FormLabel>
                                         <FormControl>
                                             <Input
-                                                type="number"
-                                                placeholder="128000"
-                                                {...field}
-                                                onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                                                type="text"
+                                                placeholder="R$ 128.000,00"
+                                                value={(field.value ?? 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                                                onChange={(e) => {
+                                                    const numericValue = e.target.value.replace(/\D/g, '');
+                                                    field.onChange(parseFloat(numericValue) / 100 || 0);
+                                                }}
                                             />
                                         </FormControl>
                                         <FormMessage />
@@ -85,10 +93,13 @@ export function AmortizacaoSacForm({ onSubmit, isLoading }: AmortizacaoSacFormPr
                                         <FormLabel>Amortização Extraordinária (R$)</FormLabel>
                                         <FormControl>
                                             <Input
-                                                type="number"
-                                                placeholder="22000"
-                                                {...field}
-                                                onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                                                type="text"
+                                                placeholder="R$ 22.000,00"
+                                                value={(field.value ?? 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                                                onChange={(e) => {
+                                                    const numericValue = e.target.value.replace(/\D/g, '');
+                                                    field.onChange(parseFloat(numericValue) / 100 || 0);
+                                                }}
                                             />
                                         </FormControl>
                                         <FormMessage />
@@ -104,11 +115,13 @@ export function AmortizacaoSacForm({ onSubmit, isLoading }: AmortizacaoSacFormPr
                                         <FormLabel>Amortização Mensal Atual (R$)</FormLabel>
                                         <FormControl>
                                             <Input
-                                                type="number"
-                                                step="0.01"
-                                                placeholder="355.56"
-                                                {...field}
-                                                onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                                                type="text"
+                                                placeholder="R$ 355,56"
+                                                value={(field.value ?? 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                                                onChange={(e) => {
+                                                    const numericValue = e.target.value.replace(/\D/g, '');
+                                                    field.onChange(parseFloat(numericValue) / 100 || 0);
+                                                }}
                                             />
                                         </FormControl>
                                         <FormMessage />
@@ -124,11 +137,13 @@ export function AmortizacaoSacForm({ onSubmit, isLoading }: AmortizacaoSacFormPr
                                         <FormLabel>Valor do Seguro Mensal (R$)</FormLabel>
                                         <FormControl>
                                             <Input
-                                                type="number"
-                                                step="0.01"
-                                                placeholder="40"
-                                                {...field}
-                                                onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                                                type="text"
+                                                placeholder="R$ 40,00"
+                                                value={(field.value ?? 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                                                onChange={(e) => {
+                                                    const numericValue = e.target.value.replace(/\D/g, '');
+                                                    field.onChange(parseFloat(numericValue) / 100 || 0);
+                                                }}
                                             />
                                         </FormControl>
                                         <FormMessage />
@@ -144,11 +159,13 @@ export function AmortizacaoSacForm({ onSubmit, isLoading }: AmortizacaoSacFormPr
                                         <FormLabel>Taxa de Administração Mensal (R$)</FormLabel>
                                         <FormControl>
                                             <Input
-                                                type="number"
-                                                step="0.01"
-                                                placeholder="25"
-                                                {...field}
-                                                onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                                                type="text"
+                                                placeholder="R$ 25,00"
+                                                value={(field.value ?? 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                                                onChange={(e) => {
+                                                    const numericValue = e.target.value.replace(/\D/g, '');
+                                                    field.onChange(parseFloat(numericValue) / 100 || 0);
+                                                }}
                                             />
                                         </FormControl>
                                         <FormMessage />
@@ -183,11 +200,14 @@ export function AmortizacaoSacForm({ onSubmit, isLoading }: AmortizacaoSacFormPr
                                         <FormLabel>Taxa de Juros Anual (%)</FormLabel>
                                         <FormControl>
                                             <Input
-                                                type="number"
-                                                step="0.1"
-                                                placeholder="9.0"
-                                                {...field}
-                                                onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                                                type="text"
+                                                placeholder="9,0 %"
+                                                value={`${new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(field.value ?? 0)} %`}
+                                                onChange={(e) => {
+                                                    const raw = String(e.target.value).replace(/[^0-9,.-]/g, '').replace(',', '.');
+                                                    const parsed = parseFloat(raw);
+                                                    field.onChange(Number.isFinite(parsed) ? parsed : 0);
+                                                }}
                                             />
                                         </FormControl>
                                         <FormMessage />

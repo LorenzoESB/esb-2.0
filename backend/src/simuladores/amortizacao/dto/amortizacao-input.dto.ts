@@ -1,25 +1,19 @@
 import {
   IsNumber,
-  IsEnum,
   IsNotEmpty,
   Min,
   Max,
   IsOptional,
-  IsDateString,
   ValidateNested,
   IsArray,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import {
-  SistemaAmortizacao,
-  TipoAmortizacaoExtraordinaria,
-} from '../enums/sistema-amortizacao.enum';
 
 export class AmortizacaoExtraordinariaDto {
   @ApiProperty({
     description: 'Extraordinary amortization amount',
-    example: 10000,
+    example: 22000,
   })
   @IsNumber()
   @Min(0)
@@ -28,27 +22,19 @@ export class AmortizacaoExtraordinariaDto {
 
   @ApiProperty({
     description: 'Month when the extraordinary amortization occurs',
-    example: 12,
+    example: 28,
     minimum: 1,
   })
   @IsNumber()
   @Min(1)
   @Type(() => Number)
   mesOcorrencia: number;
-
-  @ApiProperty({
-    description: 'Type of extraordinary amortization effect',
-    enum: TipoAmortizacaoExtraordinaria,
-    example: TipoAmortizacaoExtraordinaria.DIMINUIR_PRAZO,
-  })
-  @IsEnum(TipoAmortizacaoExtraordinaria)
-  tipo: TipoAmortizacaoExtraordinaria;
 }
 
 export class AmortizacaoInputDto {
   @ApiProperty({
-    description: 'Loan principal amount',
-    example: 170000,
+    description: 'Original loan amount',
+    example: 128000,
     minimum: 1000,
   })
   @IsNumber()
@@ -59,7 +45,7 @@ export class AmortizacaoInputDto {
 
   @ApiProperty({
     description: 'Annual interest rate (percentage)',
-    example: 8.5,
+    example: 9,
     minimum: 0,
     maximum: 100,
   })
@@ -83,18 +69,9 @@ export class AmortizacaoInputDto {
   @Type(() => Number)
   prazoMeses: number;
 
-  @ApiProperty({
-    description: 'Amortization system',
-    enum: SistemaAmortizacao,
-    example: SistemaAmortizacao.SAC,
-  })
-  @IsEnum(SistemaAmortizacao)
-  @IsNotEmpty()
-  sistemaAmortizacao: SistemaAmortizacao;
-
   @ApiPropertyOptional({
     description: 'Monthly insurance amount',
-    example: 50,
+    example: 40,
     default: 0,
   })
   @IsNumber()
@@ -115,16 +92,8 @@ export class AmortizacaoInputDto {
   taxaAdministracao?: number = 0;
 
   @ApiPropertyOptional({
-    description: 'First payment date',
-    example: '2024-01-01',
-  })
-  @IsDateString()
-  @IsOptional()
-  dataPrimeiraParcela?: string;
-
-  @ApiPropertyOptional({
-    description: 'Current installment number (for recalculation)',
-    example: 12,
+    description: 'Current installment number',
+    example: 28,
     minimum: 0,
   })
   @IsNumber()
@@ -134,8 +103,8 @@ export class AmortizacaoInputDto {
   parcelaAtual?: number;
 
   @ApiPropertyOptional({
-    description: 'Current outstanding balance (for recalculation)',
-    example: 150000,
+    description: 'Current outstanding balance',
+    example: 128000,
   })
   @IsNumber()
   @IsOptional()
@@ -152,11 +121,4 @@ export class AmortizacaoInputDto {
   @ValidateNested({ each: true })
   @Type(() => AmortizacaoExtraordinariaDto)
   amortizacoesExtraordinarias?: AmortizacaoExtraordinariaDto[];
-
-  @ApiPropertyOptional({
-    description: 'User email (optional)',
-    example: 'user@example.com',
-  })
-  @IsOptional()
-  email?: string;
 }

@@ -1,18 +1,10 @@
-import { Injectable, Logger, BadRequestException } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { AmortizacaoInputDto } from './dto/amortizacao-input.dto';
 import {
-  AmortizacaoOutputDto,
-  ParcelaDto,
-  ResumoAmortizacaoDto,
+  AmortizacaoSimplesOutputDto,
+  ResumoSimplesDto,
 } from './dto/amortizacao-output.dto';
-import {
-  SistemaAmortizacao,
-  TipoAmortizacaoExtraordinaria,
-} from './enums/sistema-amortizacao.enum';
-import {
-  CalculoParcela,
-  TabelaAmortizacao,
-} from './interfaces/amortizacao.interface';
+import { SimulacaoComparativaDto } from './dto/amortizacao-output.dto';
 import { PrismaService } from '../../prisma/prisma.service';
 import { SimulatorType } from '../../../generated/prisma';
 
@@ -20,551 +12,222 @@ import { SimulatorType } from '../../../generated/prisma';
 export class AmortizacaoService {
   private readonly logger = new Logger(AmortizacaoService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async calcularAmortizacao(
     input: AmortizacaoInputDto,
-  ): Promise<AmortizacaoOutputDto> {
-    this.logger.debug('Calculating amortization', { input });
-
-    const taxaJurosMensal = this.calcularTaxaJurosMensal(input.taxaJurosAnual);
-
-    let tabela: TabelaAmortizacao;
-
-    switch (input.sistemaAmortizacao) {
-      case SistemaAmortizacao.SAC:
-        tabela = this.calcularSAC(input, taxaJurosMensal);
-        break;
-      case SistemaAmortizacao.PRICE:
-        tabela = this.calcularPrice(input, taxaJurosMensal);
-        break;
-      case SistemaAmortizacao.PAGAMENTO_UNICO:
-        tabela = this.calcularPagamentoUnico(input, taxaJurosMensal);
-        break;
-      default:
-        throw new BadRequestException(
-          `Sistema de amortização não suportado: ${input.sistemaAmortizacao}`,
-        );
-    }
-
-    // Apply extraordinary amortizations if present
-    if (
-      input.amortizacoesExtraordinarias &&
-      input.amortizacoesExtraordinarias.length > 0
-    ) {
-      tabela = this.aplicarAmortizacoesExtraordinarias(
-        tabela,
-        input.amortizacoesExtraordinarias,
-        taxaJurosMensal,
-      );
-    }
-
-    const output = this.formatarSaida(tabela, input);
-
-    // Save to database
-    try {
-      await this.salvarSimulacao(input, output);
-    } catch (error) {
-      this.logger.error('Error saving simulation to database', error.stack);
-      // Don't throw - we still want to return the calculation result
-    }
-
-    return output;
+  ): Promise<AmortizacaoSimplesOutputDto> {
+    return this.calcularAmortizacaoSimples(input);
   }
 
   private async salvarSimulacao(
     input: AmortizacaoInputDto,
-    output: AmortizacaoOutputDto,
+    output: AmortizacaoSimplesOutputDto,
   ): Promise<void> {
-    const simulationData = {
-      simulatorType: SimulatorType.AMORTIZACAO,
-      email: input.email || null,
-      inputData: JSON.parse(JSON.stringify(input)),
-      outputData: JSON.parse(JSON.stringify(output)),
-    };
+    try {
+      const simulationData = {
+        simulatorType: SimulatorType.AMORTIZACAO,
+        email: null,
+        inputData: JSON.parse(JSON.stringify(input)),
+        outputData: JSON.parse(JSON.stringify(output)),
+      };
 
-    this.logger.debug('Saving simulation to database', {
-      hasInputData: !!simulationData.inputData,
-      hasOutputData: !!simulationData.outputData,
-      outputDataKeys: Object.keys(simulationData.outputData),
-      outputDataSize: JSON.stringify(simulationData.outputData).length,
-    });
-
-    const saved = await this.prisma.simulation.create({
-      data: simulationData,
-    });
-
-    this.logger.log('Simulation saved to database', {
-      id: saved.id,
-      hasOutputData: !!saved.outputData,
-      parcelasCount: (saved.outputData as any)?.parcelas?.length,
-    });
+      await this.prisma.simulation.create({ data: simulationData });
+    } catch (error) {
+      this.logger.warn(
+        'Failed to save simplified simulation, continuing',
+        error?.stack,
+      );
+    }
   }
 
   private calcularTaxaJurosMensal(taxaAnual: number): number {
-    // Convert annual rate to monthly rate using compound interest formula
-    return Math.pow(1 + taxaAnual / 100, 1 / 12) - 1;
+    // Convert annual percentual to effective monthly decimal using original formula:
+    // mensal = (1 + anual/100)^(1/12) - 1
+    if (!taxaAnual || taxaAnual === 0) return 0;
+    const anualDecimal = taxaAnual / 100;
+    return Math.pow(1 + anualDecimal, 1 / 12) - 1;
   }
 
-  private calcularSAC(
+  private computeTotalInterest(saldoInicial: number, amortizacaoMensal: number, taxaMensal: number, meses: number): number {
+    // Sum interest over 'meses' months using constant amortizacaoMensal.
+    // Adjust the last amortization so the balance never goes negative.
+    let saldo = saldoInicial;
+    let totalJuros = 0;
+    for (let i = 0; i < meses && saldo > 0.000001; i++) {
+      const juros = saldo * taxaMensal;
+      totalJuros += juros;
+      // amortizacao aplicada neste mês
+      const amort = Math.min(amortizacaoMensal, saldo);
+      saldo = Math.max(0, saldo - amort);
+    }
+    return totalJuros;
+  }
+
+  async calcularAmortizacaoSimples(
     input: AmortizacaoInputDto,
-    taxaJurosMensal: number,
-  ): TabelaAmortizacao {
-    const parcelas: CalculoParcela[] = [];
-    const saldoInicial = input.saldoDevedorAtual || input.valorFinanciamento;
-    const prazo = input.prazoMeses;
-    const amortizacaoConstante = saldoInicial / prazo;
+  ): Promise<AmortizacaoSimplesOutputDto> {
+    this.logger.debug('Calculating simplified amortization', { input });
+
+    const taxaMensal = this.calcularTaxaJurosMensal(input.taxaJurosAnual || 0);
+    const saldoInicial = input.saldoDevedorAtual ?? input.valorFinanciamento;
+    const prazoTotal = input.prazoMeses || 0;
+    const parcelaAtual = input.parcelaAtual || 0;
+    const prazoRestante = Math.max(0, prazoTotal - parcelaAtual);
+
     const seguro = input.seguroMensal || 0;
     const taxaAdm = input.taxaAdministracao || 0;
-    const parcelaInicial = input.parcelaAtual || 0;
 
-    let saldo = saldoInicial;
-    let amortizacaoAcumulada = 0;
-    let jurosAcumulados = 0;
-
-    for (let i = 1; i <= prazo; i++) {
-      const juros = saldo * taxaJurosMensal;
-      const prestacao = amortizacaoConstante + juros;
-      const pagamentoTotal = prestacao + seguro + taxaAdm;
-      const saldoFinal = saldo - amortizacaoConstante;
-
-      amortizacaoAcumulada += amortizacaoConstante;
-      jurosAcumulados += juros;
-
-      parcelas.push({
-        numero: parcelaInicial + i,
-        dataVencimento: this.calcularDataVencimento(
-          input.dataPrimeiraParcela,
-          i,
-        ),
-        saldoInicial: saldo,
-        amortizacao: amortizacaoConstante,
-        juros,
-        prestacao,
-        seguro,
-        taxaAdministracao: taxaAdm,
-        pagamentoTotal,
-        saldoFinal: Math.max(0, saldoFinal),
-        amortizacaoAcumulada,
-        jurosAcumulados,
-      });
-
-      saldo = saldoFinal;
-    }
-
-    return this.criarResumo(parcelas, input);
-  }
-
-  private calcularPrice(
-    input: AmortizacaoInputDto,
-    taxaJurosMensal: number,
-  ): TabelaAmortizacao {
-    const parcelas: CalculoParcela[] = [];
-    const saldoInicial = input.saldoDevedorAtual || input.valorFinanciamento;
-    const prazo = input.prazoMeses;
-    const seguro = input.seguroMensal || 0;
-    const taxaAdm = input.taxaAdministracao || 0;
-    const parcelaInicial = input.parcelaAtual || 0;
-
-    // Calculate fixed payment using Price formula
-    const prestacaoFixa = this.calcularPrestacaoPrice(
-      saldoInicial,
-      taxaJurosMensal,
-      prazo,
-    );
-
-    let saldo = saldoInicial;
-    let amortizacaoAcumulada = 0;
-    let jurosAcumulados = 0;
-
-    for (let i = 1; i <= prazo; i++) {
-      const juros = saldo * taxaJurosMensal;
-      const amortizacao = prestacaoFixa - juros;
-      const pagamentoTotal = prestacaoFixa + seguro + taxaAdm;
-      const saldoFinal = saldo - amortizacao;
-
-      amortizacaoAcumulada += amortizacao;
-      jurosAcumulados += juros;
-
-      parcelas.push({
-        numero: parcelaInicial + i,
-        dataVencimento: this.calcularDataVencimento(
-          input.dataPrimeiraParcela,
-          i,
-        ),
-        saldoInicial: saldo,
-        amortizacao,
-        juros,
-        prestacao: prestacaoFixa,
-        seguro,
-        taxaAdministracao: taxaAdm,
-        pagamentoTotal,
-        saldoFinal: Math.max(0, saldoFinal),
-        amortizacaoAcumulada,
-        jurosAcumulados,
-      });
-
-      saldo = saldoFinal;
-    }
-
-    return this.criarResumo(parcelas, input);
-  }
-
-  private calcularPrestacaoPrice(
-    principal: number,
-    taxaMensal: number,
-    prazo: number,
-  ): number {
-    if (taxaMensal === 0) {
-      return principal / prazo;
-    }
-    const fator = Math.pow(1 + taxaMensal, prazo);
-    return (principal * (taxaMensal * fator)) / (fator - 1);
-  }
-
-  private calcularAmericano(
-    input: AmortizacaoInputDto,
-    taxaJurosMensal: number,
-  ): TabelaAmortizacao {
-    const parcelas: CalculoParcela[] = [];
-    const saldoInicial = input.saldoDevedorAtual || input.valorFinanciamento;
-    const prazo = input.prazoMeses;
-    const seguro = input.seguroMensal || 0;
-    const taxaAdm = input.taxaAdministracao || 0;
-    const parcelaInicial = input.parcelaAtual || 0;
-
-    let saldo = saldoInicial;
-    let amortizacaoAcumulada = 0;
-    let jurosAcumulados = 0;
-
-    for (let i = 1; i <= prazo; i++) {
-      const juros = saldo * taxaJurosMensal;
-      const amortizacao = i === prazo ? saldo : 0; // Pay principal only on last payment
-      const prestacao = juros + amortizacao;
-      const pagamentoTotal = prestacao + seguro + taxaAdm;
-      const saldoFinal = saldo - amortizacao;
-
-      amortizacaoAcumulada += amortizacao;
-      jurosAcumulados += juros;
-
-      parcelas.push({
-        numero: parcelaInicial + i,
-        dataVencimento: this.calcularDataVencimento(
-          input.dataPrimeiraParcela,
-          i,
-        ),
-        saldoInicial: saldo,
-        amortizacao,
-        juros,
-        prestacao,
-        seguro,
-        taxaAdministracao: taxaAdm,
-        pagamentoTotal,
-        saldoFinal: Math.max(0, saldoFinal),
-        amortizacaoAcumulada,
-        jurosAcumulados,
-      });
-
-      saldo = saldoFinal;
-    }
-
-    return this.criarResumo(parcelas, input);
-  }
-
-  private calcularPagamentoUnico(
-    input: AmortizacaoInputDto,
-    taxaJurosMensal: number,
-  ): TabelaAmortizacao {
-    const parcelas: CalculoParcela[] = [];
-    const saldoInicial = input.saldoDevedorAtual || input.valorFinanciamento;
-    const prazo = input.prazoMeses;
-    const seguro = input.seguroMensal || 0;
-    const taxaAdm = input.taxaAdministracao || 0;
-    const parcelaInicial = input.parcelaAtual || 0;
-
-    let saldo = saldoInicial;
-    let jurosAcumulados = 0;
-
-    // Calculate compound interest over the entire period
-    for (let i = 1; i <= prazo; i++) {
-      const juros = saldo * taxaJurosMensal;
-      saldo += juros; // Capitalize interest
-      jurosAcumulados += juros;
-
-      const amortizacao = i === prazo ? saldoInicial : 0;
-      const jurosPagamento = i === prazo ? jurosAcumulados : 0;
-      const prestacao = amortizacao + jurosPagamento;
-      const pagamentoTotal =
-        prestacao +
-        (i === prazo ? seguro * prazo : seguro) +
-        (i === prazo ? taxaAdm * prazo : taxaAdm);
-      const saldoFinal = i === prazo ? 0 : saldo;
-
-      parcelas.push({
-        numero: parcelaInicial + i,
-        dataVencimento: this.calcularDataVencimento(
-          input.dataPrimeiraParcela,
-          i,
-        ),
-        saldoInicial: i === 1 ? saldoInicial : parcelas[i - 2].saldoFinal,
-        amortizacao,
-        juros: jurosPagamento,
-        prestacao,
-        seguro: i === prazo ? seguro * prazo : seguro,
-        taxaAdministracao: i === prazo ? taxaAdm * prazo : taxaAdm,
-        pagamentoTotal,
-        saldoFinal,
-        amortizacaoAcumulada: amortizacao,
-        jurosAcumulados: i === prazo ? jurosAcumulados : 0,
-      });
-    }
-
-    return this.criarResumo(parcelas, input);
-  }
-
-  private aplicarAmortizacoesExtraordinarias(
-    tabela: TabelaAmortizacao,
-    amortizacoesExtra: any[],
-    taxaJurosMensal: number,
-  ): TabelaAmortizacao {
-    let parcelas = [...tabela.parcelas];
-
-    for (const amortExtra of amortizacoesExtra) {
-      const mesOcorrencia = amortExtra.mesOcorrencia;
-
-      if (mesOcorrencia <= parcelas.length) {
-        const parcelaIndex = mesOcorrencia - 1;
-        const parcela = parcelas[parcelaIndex];
-
-        // Apply extraordinary amortization
-        parcela.amortizacaoExtraordinaria = amortExtra.valor;
-        parcela.amortizacao += amortExtra.valor;
-        parcela.saldoFinal -= amortExtra.valor;
-        parcela.pagamentoTotal += amortExtra.valor;
-
-        // Recalculate subsequent installments based on the type
-        if (amortExtra.tipo === TipoAmortizacaoExtraordinaria.DIMINUIR_PRAZO) {
-          // Reduce term, keep payment amount
-          parcelas = this.recalcularPrazoDiminuido(
-            parcelas,
-            parcelaIndex,
-            taxaJurosMensal,
-          );
-        } else {
-          // Reduce payment amount, keep term
-          parcelas = this.recalcularParcelaDiminuida(
-            parcelas,
-            parcelaIndex,
-            taxaJurosMensal,
-          );
+    let saldoDevedor = saldoInicial;
+    if (input.amortizacoesExtraordinarias && input.amortizacoesExtraordinarias.length > 0) {
+      for (const ae of input.amortizacoesExtraordinarias) {
+        if ((ae.mesOcorrencia || 0) <= parcelaAtual) {
+          saldoDevedor = Math.max(0, saldoDevedor - (ae.valor || 0));
         }
       }
     }
 
-    return this.criarResumo(parcelas, tabela.resumo);
-  }
+    const jurosAtual = saldoDevedor * taxaMensal;
+    const amortizacaoMensal = prazoRestante > 0 ? saldoDevedor / prazoRestante : saldoDevedor;
+    const novaPrestacao = jurosAtual + amortizacaoMensal + seguro + taxaAdm;
 
-  private recalcularPrazoDiminuido(
-    parcelas: CalculoParcela[],
-    indexAmortizacao: number,
-    taxaJurosMensal: number,
-  ): CalculoParcela[] {
-    // Implementation for recalculating with reduced term
-    // This would maintain the payment amount but reduce the number of installments
-    return parcelas; // Simplified for brevity
-  }
+    const resumo: ResumoSimplesDto = {
+      sistemaAmortizacao: 'SIMPLES',
+      novaPrestacao: Math.round(novaPrestacao * 100) / 100,
+      prazoRestante,
+      saldoDevedor: Math.round(saldoDevedor * 100) / 100,
+      // provide amortizacao mensal so frontend can show it if needed
+      novaAmortizacaoMensal: Math.round(amortizacaoMensal * 100) / 100,
+    } as any;
 
-  private recalcularParcelaDiminuida(
-    parcelas: CalculoParcela[],
-    indexAmortizacao: number,
-    taxaJurosMensal: number,
-  ): CalculoParcela[] {
-    // Implementation for recalculating with reduced payment
-    // This would reduce the payment amount but maintain the term
-    return parcelas; // Simplified for brevity
-  }
-
-  private calcularDataVencimento(
-    dataPrimeira: string | undefined,
-    mesOffset: number,
-  ): Date | undefined {
-    if (!dataPrimeira) return undefined;
-
-    const data = new Date(dataPrimeira);
-    data.setMonth(data.getMonth() + mesOffset - 1);
-    return data;
-  }
-
-  private criarResumo(
-    parcelas: CalculoParcela[],
-    input: any,
-  ): TabelaAmortizacao {
-    const totalPago = parcelas.reduce((sum, p) => sum + p.pagamentoTotal, 0);
-    const totalJuros = parcelas.reduce((sum, p) => sum + p.juros, 0);
-    const totalAmortizacao = parcelas.reduce(
-      (sum, p) => sum + p.amortizacao,
-      0,
-    );
-    const totalSeguro = parcelas.reduce((sum, p) => sum + p.seguro, 0);
-    const totalTaxaAdm = parcelas.reduce(
-      (sum, p) => sum + p.taxaAdministracao,
-      0,
-    );
-    const totalAmortExtra = parcelas.reduce(
-      (sum, p) => sum + (p.amortizacaoExtraordinaria || 0),
-      0,
-    );
-
-    const resumo = {
-      valorFinanciamento: input.valorFinanciamento,
-      taxaJurosAnual: input.taxaJurosAnual,
-      taxaJurosMensal: this.calcularTaxaJurosMensal(input.taxaJurosAnual) * 100,
-      prazoOriginal: input.prazoMeses,
-      prazoEfetivo: parcelas.length,
-      totalPago,
-      totalJuros,
-      totalAmortizacao,
-      totalSeguro,
-      totalTaxaAdministracao: totalTaxaAdm,
-      totalAmortizacoesExtraordinarias: totalAmortExtra,
-      prestacaoMedia: totalPago / parcelas.length,
-      primeiraPrestacao: parcelas[0]?.pagamentoTotal || 0,
-      ultimaPrestacao: parcelas[parcelas.length - 1]?.pagamentoTotal || 0,
-      sistemaAmortizacao: input.sistemaAmortizacao,
-      custoEfetivoTotal: (totalPago / input.valorFinanciamento - 1) * 100,
+    const output: AmortizacaoSimplesOutputDto = {
+      resumo,
+      mensagem: 'Simulação simplificada',
     };
+    await this.salvarSimulacao(input, output);
 
-    return { parcelas, resumo };
+    return output;
   }
 
-  private formatarSaida(
-    tabela: TabelaAmortizacao,
+  async compararSistemas(
     input: AmortizacaoInputDto,
-  ): AmortizacaoOutputDto {
-    const parcelas: ParcelaDto[] = tabela.parcelas.map((p) => ({
-      numero: p.numero,
-      dataVencimento: p.dataVencimento?.toISOString().split('T')[0],
-      saldoInicial: this.arredondar(p.saldoInicial),
-      amortizacao: this.arredondar(p.amortizacao),
-      juros: this.arredondar(p.juros),
-      prestacao: this.arredondar(p.prestacao),
-      seguro: this.arredondar(p.seguro),
-      taxaAdministracao: this.arredondar(p.taxaAdministracao),
-      pagamentoTotal: this.arredondar(p.pagamentoTotal),
-      saldoFinal: this.arredondar(p.saldoFinal),
-      amortizacaoExtraordinaria: p.amortizacaoExtraordinaria
-        ? this.arredondar(p.amortizacaoExtraordinaria)
-        : undefined,
-      amortizacaoAcumulada: this.arredondar(p.amortizacaoAcumulada),
-      jurosAcumulados: this.arredondar(p.jurosAcumulados),
-    }));
+  ): Promise<SimulacaoComparativaDto> {
+    this.logger.debug('Calculating simplified comparison', { input });
 
-    const resumo: ResumoAmortizacaoDto = {
-      valorFinanciamento: this.arredondar(tabela.resumo.valorFinanciamento),
-      taxaJurosAnual: this.arredondar(tabela.resumo.taxaJurosAnual, 2),
-      taxaJurosMensal: this.arredondar(tabela.resumo.taxaJurosMensal, 4),
-      prazoOriginal: tabela.resumo.prazoOriginal,
-      prazoEfetivo: tabela.resumo.prazoEfetivo,
-      totalPago: this.arredondar(tabela.resumo.totalPago),
-      totalJuros: this.arredondar(tabela.resumo.totalJuros),
-      totalAmortizacao: this.arredondar(tabela.resumo.totalAmortizacao),
-      totalSeguro: this.arredondar(tabela.resumo.totalSeguro),
-      totalTaxaAdministracao: this.arredondar(
-        tabela.resumo.totalTaxaAdministracao,
-      ),
-      totalAmortizacoesExtraordinarias: this.arredondar(
-        tabela.resumo.totalAmortizacoesExtraordinarias,
-      ),
-      prestacaoMedia: this.arredondar(tabela.resumo.prestacaoMedia),
-      primeiraPrestacao: this.arredondar(tabela.resumo.primeiraPrestacao),
-      ultimaPrestacao: this.arredondar(tabela.resumo.ultimaPrestacao),
-      sistemaAmortizacao: tabela.resumo.sistemaAmortizacao,
-      custoEfetivoTotal: this.arredondar(tabela.resumo.custoEfetivoTotal, 2),
+    const taxaMensal = this.calcularTaxaJurosMensal(input.taxaJurosAnual || 0);
+    const saldoInicial = input.saldoDevedorAtual ?? input.valorFinanciamento;
+    const prazoTotal = input.prazoMeses || 0;
+    const parcelaAtual = input.parcelaAtual || 0;
+    const prazoRestanteOriginal = Math.max(0, prazoTotal - parcelaAtual);
+
+    // Apply only extraordinary amortizations that have already occurred (mesOcorrencia <= parcelaAtual)
+    let somaExtra = 0;
+    if (input.amortizacoesExtraordinarias && input.amortizacoesExtraordinarias.length > 0) {
+      somaExtra = input.amortizacoesExtraordinarias.reduce((s: number, a: any) => {
+        const occ = a?.mesOcorrencia || 0;
+        return s + ((occ <= parcelaAtual) ? (a?.valor || 0) : 0);
+      }, 0);
+    }
+
+    const novoSaldo = Math.max(0, saldoInicial - somaExtra);
+
+    const seguro = input.seguroMensal || 0;
+    const taxaAdm = input.taxaAdministracao || 0;
+
+    const amortizacaoMensalOriginal = prazoTotal > 0 ? input.valorFinanciamento / prazoTotal : 0;
+
+    // ---- POR_PRAZO calculation following the original algorithm ----
+    const trEstimada = 1.00116;
+    const saldoDev = saldoInicial;
+    const amortExtra = somaExtra;
+
+    // saldoTr = (saldoDev - amortExtra) * trEstimada
+    const saldoTr = Math.max(0, (saldoDev - amortExtra)) * trEstimada;
+    // saldoAmortizacao = saldoTr - amortMes (use current amortizacao; assume original constant if not provided)
+    const amortMes = amortizacaoMensalOriginal;
+    const saldoAmortizacao = Math.max(0, saldoTr - amortMes);
+
+    // taxaMensal is already decimal (e.g., 0.0075)
+    const prestacaoTemp = amortMes + (taxaMensal * saldoDev);
+    const taxasSeguro = seguro + taxaAdm;
+    const valorPagoTemp = prestacaoTemp + taxasSeguro;
+
+    let aux = (prazoTotal - parcelaAtual) + 1;
+    aux = aux > 0 ? (saldoDev / aux) : saldoDev;
+    aux = valorPagoTemp + aux;
+    const prestacaoVirtual = Math.round(aux * 100) / 100 - amortMes;
+
+    const val = prestacaoVirtual - seguro - taxaAdm - (saldoAmortizacao * taxaMensal);
+
+    let prazoPrazo: number;
+    if (val <= 0) {
+      // fallback: keep original remaining term
+      prazoPrazo = prazoRestanteOriginal;
+    } else {
+      let prazoRest = Math.floor(saldoAmortizacao / val);
+      if (prazoRest <= 0) prazoRest = 1;
+      prazoPrazo = Math.min(prazoRest, prazoRestanteOriginal);
+    }
+
+    const novaAmortizacaoPrazo = prazoPrazo > 0 ? (saldoAmortizacao / prazoPrazo) : amortizacaoMensalOriginal;
+    const novaPrestacaoPrazo = (saldoAmortizacao * taxaMensal) + novaAmortizacaoPrazo + taxasSeguro;
+
+    // ---- POR_PRESTACAO (unchanged) ----
+    const novaAmortizacaoPrestacao = prazoRestanteOriginal > 0
+      ? novoSaldo / prazoRestanteOriginal
+      : 0;
+
+    const novaPrestacaoPrestacao = (novoSaldo * taxaMensal) + novaAmortizacaoPrestacao + seguro + taxaAdm;
+
+    // compute interest economy: compare interest over remaining term using original amortizacao vs new schedule
+    const mesesOriginais = prazoRestanteOriginal;
+    const totalJurosOrig = this.computeTotalInterest(novoSaldo, amortizacaoMensalOriginal, taxaMensal, mesesOriginais);
+    const totalJurosPrazo = this.computeTotalInterest(novoSaldo, novaAmortizacaoPrazo, taxaMensal, prazoPrazo);
+    const economiaJurosPrazo = Math.round((totalJurosOrig - totalJurosPrazo) * 100) / 100;
+
+    const simulacaoPrazo: AmortizacaoSimplesOutputDto = {
+      resumo: {
+        sistemaAmortizacao: 'POR_PRAZO',
+        novaPrestacao: Math.round(novaPrestacaoPrazo * 100) / 100,
+        prazoRestante: prazoPrazo,
+        saldoDevedor: Math.round(novoSaldo * 100) / 100,
+        novaAmortizacaoMensal: Math.round(novaAmortizacaoPrazo * 100) / 100,
+        reducaoPrazo: Math.max(0, prazoRestanteOriginal - prazoPrazo),
+        economiaJuros: economiaJurosPrazo,
+      },
+      mensagem: 'Amortização reduzindo prazo',
     };
 
-    // Generate chart data
-    const graficoDados = this.gerarDadosGrafico(parcelas);
+    // economia para prestacao: compare interest using original amortizacao vs new amortizacao over original remaining months
+  const totalJurosPrestacaoNew = this.computeTotalInterest(novoSaldo, novaAmortizacaoPrestacao, taxaMensal, prazoRestanteOriginal);
+  const economiaJurosPrestacao = Math.round((totalJurosOrig - totalJurosPrestacaoNew) * 100) / 100;
 
-    return { resumo, parcelas, graficoDados };
-  }
+    const amortizacaoAtual = prazoRestanteOriginal > 0 ? (saldoInicial / prazoRestanteOriginal) : saldoInicial;
+    const jurosAtualParaReducao = saldoInicial * taxaMensal;
+    const prestacaoAtualCalc = jurosAtualParaReducao + amortizacaoAtual + seguro + taxaAdm;
+    const reducaoPrestacaoVal = Math.round(Math.max(0, prestacaoAtualCalc - novaPrestacaoPrestacao) * 100) / 100;
 
-  private gerarDadosGrafico(parcelas: ParcelaDto[]) {
-    // Sample every N parcels for large datasets
-    const maxPoints = 50;
-    const step = Math.ceil(parcelas.length / maxPoints);
-    const sampledParcelas = parcelas.filter((_, index) => index % step === 0);
-
-    return {
-      labels: sampledParcelas.map((p) => `Parcela ${p.numero}`),
-      saldoDevedor: sampledParcelas.map((p) => p.saldoFinal),
-      amortizacao: sampledParcelas.map((p) => p.amortizacao),
-      juros: sampledParcelas.map((p) => p.juros),
-      prestacao: sampledParcelas.map((p) => p.prestacao),
+    const simulacaoPrestacao: AmortizacaoSimplesOutputDto = {
+      resumo: {
+        sistemaAmortizacao: 'POR_PRESTACAO',
+        novaPrestacao: Math.round(novaPrestacaoPrestacao * 100) / 100,
+        prazoRestante: prazoRestanteOriginal,
+        saldoDevedor: Math.round(novoSaldo * 100) / 100,
+        novaAmortizacaoMensal: Math.round(novaAmortizacaoPrestacao * 100) / 100,
+        reducaoPrestacao: reducaoPrestacaoVal,
+        economiaJuros: economiaJurosPrestacao,
+      },
+      mensagem: 'Amortização reduzindo prestação',
     };
-  }
 
-  private arredondar(valor: number, decimais: number = 2): number {
-    return parseFloat(valor.toFixed(decimais));
-  }
-
-  async compararSistemas(input: AmortizacaoInputDto): Promise<any> {
-    const sistemas = [
-      SistemaAmortizacao.SAC,
-      SistemaAmortizacao.PRICE,
-    ];
-
-    const simulacoes = await Promise.all(
-      sistemas.map((sistema) =>
-        this.calcularAmortizacao({ ...input, sistemaAmortizacao: sistema }),
-      ),
-    );
+    const simulacoes = [simulacaoPrazo, simulacaoPrestacao];
 
     const analiseComparativa = {
-      sistemaComMenorJurosTotal: this.encontrarMelhorSistema(
-        simulacoes,
-        'totalJuros',
-        'min',
-      ),
-      sistemaComMenorPrestacaoInicial: this.encontrarMelhorSistema(
-        simulacoes,
-        'primeiraPrestacao',
-        'min',
-      ),
-      sistemaComMaiorAmortizacaoInicial: this.encontrarMelhorSistema(
-        simulacoes,
-        'amortizacaoInicial',
-        'max',
-      ),
-      economiaMaximaJuros: this.calcularEconomiaMaxima(simulacoes),
+      sistemaComMenorPrestacao: simulacaoPrazo.resumo.novaPrestacao <= simulacaoPrestacao.resumo.novaPrestacao ? simulacaoPrazo.resumo.sistemaAmortizacao : simulacaoPrestacao.resumo.sistemaAmortizacao,
+      sistemaComMenorPrazo: simulacaoPrazo.resumo.prazoRestante <= simulacaoPrestacao.resumo.prazoRestante ? simulacaoPrazo.resumo.sistemaAmortizacao : simulacaoPrestacao.resumo.sistemaAmortizacao,
+      diferencaPrestacao: Math.round(Math.abs(simulacaoPrazo.resumo.novaPrestacao - simulacaoPrestacao.resumo.novaPrestacao) * 100) / 100,
     };
 
     return { simulacoes, analiseComparativa };
-  }
-
-  private encontrarMelhorSistema(
-    simulacoes: AmortizacaoOutputDto[],
-    criterio: string,
-    tipo: 'min' | 'max',
-  ): string {
-    let melhorSimulacao = simulacoes[0];
-    let melhorValor = (melhorSimulacao.resumo as any)[criterio];
-
-    for (const simulacao of simulacoes) {
-      const valor = (simulacao.resumo as any)[criterio];
-      if (
-        (tipo === 'min' && valor < melhorValor) ||
-        (tipo === 'max' && valor > melhorValor)
-      ) {
-        melhorValor = valor;
-        melhorSimulacao = simulacao;
-      }
-    }
-
-    return melhorSimulacao.resumo.sistemaAmortizacao;
-  }
-
-  private calcularEconomiaMaxima(simulacoes: AmortizacaoOutputDto[]): number {
-    const jurosTotal = simulacoes.map((s) => s.resumo.totalJuros);
-    return Math.max(...jurosTotal) - Math.min(...jurosTotal);
   }
 }

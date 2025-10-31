@@ -8,52 +8,43 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiBody,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { AmortizacaoService } from './amortizacao.service';
 import { AmortizacaoInputDto } from './dto/amortizacao-input.dto';
-import {
-  AmortizacaoOutputDto,
-  SimulacaoComparativaDto,
-} from './dto/amortizacao-output.dto';
+import { AmortizacaoSimplesOutputDto, SimulacaoComparativaDto } from './dto/amortizacao-output.dto';
 
 @ApiTags('Amortization')
 @Controller('simuladores/amortizacao')
 export class AmortizacaoController {
   private readonly logger = new Logger(AmortizacaoController.name);
 
-  constructor(private readonly amortizacaoService: AmortizacaoService) { }
+  constructor(private readonly amortizacaoService: AmortizacaoService) {}
 
   @Post()
   @HttpCode(HttpStatus.OK)
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
   @ApiOperation({
-    summary: 'Calculate loan amortization',
+    summary: 'Calculate simplified amortization',
     description:
-      'Calculates loan amortization schedule based on selected system (SAC, PRICE, American, Single Payment)',
+      'Returns a compact amortization result (novaPrestacao, prazoRestante, saldoDevedor)',
   })
   @ApiBody({ type: AmortizacaoInputDto })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Amortization schedule calculated successfully',
-    type: AmortizacaoOutputDto,
-  })
-  @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,
-    description: 'Invalid input data',
+    description: 'Simplified amortization calculated successfully',
+    type: AmortizacaoSimplesOutputDto,
   })
   async calcularAmortizacao(
     @Body() input: AmortizacaoInputDto,
-  ): Promise<AmortizacaoOutputDto> {
+  ): Promise<AmortizacaoSimplesOutputDto> {
     try {
-      this.logger.log('Received amortization calculation request');
-      return await this.amortizacaoService.calcularAmortizacao(input);
+      this.logger.log('Received simplified amortization request');
+      return await this.amortizacaoService.calcularAmortizacaoSimples(input);
     } catch (error) {
-      this.logger.error('Error calculating amortization', error.stack);
+      this.logger.error(
+        'Error calculating simplified amortization',
+        error.stack,
+      );
       throw error;
     }
   }
@@ -62,24 +53,18 @@ export class AmortizacaoController {
   @HttpCode(HttpStatus.OK)
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
   @ApiOperation({
-    summary: 'Compare amortization systems',
+    summary: 'Compare simplified amortization scenarios',
     description:
-      'Compares different amortization systems (SAC, PRICE, American) for the same loan parameters',
+      'Returns two simplified amortization scenarios (por prazo e por prestação) and a small comparative analysis',
   })
   @ApiBody({ type: AmortizacaoInputDto })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: 'Comparison completed successfully',
-    type: SimulacaoComparativaDto,
-  })
-  async compararSistemas(
-    @Body() input: AmortizacaoInputDto,
-  ): Promise<SimulacaoComparativaDto> {
+  @ApiResponse({ status: HttpStatus.OK, description: 'Comparison result', type: SimulacaoComparativaDto })
+  async compararSistemas(@Body() input: AmortizacaoInputDto): Promise<SimulacaoComparativaDto> {
     try {
-      this.logger.log('Received amortization systems comparison request');
+      this.logger.log('Received simplified amortization comparison request');
       return await this.amortizacaoService.compararSistemas(input);
     } catch (error) {
-      this.logger.error('Error comparing amortization systems', error.stack);
+      this.logger.error('Error comparing simplified amortization', error.stack);
       throw error;
     }
   }
