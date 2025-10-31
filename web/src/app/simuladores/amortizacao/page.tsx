@@ -11,7 +11,7 @@ export default function AmortizacaoSacPage() {
     return (
         <div className="container mx-auto py-8 space-y-8">
             <div className="text-center space-y-2">
-                <h1 className="text-4xl font-bold">Simulador de Amortização SAC</h1>
+                <h1 className="text-4xl font-bold">Simulador de Amortização</h1>
                 <p className="text-gray-600">
                     Calcule o impacto de amortizações extraordinárias no seu financiamento
                 </p>
