@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
 import { AmortizacaoModule } from './amortizacao/amortizacao.module';
+import { CombustivelModule } from './combustivel/combustivel.module';
 import { EmprestimoModule } from './emprestimo/emprestimo.module';
 import { InvestimentosModule } from './investimentos/investimentos.module';
 import { JurosCompostosModule } from './juros-composts/juros-compostos.module';
 
 @Module({
-  imports: [
+  imports: [CombustivelModule,
     InvestimentosModule,
     EmprestimoModule,
     AmortizacaoModule,
@@ -15,4 +16,4 @@ import { JurosCompostosModule } from './juros-composts/juros-compostos.module';
   providers: [],
   exports: [],
 })
-export class SimuladoresModule {}
+export class SimuladoresModule { }

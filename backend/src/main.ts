@@ -7,7 +7,6 @@ async function bootstrap() {
   const logger = new Logger('Bootstrap');
   const app = await NestFactory.create(AppModule);
 
-  // Global validation pipe
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -19,7 +18,6 @@ async function bootstrap() {
     }),
   );
 
-  // Swagger documentation
   const config = new DocumentBuilder()
     .setTitle('Compound Interest Calculator API')
     .setDescription(

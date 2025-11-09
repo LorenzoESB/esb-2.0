@@ -13,6 +13,7 @@ enum SimulatorType {
   JUROS_COMPOSTOS
   EMPRESTIMO
   INVESTIMENTOS
+  COMBUSTIVEL
 }
 
 model Simulation {

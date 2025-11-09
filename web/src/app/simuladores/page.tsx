@@ -1,4 +1,3 @@
-// app/simuladores/page.tsx
 import Link from "next/link";
 import {
     Calculator,
@@ -8,7 +7,6 @@ import {
     CreditCard,
     Building2,
     Users,
-    Banknote,
     Fuel,
     DollarSign,
 } from "lucide-react";
@@ -76,8 +74,8 @@ const simulators = [
         description: "Descubra a melhor opção de empréstimo para você",
         icon: DollarSign,
         href: "/simuladores/emprestimo",
-        status: "Indisponível",
-        color: "bg-red-50 text-red-600 border-red-200",
+        status: "Disponível",
+        color: "bg-green-50 text-green-600 border-green-200",
         features: ["Múltiplas Modalidades", "Comparativo", "Cronograma", "Economia"],
     },
     {
@@ -85,8 +83,8 @@ const simulators = [
         description: "Simule investimentos em renda fixa",
         icon: TrendingUp,
         href: "/simuladores/investimentos",
-        status: "Indisponível",
-        color: "bg-red-50 text-red-600 border-red-200",
+        status: "Disponível",
+        color: "bg-green-50 text-green-600 border-green-200",
         features: ["Renda Fixa", "Tributação", "Comparativo", "Rentabilidade"],
     },
     {
@@ -112,8 +110,8 @@ const simulators = [
         description: "Gasolina ou etanol?",
         icon: Fuel,
         href: "/simuladores/combustivel",
-        status: "Indisponível",
-        color: "bg-red-50 text-red-600 border-red-200",
+        status: "Disponível",
+        color: "bg-green-50 text-green-600 border-green-200",
         features: ["Flex", "Economia", "Consumo", "Comparativo"],
     },
     {
