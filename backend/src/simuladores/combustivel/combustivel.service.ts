@@ -51,10 +51,10 @@ export class CombustivelService {
     return { recomendacao, custos, economia };
   }
 
-  comparaCombustivelEtanol(input: CombustivelInputDto): CombustivelOutputDto {
+  async comparaCombustivelEtanol(input: CombustivelInputDto): Promise<CombustivelOutputDto> {
     const resultado = this.calcularCombustivelVantajoso(input);
 
-    return {
+    const output: CombustivelOutputDto = {
       recomendacao: resultado.recomendacao,
       custos: {
         gasolina: {
@@ -72,6 +72,30 @@ export class CombustivelService {
         percentual: resultado.economia.percentual,
       },
       mensagem: this.gerarMensagem(input, resultado.recomendacao),
-    };
+    }
+
+    await this.salvaSimulacao(input, output)
+
+    return output;
   }
+
+  async salvaSimulacao(input: CombustivelInputDto, output: CombustivelOutputDto) {
+    try {
+      await this.prisma.simulation.create({
+        data: {
+          simulatorType: SimulatorType.COMBUSTIVEL,
+          inputData: JSON.parse(JSON.stringify(input)),
+          outputData: JSON.parse(JSON.stringify(output)),
+          email: input.email,
+        },
+      });
+
+      this.logger.log(`Simulação salva para o email: ${input.email}`);
+
+    } catch (error) {
+      this.logger.error('Erro ao salvar a simulação de combustível', error);
+      throw error;
+    }
+  }
+
 }
