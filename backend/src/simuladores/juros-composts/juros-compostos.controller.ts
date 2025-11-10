@@ -14,7 +14,7 @@ import { JurosCompostosInputDto } from './dto/juros-compostos-input.dto';
 import { JurosCompostosDetalhadoOutputDto } from './dto/juros-compostos-output.dto';
 
 @ApiTags('Compound Interest')
-@Controller('simulators/juros-compostos')
+@Controller('simuladores/juros-compostos')
 export class JurosCompostosController {
   private readonly logger = new Logger(JurosCompostosController.name);
 

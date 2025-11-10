@@ -1,78 +1,93 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsNumber, IsString, IsObject, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
 
-/**
- * Representa os custos de um combustível específico
- */
-export class CustoCombustivelDto {
-    @ApiProperty({
-        description: 'Custo por quilômetro (valor numérico)',
-        example: 0.574,
-    })
-    custoPorKm: number;
+class CustoDetalhadoDto {
+  @ApiProperty({
+    example: 0.57,
+    description: 'Custo por quilômetro rodado com o combustível, em reais',
+  })
+  @IsNumber()
+  custoPorKm: number;
 
-    @ApiProperty({
-        description: 'Custo por quilômetro formatado em R$',
-        example: 'R$ 0,57',
-    })
-    custoFormatado: string;
+  @ApiProperty({
+    example: 'R$ 0,57',
+    description: 'Custo formatado em reais para exibição',
+  })
+  @IsString()
+  custoFormatado: string;
 }
 
-/**
- * Representa a economia entre os combustíveis
- */
-export class EconomiaDto {
-    @ApiProperty({
-        description: 'Valor absoluto de economia por km',
-        example: 0.036,
-    })
-    valor: number;
+class CustosDto {
+  @ApiProperty({
+    description: 'Custos relacionados ao uso da gasolina',
+    type: () => CustoDetalhadoDto,
+  })
+  @ValidateNested()
+  @Type(() => CustoDetalhadoDto)
+  gasolina: CustoDetalhadoDto;
 
-    @ApiProperty({
-        description: 'Valor de economia formatado em R$',
-        example: 'R$ 0,04',
-    })
-    valorFormatado: string;
-
-    @ApiProperty({
-        description: 'Percentual de economia',
-        example: 6.27,
-    })
-    percentual: number;
+  @ApiProperty({
+    description: 'Custos relacionados ao uso do etanol',
+    type: () => CustoDetalhadoDto,
+  })
+  @ValidateNested()
+  @Type(() => CustoDetalhadoDto)
+  etanol: CustoDetalhadoDto;
 }
 
-/**
- * DTO de saída do simulador de combustível
- */
+class EconomiaDto {
+  @ApiProperty({
+    example: 0.03,
+    description: 'Economia por quilômetro entre o combustível mais caro e o mais barato',
+  })
+  @IsNumber()
+  valor: number;
+
+  @ApiProperty({
+    example: 'R$ 0,03',
+    description: 'Economia formatada em reais',
+  })
+  @IsString()
+  valorFormatado: string;
+
+  @ApiProperty({
+    example: 5.26,
+    description: 'Percentual de economia em relação ao combustível mais caro',
+  })
+  @IsNumber()
+  percentual: number;
+}
+
 export class CombustivelOutputDto {
-    @ApiProperty({
-        description: 'Combustível recomendado',
-        example: 'Etanol',
-        enum: ['Gasolina', 'Etanol'],
-    })
-    recomendacao: 'Gasolina' | 'Etanol';
+  @ApiProperty({
+    example: 'Etanol',
+    description: 'Combustível mais vantajoso com base nos preços e consumo',
+  })
+  @IsString()
+  recomendacao: string;
 
-    @ApiProperty({
-        description: 'Custos detalhados de cada combustível',
-        type: () => ({
-            gasolina: CustoCombustivelDto,
-            etanol: CustoCombustivelDto,
-        }),
-    })
-    custos: {
-        gasolina: CustoCombustivelDto;
-        etanol: CustoCombustivelDto;
-    };
+  @ApiProperty({
+    description: 'Custos por km de cada combustível',
+    type: () => CustosDto,
+  })
+  @ValidateNested()
+  @Type(() => CustosDto)
+  custos: CustosDto;
 
-    @ApiProperty({
-        description: 'Economia ao escolher o combustível recomendado',
-        type: EconomiaDto,
-    })
-    economia: EconomiaDto;
+  @ApiProperty({
+    description: 'Economia estimada ao escolher o combustível mais vantajoso',
+    type: () => EconomiaDto,
+  })
+  @ValidateNested()
+  @Type(() => EconomiaDto)
+  economia: EconomiaDto;
 
-    @ApiProperty({
-        description: 'Mensagem amigável explicando o resultado',
-        example:
-            'Levando em conta a gasolina a R$5,74, o etanol a R$4,84 e o consumo do seu veículo. O combustível que mais vale a pena para abastecer o seu carro é: Etanol',
-    })
-    mensagem: string;
+  @ApiProperty({
+    example:
+      'Levando em conta a gasolina a R$ 5,74, o etanol a R$ 4,84 e o consumo do seu veículo. O combustível que mais vale a pena é: Etanol',
+    description: 'Mensagem explicativa sobre o resultado do cálculo',
+  })
+  @IsString()
+  mensagem: string;
 }

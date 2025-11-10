@@ -3,6 +3,7 @@ import { JurosCompostosModule } from './simuladores/juros-composts/juros-compost
 import { ConfigModule } from '@nestjs/config';
 import { AmortizacaoModule } from './simuladores/amortizacao/amortizacao.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { SimuladoresModule } from './simuladores/simuladores.module';
 
 @Module({
   imports: [
@@ -10,8 +11,7 @@ import { PrismaModule } from './prisma/prisma.module';
       isGlobal: true,
     }),
     PrismaModule,
-    JurosCompostosModule,
-    AmortizacaoModule,
+    SimuladoresModule
   ],
 })
 export class AppModule {}

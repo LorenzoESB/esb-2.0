@@ -5,13 +5,26 @@ export const CombustivelInputSchema = z.object({
     precoEtanol: z.number().min(0).optional(),
     consumoGasolina: z.number().min(0).optional(),
     consumoEtanol: z.number().min(0).optional(),
-    distanciaMensal: z.number().min(0).optional(),
 });
 
 export const CombustivelOutputSchema = z.object({
-    custoMensalGasolina: z.number(),
-    custoMensalEtanol: z.number(),
-    melhorOpcao: z.enum(['gasolina', 'etanol', 'indiferente']),
+    recomendacao: z.enum(['Gasolina', 'Etanol']),
+    custos: z.object({
+        gasolina: z.object({
+            custoPorKm: z.number(),
+            custoFormatado: z.string(),
+        }),
+        etanol: z.object({
+            custoPorKm: z.number(),
+            custoFormatado: z.string(),
+        }),
+    }),
+    economia: z.object({
+        valor: z.number(),
+        valorFormatado: z.string(),
+        percentual: z.number(),
+    }),
+    mensagem: z.string(),
 });
 
 export type CombustivelOutput = z.infer<typeof CombustivelOutputSchema>;

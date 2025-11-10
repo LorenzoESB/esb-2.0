@@ -2,43 +2,76 @@ import { Injectable, Logger } from '@nestjs/common';
 import { CombustivelInputDto } from './dto/combustivel-input.dto';
 import { CombustivelOutputDto } from './dto/combustivel-output.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-
+import { SimulatorType } from 'generated/prisma';
 
 @Injectable()
 export class CombustivelService {
   private readonly logger = new Logger(CombustivelService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
-  calcular(input: CombustivelInputDto): CombustivelOutputDto {
+  private arredondar(valor: number, casas = 3) {
+    return Number(valor.toFixed(casas));
+  }
 
-    const resultado = calcularCombustivelVantajoso({
-      precoGasolina: input.precoGasolina,
-      precoEtanol: input.precoEtanol,
-      consumoGasolina: input.consumoGasolina,
-      consumoEtanol: input.consumoEtanol,
-    });
+  private calcularCustoPorKm(preco: number, consumo: number): number {
+    return this.arredondar(preco / consumo);
+  }
+
+  private calcularEconomia(custoA: number, custoB: number) {
+    const maior = Math.max(custoA, custoB);
+    const menor = Math.min(custoA, custoB);
+    const valor = this.arredondar(maior - menor);
+    const percentual = maior === 0 ? 0 : this.arredondar(((maior - menor) / maior) * 100, 2);
+    return { valor, percentual };
+  }
+
+  private formatarMoeda(valor: number): string {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(valor);
+  }
+
+  private gerarMensagem(input: CombustivelInputDto, recomendacao: 'Gasolina' | 'Etanol') {
+    return `Levando em conta a gasolina a ${this.formatarMoeda(input.precoGasolina)}, o etanol a ${this.formatarMoeda(input.precoEtanol)} e o consumo do seu veículo. O combustível que mais vale a pena para abastecer o seu carro é: ${recomendacao}`;
+  }
+
+  private calcularCombustivelVantajoso(input: CombustivelInputDto) {
+    const custos = {
+      gasolina: this.calcularCustoPorKm(input.precoGasolina, input.consumoGasolina),
+      etanol: this.calcularCustoPorKm(input.precoEtanol, input.consumoEtanol),
+    };
+
+    const recomendacao: 'Gasolina' | 'Etanol' = custos.etanol < custos.gasolina ? 'Etanol' : 'Gasolina';
+    const economia = this.calcularEconomia(custos.gasolina, custos.etanol);
+
+    return { recomendacao, custos, economia };
+  }
+
+  comparaCombustivelEtanol(input: CombustivelInputDto): CombustivelOutputDto {
+    const resultado = this.calcularCombustivelVantajoso(input);
 
     return {
       recomendacao: resultado.recomendacao,
       custos: {
         gasolina: {
           custoPorKm: resultado.custos.gasolina,
-          custoFormatado: formatarMoeda(resultado.custos.gasolina),
+          custoFormatado: this.formatarMoeda(resultado.custos.gasolina),
         },
         etanol: {
           custoPorKm: resultado.custos.etanol,
-          custoFormatado: formatarMoeda(resultado.custos.etanol),
+          custoFormatado: this.formatarMoeda(resultado.custos.etanol),
         },
       },
       economia: {
         valor: resultado.economia.valor,
-        valorFormatado: formatarMoeda(resultado.economia.valor),
+        valorFormatado: this.formatarMoeda(resultado.economia.valor),
         percentual: resultado.economia.percentual,
       },
-      mensagem: gerarMensagem(input, resultado.recomendacao),
+      mensagem: this.gerarMensagem(input, resultado.recomendacao),
     };
   }
-
-
 }

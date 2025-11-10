@@ -4,9 +4,8 @@ import { CombustivelService } from './combustivel.service';
 
 
 @Module({
-  imports: [],
-  controllers: [CombustivelController,],
-  providers: [CombustivelService,],
-  exports: []
+  controllers: [CombustivelController],
+  providers: [CombustivelService],
+  exports: [CombustivelService]
 })
 export class CombustivelModule { }

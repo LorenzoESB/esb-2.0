@@ -1,5 +1,7 @@
 'use client';
 import { CombustivelForm } from "@/components/simuladores/combustivel/combustivel-form";
+import { CombustivelResults } from "@/components/simuladores/combustivel/combustivel-results";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useCombustivel } from "@/lib/hooks/use-combustivel";
 
 export default function Combustivel() {
@@ -23,6 +25,19 @@ export default function Combustivel() {
                         }}
                         isLoading={isLoading}
                     />
+
+                    {isLoading && (
+                        <div className="space-y-4">
+                            <Skeleton className="h-48 w-full" />
+                            <Skeleton className="h-96 w-full" />
+                        </div>
+                    )}
+
+                    {data && !isLoading && (
+                        <div className="space-y-6">
+                            <CombustivelResults data={data} />
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
