@@ -1,51 +1,29 @@
-# ---------- BASE ----------
-FROM node:20-alpine AS base
+FROM node:20-alpine
+
 WORKDIR /app
 
-# Dependências do SO
-RUN apk add --no-cache bash openssl openssh dumb-init python3 make g++
+# Dependências do sistema
+RUN apk add --no-cache dumb-init bash openssl openssh python3 make g++
 
-# Habilitar corepack + versão exata do pnpm compatível com seu lockfile
-RUN corepack enable && corepack prepare pnpm@8.15.4 --activate
+# Habilitar PNPM 10 (MESMA versão do seu lockfile)
+RUN corepack enable && corepack prepare pnpm@10.24.0 --activate
 
-# ---------- INSTALL STAGE ----------
-FROM base AS deps
-WORKDIR /app
-
+# Copiar arquivos de manifesto
 COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile
 
-# ---------- BUILD STAGE ----------
-FROM base AS build
-WORKDIR /app
+# Instalar dependências (SEM frozen-lockfile)
+RUN pnpm install
 
-COPY --from=deps /app/node_modules ./node_modules
+# Copiar resto do projeto
 COPY . .
 
-# Garante que o dist tem permissão de escrita
-RUN mkdir -p /app/dist && chmod -R 777 /app/dist
+# Build da aplicação (NODE_ENV=production evita watch)
+RUN pnpm build
 
-# Gera Prisma Client (Prisma 6)
+# Gerar client do Prisma (versão 6.x)
 RUN pnpm prisma generate
 
-# Compilar NestJS — sem watch
-RUN pnpm run build
-
-# ---------- PRODUCTION ----------
-FROM node:20-alpine AS prod
-WORKDIR /app
-
-RUN apk add --no-cache dumb-init
-
-ENV NODE_ENV=production
 ENV PORT=3030
 EXPOSE 3030
 
-# Copiar prod build
-COPY --from=build /app/dist ./dist
-COPY --from=build /app/node_modules ./node_modules
-COPY package.json ./
-
-USER node
-
-CMD ["dumb-init", "node", "dist/main.js"]
+CMD ["node", "dist/main.js"]
