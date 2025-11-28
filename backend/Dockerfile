@@ -1,37 +1,32 @@
-# Dockerfile (Node + Prisma 6.x + NestJS)
 FROM node:20-alpine
 
 WORKDIR /app
 
-# Dependências do sistema
+# Dependências básicas
 RUN apk add --no-cache dumb-init git openssh bash openssl
 
-# Corepack + PNPM
+# PNPM versão compatível com lockfile
 RUN corepack enable && corepack prepare pnpm@8.15.5 --activate
 
-# Copia manifests
+# Copia manifest + lockfile primeiro
 COPY package.json pnpm-lock.yaml* ./
 
-# Instala dependências (dev incluídas)
+# Instala dependências
 RUN pnpm install --frozen-lockfile
 
-# Copia resto dos arquivos
+# Copia código
 COPY . .
 
-# Ajusta dist
-RUN mkdir -p /app/dist && chown -R node:node /app
+# Diretório dist e permissões
+RUN mkdir -p /app/dist && \
+    chown -R node:node /app
 
-# ENV DATABASE_URL
-ARG DATABASE_URL
-ENV DATABASE_URL=$DATABASE_URL
-
-# Prisma (funciona apenas com Prisma 6)
-RUN if [ -n "$DATABASE_URL" ]; then pnpx prisma db pull; fi
-RUN pnpx prisma generate
+# Prisma (apenas generate, SEM db pull durante a build!)
+RUN pnpx prisma generate || true
 
 ENV PORT=3030
 EXPOSE 3030
 
 USER node
 
-CMD ["pnpm", "run", "start:prod"]
+CMD ["pnpm", "start:dev"]
