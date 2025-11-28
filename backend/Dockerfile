@@ -1,39 +1,37 @@
-# Dockerfile.dev
+# Dockerfile (Node + Prisma 6.x + NestJS)
 FROM node:20-alpine
 
 WORKDIR /app
 
-# Instala dependências do sistema necessárias (ajuste se precisar de build-tools)
-RUN apk add --no-cache dumb-init git openssh
+# Dependências do sistema
+RUN apk add --no-cache dumb-init git openssh bash openssl
 
-# Habilita corepack e ativa pnpm
-RUN corepack enable && corepack prepare pnpm@latest --activate
+# Corepack + PNPM
+RUN corepack enable && corepack prepare pnpm@8.15.5 --activate
 
-# Copia apenas arquivos de lock / manifest primeiro (cache eficiente)
+# Copia manifests
 COPY package.json pnpm-lock.yaml* ./
 
-# Instala todas as dependências (dev + prod) para ambiente de desenvolvimento
+# Instala dependências (dev incluídas)
 RUN pnpm install --frozen-lockfile
 
-# Copia o restante do código
+# Copia resto dos arquivos
 COPY . .
 
-# CORREÇÃO: Criar diretório dist e ajustar permissões
-RUN mkdir -p /app/dist && \
-    chown -R node:node /app
+# Ajusta dist
+RUN mkdir -p /app/dist && chown -R node:node /app
 
-# (Opcional) Apenas gera o client do Prisma se DATABASE_URL estiver presente.
-# Isso evita erro de build quando não há DB acessível durante a build.
+# ENV DATABASE_URL
 ARG DATABASE_URL
-ENV DATABASE_URL=${DATABASE_URL}
+ENV DATABASE_URL=$DATABASE_URL
+
+# Prisma (funciona apenas com Prisma 6)
 RUN if [ -n "$DATABASE_URL" ]; then pnpx prisma db pull; fi
-RUN pnpx prisma generate || true
+RUN pnpx prisma generate
 
 ENV PORT=3030
 EXPOSE 3030
 
-# Usa dumb-init para signal handling (opcional) e troca para usuario não-root
 USER node
 
-# Comando típico em dev (assume script "start:dev" no package.json)
-CMD ["pnpm", "run", "start:dev"]
+CMD ["pnpm", "run", "start:prod"]
