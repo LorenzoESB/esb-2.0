@@ -23,6 +23,7 @@ export class PrismaService
       throw error;
     }
   }
+  
 
   async onModuleDestroy() {
     await this.$disconnect();
