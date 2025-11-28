@@ -12,7 +12,7 @@ RUN corepack enable && corepack prepare pnpm@8.15.5 --activate
 COPY package.json pnpm-lock.yaml* ./
 
 # Instala dependências
-RUN pnpm install --frozen-lockfile
+RUN pnpm install
 
 # Copia código
 COPY . .
