@@ -14,6 +14,9 @@ COPY . .
 
 RUN pnpm prisma generate
 
+RUN mkdir -p /app/dist /app/generated && \
+    chown -R node:node /app
+
 ENV PORT=3030
 EXPOSE 3030
 
