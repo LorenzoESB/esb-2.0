@@ -6,7 +6,7 @@ import {
 } from './dto/amortizacao-output.dto';
 import { SimulacaoComparativaDto } from './dto/amortizacao-output.dto';
 import { PrismaService } from '../../prisma/prisma.service';
-import { SimulatorType } from '../../../generated/prisma';
+import { SimulatorType } from 'generated/prisma';
 
 @Injectable()
 export class AmortizacaoService {
