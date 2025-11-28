@@ -18,6 +18,8 @@ RUN mkdir -p /app/dist /app/generated && \
     chown -R node:node /app
 
 ENV PORT=3030
+ENV DATABASE_URL="postgresql://admin_educando:Educando@2025@136.248.90.42:5432/educando_db?schema=simuladores"
+
 EXPOSE 3030
 
 USER node
