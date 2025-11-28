@@ -11,11 +11,11 @@ RUN pnpm install --frozen-lockfile
 
 COPY . .
 
-RUN mkdir -p /app/dist && \
-    chown -R node:node /app
+# Generate Prisma client
+RUN pnpx prisma generate
 
-# Apenas gera o client – sem acessar DB
-RUN pnpx prisma generate || true
+RUN mkdir -p /app/dist /app/generated && \
+    chown -R node:node /app
 
 ENV PORT=3030
 EXPOSE 3030
