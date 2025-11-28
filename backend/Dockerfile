@@ -1,55 +1,51 @@
-FROM node:20-alpine AS builder
-
+# ---------- BASE ----------
+FROM node:20-alpine AS base
 WORKDIR /app
 
-# Instala dependências do sistema
-RUN apk add --no-cache bash openssl git
+# Dependências do SO
+RUN apk add --no-cache bash openssl openssh dumb-init python3 make g++
 
-# Habilita PNPM
-RUN corepack enable && corepack prepare pnpm@8.15.5 --activate
+# Habilitar corepack + versão exata do pnpm compatível com seu lockfile
+RUN corepack enable && corepack prepare pnpm@8.15.4 --activate
 
-# Copia arquivos
+# ---------- INSTALL STAGE ----------
+FROM base AS deps
+WORKDIR /app
+
 COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
 
-# Instala dependências
-RUN pnpm install
+# ---------- BUILD STAGE ----------
+FROM base AS build
+WORKDIR /app
 
-# Copia código restante
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Gera Prisma Client (usa variáveis do build)
-ARG DATABASE_URL
-ENV DATABASE_URL=${DATABASE_URL}
-RUN pnpx prisma generate
+# Garante que o dist tem permissão de escrita
+RUN mkdir -p /app/dist && chmod -R 777 /app/dist
 
-# Gera build NestJS
-RUN pnpm build
+# Gera Prisma Client (Prisma 6)
+RUN pnpm prisma generate
 
+# Compilar NestJS — sem watch
+RUN pnpm run build
 
-
-# ==========================
-#        RUNTIME
-# ==========================
-FROM node:20-alpine AS runner
-
+# ---------- PRODUCTION ----------
+FROM node:20-alpine AS prod
 WORKDIR /app
 
-RUN apk add --no-cache dumb-init openssl
-
-# Habilita pnpm
-RUN corepack enable && corepack prepare pnpm@8.15.5 --activate
-
-# Copia apenas arquivos necessários
-COPY package.json pnpm-lock.yaml ./
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/prisma ./prisma
+RUN apk add --no-cache dumb-init
 
 ENV NODE_ENV=production
 ENV PORT=3030
-
 EXPOSE 3030
+
+# Copiar prod build
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/node_modules ./node_modules
+COPY package.json ./
 
 USER node
 
-CMD ["node", "dist/main.js"]
+CMD ["dumb-init", "node", "dist/main.js"]
