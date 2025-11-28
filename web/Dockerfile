@@ -2,7 +2,7 @@
 FROM node:18-alpine
 
 ENV NODE_ENV=development
-ENV NEXT_PUBLIC_API_URL=https://dev.educandoseubolso.blog.br
+ENV NEXT_PUBLIC_API_URL=https://backend.educandoseubolso.blog.br
 ENV WORDPRESS_API_URL=https://educandoseubolso.blog.br/wp-json/wp/v2
 ENV PORT=3001
 WORKDIR /app
