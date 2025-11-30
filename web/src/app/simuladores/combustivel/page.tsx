@@ -3,9 +3,13 @@ import { CombustivelForm } from "@/components/simuladores/combustivel/combustive
 import { CombustivelResults } from "@/components/simuladores/combustivel/combustivel-results";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCombustivel } from "@/lib/hooks/use-combustivel";
+import { useAutoIframeHeight } from '@/lib/hooks/use-auto-iframe-height';
 
 export default function Combustivel() {
     const { data, isLoading, calcular } = useCombustivel();
+
+    // Auto-adjust iframe height when data or loading state changes
+    useAutoIframeHeight([data, isLoading], { delay: 100 });
     return (
         <div className="container mx-auto py-4 sm:py-8 px-4 space-y-6 sm:space-y-8">
             <div className="text-center space-y-2">

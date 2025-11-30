@@ -1,12 +1,28 @@
 'use client';
 
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { AposentadoriaForm } from '@/components/simuladores/aposentadoria/aposentadoria-form';
 import { AposentadoriaResults } from '@/components/simuladores/aposentadoria/aposentadoria-results';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAposentadoria } from '@/lib/hooks/use-aposentadoria';
+import { useAutoIframeHeight } from '@/lib/hooks/use-auto-iframe-height';
 
 export default function AposentadoriaPrivadaPage() {
     const { data, isLoading, simular } = useAposentadoria();
+    const router = useRouter();
+
+    // Auto-adjust iframe height when data or loading state changes
+    useAutoIframeHeight([data, isLoading], { delay: 100 });
+
+    // Clean up URL query parameters on mount and after navigation
+    useEffect(() => {
+        const currentUrl = new URL(window.location.href);
+        if (currentUrl.search) {
+            // Remove all query parameters
+            router.replace('/simuladores/aposentadoria-privada', { scroll: false });
+        }
+    }, [router]);
 
     return (
         <div className="container mx-auto py-8 space-y-8">

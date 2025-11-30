@@ -6,10 +6,12 @@ import {
   SimularAposentadoriaDto,
   ModoCalculoAposentadoria,
 } from '../dto/simular-aposentadoria.dto';
+import { PrismaService } from '../../../prisma/prisma.service';
 
 describe('AposentadoriaService', () => {
   let service: AposentadoriaService;
   let configService: ConfigService;
+  let prismaService: PrismaService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -27,11 +29,20 @@ describe('AposentadoriaService', () => {
             }),
           },
         },
+        {
+          provide: PrismaService,
+          useValue: {
+            simulation: {
+              create: jest.fn().mockResolvedValue({}),
+            },
+          },
+        },
       ],
     }).compile();
 
     service = module.get<AposentadoriaService>(AposentadoriaService);
     configService = module.get<ConfigService>(ConfigService);
+    prismaService = module.get<PrismaService>(PrismaService);
   });
 
   it('deve estar definido', () => {
@@ -39,7 +50,7 @@ describe('AposentadoriaService', () => {
   });
 
   describe('simular - Modo RECEBER', () => {
-    it('deve calcular contribuição necessária para renda desejada de R$ 12.000', () => {
+    it('deve calcular contribuição necessária para renda desejada de R$ 12.000', async () => {
       const dto: SimularAposentadoriaDto = {
         modoCalculo: ModoCalculoAposentadoria.RECEBER,
         idadeAtual: 28,
@@ -49,7 +60,7 @@ describe('AposentadoriaService', () => {
         incluirCenariosSaque: true,
       };
 
-      const resultado = service.simular(dto);
+      const resultado = await service.simular(dto);
 
       // Validações estruturais
       expect(resultado).toHaveProperty('parametros');
@@ -87,7 +98,7 @@ describe('AposentadoriaService', () => {
       expect(resultado.sustentabilidade.cenarios.length).toBeGreaterThan(0);
     });
 
-    it('deve calcular corretamente sem reserva inicial', () => {
+    it('deve calcular corretamente sem reserva inicial', async () => {
       const dto: SimularAposentadoriaDto = {
         modoCalculo: ModoCalculoAposentadoria.RECEBER,
         idadeAtual: 24,
@@ -97,14 +108,14 @@ describe('AposentadoriaService', () => {
         incluirCenariosSaque: false,
       };
 
-      const resultado = service.simular(dto);
+      const resultado = await service.simular(dto);
 
       expect(resultado.acumulacao.mesesContribuicao).toBe(312);
       expect(resultado.acumulacao.valorFuturoReserva).toBe(0);
       expect(resultado.acumulacao.contribuicaoMensal).toBeCloseTo(2836.26, 1);
     });
 
-    it('deve calcular renda menor com menos tempo de acumulação', () => {
+    it('deve calcular renda menor com menos tempo de acumulação', async () => {
       const dto1: SimularAposentadoriaDto = {
         modoCalculo: ModoCalculoAposentadoria.RECEBER,
         idadeAtual: 40,
@@ -121,8 +132,8 @@ describe('AposentadoriaService', () => {
         rendaMensalDesejada: 5000,
       };
 
-      const resultado1 = service.simular(dto1);
-      const resultado2 = service.simular(dto2);
+      const resultado1 = await service.simular(dto1);
+      const resultado2 = await service.simular(dto2);
 
       // Com menos tempo, precisa contribuir mais por mês
       expect(resultado1.acumulacao.contribuicaoMensal).toBeGreaterThan(
@@ -132,7 +143,7 @@ describe('AposentadoriaService', () => {
   });
 
   describe('simular - Modo CONTRIBUIR', () => {
-    it('deve calcular renda futura com contribuição de R$ 2.000/mês', () => {
+    it('deve calcular renda futura com contribuição de R$ 2.000/mês', async () => {
       const dto: SimularAposentadoriaDto = {
         modoCalculo: ModoCalculoAposentadoria.CONTRIBUIR,
         idadeAtual: 30,
@@ -142,7 +153,7 @@ describe('AposentadoriaService', () => {
         incluirCenariosSaque: true,
       };
 
-      const resultado = service.simular(dto);
+      const resultado = await service.simular(dto);
 
       // Validações estruturais
       expect(resultado).toHaveProperty('acumulacao');
@@ -161,7 +172,7 @@ describe('AposentadoriaService', () => {
       expect(resultado.sustentabilidade.cenarios.length).toBeGreaterThan(0);
     });
 
-    it('deve gerar renda maior com mais tempo de acumulação', () => {
+    it('deve gerar renda maior com mais tempo de acumulação', async () => {
       const dtoMenosTempo: SimularAposentadoriaDto = {
         modoCalculo: ModoCalculoAposentadoria.CONTRIBUIR,
         idadeAtual: 45,
@@ -178,8 +189,8 @@ describe('AposentadoriaService', () => {
         contribuicaoMensal: 1000,
       };
 
-      const resultadoMenosTempo = service.simular(dtoMenosTempo);
-      const resultadoMaisTempo = service.simular(dtoMaisTempo);
+      const resultadoMenosTempo = await service.simular(dtoMenosTempo);
+      const resultadoMaisTempo = await service.simular(dtoMaisTempo);
 
       // Mais tempo de contribuição = maior acumulação = maior renda
       expect(resultadoMaisTempo.acumulacao.valorTotalAcumulado).toBeGreaterThan(
@@ -192,7 +203,7 @@ describe('AposentadoriaService', () => {
   });
 
   describe('Validações de negócio', () => {
-    it('deve rejeitar idade de aposentadoria menor ou igual à idade atual', () => {
+    it('deve rejeitar idade de aposentadoria menor ou igual à idade atual', async () => {
       const dto: SimularAposentadoriaDto = {
         modoCalculo: ModoCalculoAposentadoria.RECEBER,
         idadeAtual: 50,
@@ -207,7 +218,7 @@ describe('AposentadoriaService', () => {
       );
     });
 
-    it('deve rejeitar idade de aposentadoria maior que expectativa de vida', () => {
+    it('deve rejeitar idade de aposentadoria maior que expectativa de vida', async () => {
       const dto: SimularAposentadoriaDto = {
         modoCalculo: ModoCalculoAposentadoria.RECEBER,
         idadeAtual: 30,
@@ -220,7 +231,7 @@ describe('AposentadoriaService', () => {
       expect(() => service.simular(dto)).toThrow(/expectativa de vida/);
     });
 
-    it('deve rejeitar modo RECEBER sem renda desejada', () => {
+    it('deve rejeitar modo RECEBER sem renda desejada', async () => {
       const dto: SimularAposentadoriaDto = {
         modoCalculo: ModoCalculoAposentadoria.RECEBER,
         idadeAtual: 30,
@@ -233,7 +244,7 @@ describe('AposentadoriaService', () => {
       expect(() => service.simular(dto)).toThrow(/Renda mensal desejada/);
     });
 
-    it('deve rejeitar modo CONTRIBUIR sem contribuição mensal', () => {
+    it('deve rejeitar modo CONTRIBUIR sem contribuição mensal', async () => {
       const dto: SimularAposentadoriaDto = {
         modoCalculo: ModoCalculoAposentadoria.CONTRIBUIR,
         idadeAtual: 30,
@@ -248,7 +259,7 @@ describe('AposentadoriaService', () => {
   });
 
   describe('Sustentabilidade', () => {
-    it('deve gerar cenários de saque quando solicitado', () => {
+    it('deve gerar cenários de saque quando solicitado', async () => {
       const dto: SimularAposentadoriaDto = {
         modoCalculo: ModoCalculoAposentadoria.RECEBER,
         idadeAtual: 30,
@@ -258,7 +269,7 @@ describe('AposentadoriaService', () => {
         incluirCenariosSaque: true,
       };
 
-      const resultado = service.simular(dto);
+      const resultado = await service.simular(dto);
 
       expect(resultado.sustentabilidade.cenarios).toBeDefined();
       expect(resultado.sustentabilidade.cenarios.length).toBeGreaterThan(0);
@@ -272,7 +283,7 @@ describe('AposentadoriaService', () => {
       });
     });
 
-    it('não deve gerar cenários quando não solicitado', () => {
+    it('não deve gerar cenários quando não solicitado', async () => {
       const dto: SimularAposentadoriaDto = {
         modoCalculo: ModoCalculoAposentadoria.RECEBER,
         idadeAtual: 30,
@@ -282,7 +293,7 @@ describe('AposentadoriaService', () => {
         incluirCenariosSaque: false,
       };
 
-      const resultado = service.simular(dto);
+      const resultado = await service.simular(dto);
 
       expect(resultado.sustentabilidade.cenarios).toEqual([]);
       expect(resultado.sustentabilidade.rendimentoMensalPuro).toBeGreaterThan(
@@ -290,7 +301,7 @@ describe('AposentadoriaService', () => {
       );
     });
 
-    it('deve identificar saques sustentáveis vs que consomem principal', () => {
+    it('deve identificar saques sustentáveis vs que consomem principal', async () => {
       const dto: SimularAposentadoriaDto = {
         modoCalculo: ModoCalculoAposentadoria.CONTRIBUIR,
         idadeAtual: 30,
@@ -300,7 +311,7 @@ describe('AposentadoriaService', () => {
         incluirCenariosSaque: true,
       };
 
-      const resultado = service.simular(dto);
+      const resultado = await service.simular(dto);
 
       const cenariosComConsumo = resultado.sustentabilidade.cenarios.filter(
         (c) => c.consumePrincipal,
@@ -321,7 +332,7 @@ describe('AposentadoriaService', () => {
   });
 
   describe('Resumo', () => {
-    it('deve calcular resumo executivo corretamente', () => {
+    it('deve calcular resumo executivo corretamente', async () => {
       const dto: SimularAposentadoriaDto = {
         modoCalculo: ModoCalculoAposentadoria.RECEBER,
         idadeAtual: 30,
@@ -330,7 +341,7 @@ describe('AposentadoriaService', () => {
         rendaMensalDesejada: 10000,
       };
 
-      const resultado = service.simular(dto);
+      const resultado = await service.simular(dto);
 
       // Validar cálculos do resumo
       expect(resultado.resumo.totalInvestido).toBeGreaterThan(
@@ -347,7 +358,7 @@ describe('AposentadoriaService', () => {
       expect(resultado.resumo.saldoPatrimonial).toBeGreaterThan(0);
     });
 
-    it('deve incluir reserva inicial no total investido', () => {
+    it('deve incluir reserva inicial no total investido', async () => {
       const reserva = 50000;
       const dto: SimularAposentadoriaDto = {
         modoCalculo: ModoCalculoAposentadoria.CONTRIBUIR,
@@ -357,7 +368,7 @@ describe('AposentadoriaService', () => {
         contribuicaoMensal: 1500,
       };
 
-      const resultado = service.simular(dto);
+      const resultado = await service.simular(dto);
 
       const totalContribuicoes =
         resultado.acumulacao.contribuicaoMensal *
@@ -401,7 +412,7 @@ describe('AposentadoriaService', () => {
         rendaMensalDesejada: 5000,
       };
 
-      const resultado = customService.simular(dto);
+      const resultado = await customService.simular(dto);
 
       expect(resultado.parametros.taxaJurosMensal).toBe(0.004);
       expect(resultado.parametros.expectativaVida).toBe(80);

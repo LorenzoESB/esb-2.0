@@ -4,9 +4,13 @@ import { JurosCompostosResults } from '@/components/simuladores/juros-compostos/
 import { useJurosCompostos } from '@/lib/hooks/use-juros-compostos';
 import { Skeleton } from '@/components/ui/skeleton';
 import { JurosCompostosChart } from '@/components/simuladores/juros-compostos/juros-compostos-chart';
+import { useAutoIframeHeight } from '@/lib/hooks/use-auto-iframe-height';
 
 export default function JurosCompostosPage() {
     const { data, isLoading, calcular } = useJurosCompostos();
+
+    // Auto-adjust iframe height when data or loading state changes
+    useAutoIframeHeight([data, isLoading], { delay: 100 });
 
     return (
         <div className="container mx-auto py-4 sm:py-8 px-4 space-y-6 sm:space-y-8">

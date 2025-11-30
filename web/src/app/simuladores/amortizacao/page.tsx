@@ -4,9 +4,13 @@ import { AmortizacaoSacForm } from '@/components/simuladores/amortizacao/amortiz
 import { AmortizacaoSacResults } from '@/components/simuladores/amortizacao/amortizacao-results';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAmortizacaoSac } from '@/lib/hooks/use-amortizacao';
+import { useAutoIframeHeight } from '@/lib/hooks/use-auto-iframe-height';
 
 export default function AmortizacaoSacPage() {
     const { data, isLoading, comparar } = useAmortizacaoSac();
+
+    // Auto-adjust iframe height when data or loading state changes
+    useAutoIframeHeight([data, isLoading], { delay: 100 });
 
     return (
         <div className="container mx-auto py-8 space-y-8">

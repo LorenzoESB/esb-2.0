@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Decimal from 'decimal.js';
 import {
@@ -24,13 +24,19 @@ import {
   calcularDuracaoPatrimonio,
   calcularSaldoAposSaques,
 } from './calc/aposentadoria.calc';
+import { PrismaService } from '../../prisma/prisma.service';
+import { SimulatorType } from 'generated/prisma';
 
 @Injectable()
 export class AposentadoriaService {
+  private readonly logger = new Logger(AposentadoriaService.name);
   private readonly taxaMensal: Decimal;
   private readonly expectativaVida: number;
 
-  constructor(private configService: ConfigService) {
+  constructor(
+    private configService: ConfigService,
+    private readonly prisma: PrismaService,
+  ) {
     // Parâmetros vindos de variáveis de ambiente com fallback para valores padrão
     this.taxaMensal = new Decimal(
       this.configService.get<number>('RETIREMENT_MONTHLY_RATE', 0.005),
@@ -43,15 +49,15 @@ export class AposentadoriaService {
 
   /**
    * Simula planejamento de aposentadoria privada.
-   * 
+   *
    * Implementa dois modos de cálculo:
    * 1. RECEBER: usuário informa quanto quer receber → calcula contribuição necessária
    * 2. CONTRIBUIR: usuário informa quanto vai contribuir → calcula renda futura
-   * 
+   *
    * @param dto - Dados da simulação
    * @returns Resultado completo com acumulação, usufruto e sustentabilidade
    */
-  simular(dto: SimularAposentadoriaDto): ResultadoAposentadoriaDto {
+  async simular(dto: SimularAposentadoriaDto): Promise<ResultadoAposentadoriaDto> {
     // Validações de negócio
     this.validarDados(dto);
 
@@ -120,13 +126,18 @@ export class AposentadoriaService {
       expectativaVida: this.expectativaVida,
     };
 
-    return {
+    const result = {
       parametros,
       acumulacao,
       usufruto,
       sustentabilidade,
       resumo,
     };
+
+    // Save simulation to database
+    await this.salvarSimulacao(dto, result);
+
+    return result;
   }
 
   /**
@@ -375,5 +386,32 @@ export class AposentadoriaService {
    */
   private arredondar(valor: number | Decimal): number {
     return new Decimal(valor).toDecimalPlaces(2).toNumber();
+  }
+
+  /**
+   * Salva a simulação no banco de dados.
+   */
+  private async salvarSimulacao(
+    input: SimularAposentadoriaDto,
+    output: ResultadoAposentadoriaDto,
+  ): Promise<void> {
+    try {
+      await this.prisma.simulation.create({
+        data: {
+          simulatorType: SimulatorType.APOSENTADORIA,
+          inputData: JSON.parse(JSON.stringify(input)),
+          outputData: JSON.parse(JSON.stringify(output)),
+          email: null,
+        },
+      });
+
+      this.logger.log('Retirement simulation saved to database');
+    } catch (error) {
+      this.logger.warn(
+        'Failed to save retirement simulation, continuing',
+        error?.stack,
+      );
+      // Don't throw - simulation should still work even if logging fails
+    }
   }
 }
