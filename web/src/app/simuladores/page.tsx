@@ -65,8 +65,8 @@ const simulators = [
         description: "Veja quanto precisa poupar para ter tranquilidade",
         icon: Users,
         href: "/simuladores/aposentadoria-privada",
-        status: "Indisponível",
-        color: "bg-red-50 text-red-600 border-red-200",
+        status: "Disponível",
+        color: "bg-green-50 text-green-600 border-green-200",
         features: ["Previdência", "Expectativa", "Meta de Renda", "Projeções"],
     },
     {

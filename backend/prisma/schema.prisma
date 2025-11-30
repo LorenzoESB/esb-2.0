@@ -10,10 +10,11 @@ datasource db {
 
 enum SimulatorType {
   AMORTIZACAO
-  JUROS_COMPOSTOS
+  APOSENTADORIA
+  COMBUSTIVEL
   EMPRESTIMO
   INVESTIMENTOS
-  COMBUSTIVEL
+  JUROS_COMPOSTOS
 }
 
 model Simulation {
