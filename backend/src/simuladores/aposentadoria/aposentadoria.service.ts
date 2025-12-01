@@ -253,7 +253,6 @@ export class AposentadoriaService {
     rendaReferencia: number,
   ): SustentabilidadeDto {
     const capital = new Decimal(patrimonio);
-    const rendimentoMensalPuro = capital.mul(this.taxaMensal);
 
     // Definir cenários de saque baseados na renda de referência
     const percentuais = [0.5, 0.75, 1.0, 1.25, 1.5, 2.0];
@@ -263,7 +262,6 @@ export class AposentadoriaService {
     });
 
     return {
-      rendimentoMensalPuro: this.arredondar(rendimentoMensalPuro),
       cenarios,
     };
   }
@@ -274,11 +272,7 @@ export class AposentadoriaService {
   private calcularSustentabilidadeSimples(
     patrimonio: number,
   ): SustentabilidadeDto {
-    const capital = new Decimal(patrimonio);
-    const rendimentoMensalPuro = capital.mul(this.taxaMensal);
-
     return {
-      rendimentoMensalPuro: this.arredondar(rendimentoMensalPuro),
       cenarios: [],
     };
   }

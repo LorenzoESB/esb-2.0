@@ -73,14 +73,14 @@ export function calcularDadosAcumulacao(
 export function calcularDadosUsufruto(
   data: ResultadoAposentadoria,
 ): UsufrutoChartData[] {
-  const { parametros, acumulacao, usufruto, sustentabilidade } = data;
+  const { parametros, acumulacao, usufruto } = data;
   const { idadeAposentadoria, taxaJurosMensal } = parametros;
   const { valorTotalAcumulado } = acumulacao;
   const { rendaMensal } = usufruto;
 
   const dadosAnuais: UsufrutoChartData[] = [];
   let saldoAtual = valorTotalAcumulado;
-  const rendimentoMensalPuro = sustentabilidade.rendimentoMensalPuro;
+  const saldoInicial = valorTotalAcumulado;
 
   // Determina quantos anos simular (maximo 50 anos ou ate esgotamento)
   const maxAnos = 50;
@@ -92,7 +92,7 @@ export function calcularDadosUsufruto(
     idade: idadeAposentadoria,
     saldo: Math.round(saldoAtual),
     rendaMensal: rendaMensal,
-    tipo: rendaMensal <= rendimentoMensalPuro ? "Sustentavel" : "Com Principal",
+    tipo: "Sustentavel",
   });
 
   // Calcula ano a ano
@@ -112,12 +112,13 @@ export function calcularDadosUsufruto(
       }
     }
 
+    // Determina o tipo baseado no saldo
     const tipo: "Sustentavel" | "Com Principal" | "Esgotado" =
       saldoAtual <= 0
         ? "Esgotado"
-        : rendaMensal <= rendimentoMensalPuro
-          ? "Sustentavel"
-          : "Com Principal";
+        : saldoAtual < saldoInicial
+          ? "Com Principal"
+          : "Sustentavel";
 
     dadosAnuais.push({
       ano,

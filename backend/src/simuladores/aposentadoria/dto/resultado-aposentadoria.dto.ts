@@ -149,13 +149,6 @@ export class CenarioSaqueDto {
 
 export class SustentabilidadeDto {
   @ApiProperty({
-    description:
-      'Rendimento mensal puro (apenas juros, sem consumir capital) (R$)',
-    example: 10608.63,
-  })
-  rendimentoMensalPuro: number;
-
-  @ApiProperty({
     description: 'Cenários de saque analisados',
     type: [CenarioSaqueDto],
   })

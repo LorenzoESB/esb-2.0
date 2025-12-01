@@ -54,8 +54,8 @@ export function AposentadoriaResults({ data }: AposentadoriaResultsProps) {
 
             {/* Graficos principais */}
             <div className="grid grid-cols-1 gap-6">
-                <UsufrutoChart data={data} />
                 <AcumulacaoChart data={data} />
+                <UsufrutoChart data={data} />
             </div>
 
             {/* Detalhes em abas */}
@@ -124,18 +124,55 @@ export function AposentadoriaResults({ data }: AposentadoriaResultsProps) {
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
                                 <Shield className="h-5 w-5" />
-                                Sustentabilidade
+                                Projeção de Sustentabilidade
                             </CardTitle>
+                            <CardDescription>
+                                Análise de diferentes cenários de saque do patrimônio acumulado
+                            </CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <div className="p-4 bg-purple-50 border border-purple-200 rounded-lg">
-                                <p className="text-2xl font-bold text-purple-700">
-                                    {formatCurrency(sustentabilidade.rendimentoMensalPuro)}
+                            {sustentabilidade.cenarios && sustentabilidade.cenarios.length > 0 ? (
+                                <div className="space-y-4">
+                                    {sustentabilidade.cenarios.map((cenario, index) => (
+                                        <div
+                                            key={index}
+                                            className="p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+                                        >
+                                            <div className="flex items-start justify-between mb-2">
+                                                <div>
+                                                    <p className="font-semibold text-gray-900">
+                                                        Saque Mensal: {formatCurrency(cenario.valorSaqueMensal)}
+                                                    </p>
+                                                    <p className="text-sm text-gray-600 mt-1">
+                                                        {cenario.observacao}
+                                                    </p>
+                                                </div>
+                                                <Badge
+                                                    variant={cenario.consumePrincipal ? "destructive" : "default"}
+                                                    className="ml-2"
+                                                >
+                                                    {cenario.consumePrincipal ? "Consome Capital" : "Sustentável"}
+                                                </Badge>
+                                            </div>
+                                            {cenario.duracaoAnos > 0 && (
+                                                <div className="mt-2 pt-2 border-t">
+                                                    <p className="text-sm text-gray-600">
+                                                        Duração: <span className="font-medium">{cenario.duracaoAnos} anos</span>
+                                                    </p>
+                                                    <p className="text-sm text-gray-600">
+                                                        Saldo Final: <span className="font-medium">{formatCurrency(cenario.saldoFinal)}</span>
+                                                    </p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <p className="text-gray-500 text-center py-8">
+                                    Nenhum cenário de sustentabilidade disponível.
+                                    Marque a opção "Incluir cenários de saque" para visualizar esta análise.
                                 </p>
-                                <p className="text-xs text-gray-600 mt-1">
-                                    Rendimento mensal sem tocar no principal
-                                </p>
-                            </div>
+                            )}
                         </CardContent>
                     </Card>
                 </TabsContent>

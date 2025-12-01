@@ -91,10 +91,6 @@ describe('AposentadoriaService', () => {
       expect(resultado.usufruto.valorTotalRecebido).toBe(12000 * 432);
 
       // Validações de sustentabilidade
-      expect(resultado.sustentabilidade.rendimentoMensalPuro).toBeCloseTo(
-        10608.63,
-        1,
-      );
       expect(resultado.sustentabilidade.cenarios.length).toBeGreaterThan(0);
     });
 
@@ -296,9 +292,6 @@ describe('AposentadoriaService', () => {
       const resultado = await service.simular(dto);
 
       expect(resultado.sustentabilidade.cenarios).toEqual([]);
-      expect(resultado.sustentabilidade.rendimentoMensalPuro).toBeGreaterThan(
-        0,
-      );
     });
 
     it('deve identificar saques sustentáveis vs que consomem principal', async () => {

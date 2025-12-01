@@ -37,10 +37,7 @@ export function UsufrutoChart({ data }: UsufrutoChartProps) {
   const anoEsgotamento = saldoEsgotado ? ultimoDado.ano : null;
   const idadeEsgotamento = saldoEsgotado ? ultimoDado.idade : null;
 
-  // Verifica se e sustentavel (nao consome o principal)
-  const rendimentoMensalPuro = data.sustentabilidade.rendimentoMensalPuro;
   const rendaMensal = data.usufruto.rendaMensal;
-  const isSustentavel = rendaMensal <= rendimentoMensalPuro;
 
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
@@ -92,49 +89,32 @@ export function UsufrutoChart({ data }: UsufrutoChartProps) {
       <CardContent>
         {/* Status da sustentabilidade */}
         <div className="mb-6 space-y-3">
-          {isSustentavel ? (
+          {!saldoEsgotado ? (
             <div className="flex items-start gap-3 p-4 bg-green-50 border border-green-200 rounded-lg">
               <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5" />
               <div>
                 <p className="font-semibold text-green-900">
-                  Aposentadoria Sustentavel
+                  Patrimônio Preservado
                 </p>
                 <p className="text-sm text-green-700 mt-1">
-                  A renda mensal de {formatarValorGrafico(rendaMensal)} esta
-                  dentro do rendimento puro de{" "}
-                  {formatarValorGrafico(rendimentoMensalPuro)}. Seu patrimonio
-                  nao sera consumido e pode durar indefinidamente.
-                </p>
-              </div>
-            </div>
-          ) : saldoEsgotado ? (
-            <div className="flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-lg">
-              <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5" />
-              <div>
-                <p className="font-semibold text-red-900">
-                  Patrimonio se Esgotara
-                </p>
-                <p className="text-sm text-red-700 mt-1">
-                  Com a renda mensal de {formatarValorGrafico(rendaMensal)}, seu
-                  patrimonio se esgotara em aproximadamente{" "}
-                  <strong>{anoEsgotamento} anos</strong>, quando voce tiver{" "}
-                  <strong>{idadeEsgotamento} anos</strong>.
+                  Com a renda mensal de {formatarValorGrafico(rendaMensal)},
+                  seu patrimônio será preservado durante todo o período de aposentadoria
+                  projetado até os {data.parametros.expectativaVida} anos.
                 </p>
               </div>
             </div>
           ) : (
-            <div className="flex items-start gap-3 p-4 bg-orange-50 border border-orange-200 rounded-lg">
-              <AlertTriangle className="h-5 w-5 text-orange-600 mt-0.5" />
+            <div className="flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5" />
               <div>
-                <p className="font-semibold text-orange-900">
-                  Consumindo o Principal
+                <p className="font-semibold text-red-900">
+                  Patrimônio se Esgotará
                 </p>
-                <p className="text-sm text-orange-700 mt-1">
-                  A renda mensal de {formatarValorGrafico(rendaMensal)} excede o
-                  rendimento puro de{" "}
-                  {formatarValorGrafico(rendimentoMensalPuro)}. Voce esta
-                  consumindo o principal. O grafico mostra ate{" "}
-                  {chartData.length - 1} anos de projecao.
+                <p className="text-sm text-red-700 mt-1">
+                  Com a renda mensal de {formatarValorGrafico(rendaMensal)}, seu
+                  patrimônio se esgotará em aproximadamente{" "}
+                  <strong>{anoEsgotamento} anos</strong>, quando você tiver{" "}
+                  <strong>{idadeEsgotamento} anos</strong>.
                 </p>
               </div>
             </div>
@@ -148,9 +128,6 @@ export function UsufrutoChart({ data }: UsufrutoChartProps) {
             </Badge>
             <Badge variant="outline" className="bg-green-50">
               Renda mensal: {formatarValorGrafico(rendaMensal)}
-            </Badge>
-            <Badge variant="outline" className="bg-purple-50">
-              Rendimento puro: {formatarValorGrafico(rendimentoMensalPuro)}
             </Badge>
           </div>
         </div>

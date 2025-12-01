@@ -51,7 +51,6 @@ export interface CenarioSaque {
 }
 
 export interface Sustentabilidade {
-  rendimentoMensalPuro: number;
   cenarios: CenarioSaque[];
 }
 

@@ -76,7 +76,6 @@ export const CenarioSaqueSchema = z.object({
 });
 
 export const SustentabilidadeSchema = z.object({
-    rendimentoMensalPuro: z.number(),
     cenarios: z.array(CenarioSaqueSchema),
 });
 
