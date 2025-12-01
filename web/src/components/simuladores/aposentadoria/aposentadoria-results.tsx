@@ -18,47 +18,7 @@ export function AposentadoriaResults({ data }: AposentadoriaResultsProps) {
 
     return (
         <div className="space-y-6">
-            <Card className="border-blue-200 bg-blue-50">
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <Target className="h-5 w-5 text-blue-600" />
-                        Resumo do Seu Planejamento
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div>
-                            <p className="text-sm text-gray-600">Total Investido</p>
-                            <p className="text-2xl font-bold text-gray-900">
-                                {formatCurrency(resumo.totalInvestido)}
-                            </p>
-                        </div>
-                        <div>
-                            <p className="text-sm text-gray-600">Total a Receber</p>
-                            <p className="text-2xl font-bold text-green-600">
-                                {formatCurrency(resumo.totalRecebido)}
-                            </p>
-                        </div>
-                        <div>
-                            <p className="text-sm text-gray-600">Ganho Patrimonial</p>
-                            <p className="text-2xl font-bold text-blue-600">
-                                {formatCurrency(resumo.saldoPatrimonial)}
-                            </p>
-                            <p className="text-xs text-gray-500 mt-1">
-                                {((resumo.saldoPatrimonial / resumo.totalInvestido) * 100).toFixed(1)}% de retorno
-                            </p>
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
-
-            {/* Graficos principais */}
-            <div className="grid grid-cols-1 gap-6">
-                <AcumulacaoChart data={data} />
-                <UsufrutoChart data={data} />
-            </div>
-
-            {/* Detalhes em abas */}
+            {/* Detalhes em abas - PRIMEIRO ITEM */}
             <Tabs defaultValue="acumulacao" className="w-full">
                 <TabsList className="grid w-full grid-cols-3">
                     <TabsTrigger value="acumulacao">Acumulacao</TabsTrigger>
@@ -177,6 +137,47 @@ export function AposentadoriaResults({ data }: AposentadoriaResultsProps) {
                     </Card>
                 </TabsContent>
             </Tabs>
+
+            {/* Resumo do Seu Planejamento */}
+            <Card className="border-blue-200 bg-blue-50">
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                        <Target className="h-5 w-5 text-blue-600" />
+                        Resumo do Seu Planejamento
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <p className="text-sm text-gray-600">Total Investido</p>
+                            <p className="text-2xl font-bold text-gray-900">
+                                {formatCurrency(resumo.totalInvestido)}
+                            </p>
+                        </div>
+                        <div>
+                            <p className="text-sm text-gray-600">Total a Receber</p>
+                            <p className="text-2xl font-bold text-green-600">
+                                {formatCurrency(resumo.totalRecebido)}
+                            </p>
+                        </div>
+                        <div>
+                            <p className="text-sm text-gray-600">Ganho Patrimonial</p>
+                            <p className="text-2xl font-bold text-blue-600">
+                                {formatCurrency(resumo.saldoPatrimonial)}
+                            </p>
+                            <p className="text-xs text-gray-500 mt-1">
+                                {((resumo.saldoPatrimonial / resumo.totalInvestido) * 100).toFixed(1)}% de retorno
+                            </p>
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
+
+            {/* Graficos principais */}
+            <div className="grid grid-cols-1 gap-6">
+                <AcumulacaoChart data={data} />
+                <UsufrutoChart data={data} />
+            </div>
         </div>
     );
 }

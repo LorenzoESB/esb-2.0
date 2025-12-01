@@ -107,7 +107,7 @@ export class AposentadoriaService {
           acumulacao.valorTotalAcumulado,
           usufruto.rendaMensal,
         )
-      : this.calcularSustentabilidadeSimples(acumulacao.valorTotalAcumulado);
+      : this.calcularSustentabilidadeSimples();
 
     // Calcular resumo
     const resumo = this.calcularResumo(
@@ -269,9 +269,7 @@ export class AposentadoriaService {
   /**
    * Calcula sustentabilidade simples (sem cenários detalhados).
    */
-  private calcularSustentabilidadeSimples(
-    patrimonio: number,
-  ): SustentabilidadeDto {
+  private calcularSustentabilidadeSimples(): SustentabilidadeDto {
     return {
       cenarios: [],
     };
