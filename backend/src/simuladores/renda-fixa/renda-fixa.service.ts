@@ -22,7 +22,6 @@ import {
   RendaFixaApiClient,
   OfertaInvestimento,
   OfertaTesouro,
-  INVESTMENT_TYPE_MAP,
   API_TO_SYSTEM_MAP,
 } from './clients/renda-fixa-api.client';
 
@@ -365,12 +364,12 @@ export class RendaFixaService {
       totalInvestido > 0 ? (rendimentoLiquido / totalInvestido) * 100 : 0;
 
     // Calcular percentual de rendimento mensal médio (taxa efetiva mensal)
-    // Fórmula: ((1 + rendimentoTotal) ^ (1/meses)) - 1) * 100
+    // Fórmula LEGACY: rlm = ((rlp/100 + 1)^(1/prazoMeses) - 1) * 100
+    // Onde rlp = percentualRendimento (ex: 45 para 45%)
     let percentualRendimentoMensal = 0;
-    if (totalInvestido > 0 && prazoMeses > 0) {
-      const rendimentoTotal = rendimentoLiquido / totalInvestido; // ex: 0.45 = 45%
+    if (totalInvestido > 0 && prazoMeses > 0 && percentualRendimento !== 0) {
       percentualRendimentoMensal =
-        (Math.pow(1 + rendimentoTotal, 1 / prazoMeses) - 1) * 100;
+        (Math.pow(percentualRendimento / 100 + 1, 1 / prazoMeses) - 1) * 100;
     }
 
     return {
