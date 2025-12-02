@@ -142,7 +142,7 @@ export function RendaFixaResults({ data }: RendaFixaResultsProps) {
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-600">Rendimento</p>
+                    <p className="text-xs text-gray-600">Rendimento Total</p>
                     <p className="text-lg font-bold text-green-600">
                       {formatCurrency(investimento.dados.rendimentoLiquido)}
                     </p>
@@ -151,20 +151,29 @@ export function RendaFixaResults({ data }: RendaFixaResultsProps) {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-xs text-gray-600">% Rendimento</p>
+                    <p className="text-xs text-gray-600">% Total no Período</p>
                     <p className="text-md font-semibold">
                       {formatPercentage(investimento.dados.percentualRendimento)}
                     </p>
                   </div>
-                  {investimento.dados.imposto > 0 && (
+                  <div>
+                    <p className="text-xs text-gray-600">% Mensal Médio</p>
+                    <p className="text-md font-semibold text-blue-600">
+                      {formatPercentage(investimento.dados.percentualRendimentoMensal)}
+                    </p>
+                  </div>
+                </div>
+
+                {investimento.dados.imposto > 0 && (
+                  <div className="grid grid-cols-2 gap-4">
                     <div>
                       <p className="text-xs text-gray-600">IR Retido</p>
                       <p className="text-md font-semibold text-red-600">
                         {formatCurrency(investimento.dados.imposto)}
                       </p>
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
           );
@@ -196,10 +205,10 @@ export function RendaFixaResults({ data }: RendaFixaResultsProps) {
       )}
 
       {/* Ofertas Detalhadas */}
-      {showDetailedOptions && data.ofertasDetalhadas && (
+      {showDetailedOptions && data.ofertasDetalhadas && data.tipoOfertasDetalhadas && (
         <RendaFixaDetailedOptions
           ofertas={data.ofertasDetalhadas}
-          melhorInvestimento={data.melhorInvestimento}
+          tipoOfertas={data.tipoOfertasDetalhadas}
         />
       )}
 

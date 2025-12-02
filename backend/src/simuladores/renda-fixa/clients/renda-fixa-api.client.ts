@@ -48,10 +48,30 @@ export interface RendaFixaApiResponse {
     POUP?: any;
     CDI?: number;
     cdi?: number;
-    melhor_titulo: string;
+    melhor_titulo: string; // 'CDB' | 'LCI' | 'SELIC' | 'POUP'
     listamelhortitulo: OfertaInvestimento[] | OfertaTesouro[];
   };
 }
+
+/**
+ * Mapeamento entre nomes dos investimentos no sistema e nomes da API
+ */
+export const INVESTMENT_TYPE_MAP: Record<string, string> = {
+  Poupança: 'POUP',
+  'Tesouro Direto': 'SELIC',
+  LCI: 'LCI',
+  CDB: 'CDB',
+};
+
+/**
+ * Mapeamento reverso: da API para o sistema
+ */
+export const API_TO_SYSTEM_MAP: Record<string, string> = {
+  POUP: 'Poupança',
+  SELIC: 'Tesouro Direto',
+  LCI: 'LCI',
+  CDB: 'CDB',
+};
 
 /**
  * Cliente para integração com API externa de ofertas de investimento

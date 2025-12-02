@@ -25,6 +25,7 @@ export const ResultadoModalidadeSchema = z.object({
   imposto: z.number(),
   rendimentoLiquido: z.number(),
   percentualRendimento: z.number(),
+  percentualRendimentoMensal: z.number(),
 });
 
 /**
@@ -64,6 +65,7 @@ export const RendaFixaOutputSchema = z.object({
   ofertasDetalhadas: z
     .union([z.array(InvestimentoOfertaSchema), z.array(OfertaTesouroSchema)])
     .optional(),
+  tipoOfertasDetalhadas: z.string().optional(),
 });
 
 export type RendaFixaInput = z.infer<typeof RendaFixaInputSchema>;

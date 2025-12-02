@@ -24,16 +24,7 @@ import type {
 
 interface RendaFixaDetailedOptionsProps {
   ofertas: InvestimentoOferta[] | OfertaTesouro[];
-  melhorInvestimento: string;
-}
-
-/**
- * Verifica se as ofertas são do tipo CDB/LCI
- */
-function isInvestimentoOferta(
-  oferta: InvestimentoOferta | OfertaTesouro,
-): oferta is InvestimentoOferta {
-  return 'corretora' in oferta;
+  tipoOfertas: string;
 }
 
 /**
@@ -42,7 +33,7 @@ function isInvestimentoOferta(
  */
 export function RendaFixaDetailedOptions({
   ofertas,
-  melhorInvestimento,
+  tipoOfertas,
 }: RendaFixaDetailedOptionsProps) {
   if (!ofertas || ofertas.length === 0) {
     return (
@@ -58,25 +49,24 @@ export function RendaFixaDetailedOptions({
   }
 
   const isTesouro =
-    melhorInvestimento === 'Tesouro Direto' ||
-    melhorInvestimento === 'SELIC';
+    tipoOfertas === 'Tesouro Direto' ||
+    tipoOfertas === 'SELIC';
 
   return (
     <Card className="mt-6">
       <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-green-600" />
-              Ofertas Detalhadas - {melhorInvestimento}
-            </CardTitle>
-            <CardDescription>
-              {ofertas.length} {ofertas.length === 1 ? 'oferta disponível' : 'ofertas disponíveis'} no mercado
-            </CardDescription>
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp className="h-5 w-5 text-green-600" />
+                Ofertas Detalhadas - {tipoOfertas}
+              </CardTitle>
+              <CardDescription>
+                {ofertas.length} {ofertas.length === 1 ? 'oferta disponível' : 'ofertas disponíveis'} no mercado
+              </CardDescription>
+            </div>
           </div>
-          <Badge variant="outline" className="text-xs">
-            Dados fornecidos por App Renda Fixa
-          </Badge>
         </div>
       </CardHeader>
       <CardContent>

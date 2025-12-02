@@ -12,7 +12,7 @@ export class ResultadoModalidadeDto {
   taxa: number;
 
   @ApiProperty({
-    description: 'Valor final após rendimento',
+    description: 'Valor final após rendimento (montante líquido final)',
     example: 15000.5,
   })
   resultado: number;
@@ -30,10 +30,16 @@ export class ResultadoModalidadeDto {
   rendimentoLiquido: number;
 
   @ApiProperty({
-    description: 'Percentual de rendimento sobre o investido',
+    description: 'Percentual de rendimento total sobre o período completo',
     example: 45.0,
   })
   percentualRendimento: number;
+
+  @ApiProperty({
+    description: 'Percentual de rendimento mensal médio (taxa efetiva mensal)',
+    example: 1.85,
+  })
+  percentualRendimentoMensal: number;
 }
 
 export class ResultadoRendaFixaDto {
@@ -113,4 +119,11 @@ export class ResultadoRendaFixaDto {
     ],
   })
   ofertasDetalhadas?: InvestimentoOfertaDto[] | OfertaTesouroDto[];
+
+  @ApiPropertyOptional({
+    description:
+      'Tipo de investimento das ofertas detalhadas (pode diferir do melhorInvestimento se a API externa calculou diferente)',
+    example: 'LCI',
+  })
+  tipoOfertasDetalhadas?: string;
 }
