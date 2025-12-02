@@ -15,6 +15,7 @@ enum SimulatorType {
   EMPRESTIMO
   INVESTIMENTOS
   JUROS_COMPOSTOS
+  RENDA_FIXA
 }
 
 model Simulation {

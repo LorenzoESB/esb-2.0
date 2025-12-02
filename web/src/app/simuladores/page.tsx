@@ -79,10 +79,10 @@ const simulators = [
         features: ["Múltiplas Modalidades", "Comparativo", "Cronograma", "Economia"],
     },
     {
-        title: "Simulador de Investimentos",
+        title: "Simulador de Investimentos em Renda Fixa",
         description: "Simule investimentos em renda fixa",
         icon: TrendingUp,
-        href: "/simuladores/investimentos",
+        href: "/simuladores/renda-fixa",
         status: "Disponível",
         color: "bg-green-50 text-green-600 border-green-200",
         features: ["Renda Fixa", "Tributação", "Comparativo", "Rentabilidade"],

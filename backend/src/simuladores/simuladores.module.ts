@@ -5,6 +5,7 @@ import { CombustivelModule } from './combustivel/combustivel.module';
 import { EmprestimoModule } from './emprestimo/emprestimo.module';
 import { InvestimentosModule } from './investimentos/investimentos.module';
 import { JurosCompostosModule } from './juros-composts/juros-compostos.module';
+import { RendaFixaModule } from './renda-fixa/renda-fixa.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { JurosCompostosModule } from './juros-composts/juros-compostos.module';
     EmprestimoModule,
     InvestimentosModule,
     JurosCompostosModule,
+    RendaFixaModule,
   ],
   controllers: [],
   providers: [],
