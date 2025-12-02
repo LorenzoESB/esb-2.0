@@ -27,7 +27,8 @@ export class AmortizacaoService {
     try {
       const simulationData = {
         simulatorType: SimulatorType.AMORTIZACAO,
-        email: null,
+        email: input.email,
+        nome: input.nome,
         inputData: JSON.parse(JSON.stringify(input)),
         outputData: JSON.parse(JSON.stringify(output)),
       };

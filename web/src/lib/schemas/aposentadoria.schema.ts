@@ -15,7 +15,8 @@ export const SimularAposentadoriaInputSchema = z.object({
     rendaMensalDesejada: z.number().min(0.01, 'Renda mensal desejada deve ser maior que zero').optional(),
     contribuicaoMensal: z.number().min(0.01, 'Contribuição mensal deve ser maior que zero').optional(),
     incluirCenariosSaque: z.boolean().optional().default(true),
-    email: z.string().email('Email inválido').optional().or(z.literal('')),
+    nome: z.string().min(1, 'Nome é obrigatório'),
+    email: z.string().email('Email inválido'),
 }).refine(
     (data) => {
         if (data.modoCalculo === ModoCalculoAposentadoria.RECEBER) {

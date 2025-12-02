@@ -4,13 +4,24 @@ import {
   JurosCompostosInputDto,
   TempoAplicacaoUnidade,
 } from '../dto/juros-compostos-input.dto';
+import { PrismaService } from '../../../prisma/prisma.service';
 
 describe('JurosCompostosService', () => {
   let service: JurosCompostosService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [JurosCompostosService],
+      providers: [
+        JurosCompostosService,
+        {
+          provide: PrismaService,
+          useValue: {
+            simulation: {
+              create: jest.fn().mockResolvedValue({}),
+            },
+          },
+        },
+      ],
     }).compile();
 
     service = module.get<JurosCompostosService>(JurosCompostosService);
@@ -23,6 +34,8 @@ describe('JurosCompostosService', () => {
   describe('calculaJurosCompostos', () => {
     it('should calculate compound interest correctly for the standard example', async () => {
       const input: JurosCompostosInputDto = {
+        nome: 'João da Silva',
+        email: 'joao@exemplo.com',
         valorInicial: 10000,
         aporteMensal: 500,
         tempoAplicacao: 3,
@@ -40,6 +53,8 @@ describe('JurosCompostosService', () => {
 
     it('should calculate correctly for monthly period', async () => {
       const input: JurosCompostosInputDto = {
+        nome: 'João da Silva',
+        email: 'joao@exemplo.com',
         valorInicial: 5000,
         aporteMensal: 300,
         tempoAplicacao: 12,
@@ -56,6 +71,8 @@ describe('JurosCompostosService', () => {
 
     it('should calculate correctly without monthly contributions', async () => {
       const input: JurosCompostosInputDto = {
+        nome: 'João da Silva',
+        email: 'joao@exemplo.com',
         valorInicial: 10000,
         aporteMensal: 0,
         tempoAplicacao: 2,
@@ -72,6 +89,8 @@ describe('JurosCompostosService', () => {
 
     it('should have increasing evolution month by month', async () => {
       const input: JurosCompostosInputDto = {
+        nome: 'João da Silva',
+        email: 'joao@exemplo.com',
         valorInicial: 1000,
         aporteMensal: 100,
         tempoAplicacao: 6,
@@ -93,6 +112,8 @@ describe('JurosCompostosService', () => {
 
     it('should work with zero interest rate', async () => {
       const input: JurosCompostosInputDto = {
+        nome: 'João da Silva',
+        email: 'joao@exemplo.com',
         valorInicial: 1000,
         aporteMensal: 100,
         tempoAplicacao: 6,
@@ -108,6 +129,8 @@ describe('JurosCompostosService', () => {
 
     it('should maintain consistency between summary and monthly details', async () => {
       const input: JurosCompostosInputDto = {
+        nome: 'João da Silva',
+        email: 'joao@exemplo.com',
         valorInicial: 2000,
         aporteMensal: 300,
         tempoAplicacao: 6,
@@ -137,6 +160,8 @@ describe('JurosCompostosService', () => {
       const start = performance.now();
 
       const input: JurosCompostosInputDto = {
+        nome: 'João da Silva',
+        email: 'joao@exemplo.com',
         valorInicial: 10000,
         aporteMensal: 500,
         tempoAplicacao: 10,
@@ -155,6 +180,8 @@ describe('JurosCompostosService', () => {
 
     it('should maintain precision with decimal values', async () => {
       const input: JurosCompostosInputDto = {
+        nome: 'João da Silva',
+        email: 'joao@exemplo.com',
         valorInicial: 1234.56,
         aporteMensal: 123.45,
         tempoAplicacao: 6,

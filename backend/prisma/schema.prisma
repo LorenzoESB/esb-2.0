@@ -21,7 +21,8 @@ model Simulation {
   id            Int           @id @default(autoincrement())
   createdAt     DateTime      @default(now())
   simulatorType SimulatorType
-  email         String?
+  nome          String
+  email         String
   inputData     Json
   outputData    Json
 

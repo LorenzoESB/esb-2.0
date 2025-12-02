@@ -87,6 +87,7 @@ export class CombustivelService {
           inputData: JSON.parse(JSON.stringify(input)),
           outputData: JSON.parse(JSON.stringify(output)),
           email: input.email,
+          nome: input.nome,
         },
       });
 

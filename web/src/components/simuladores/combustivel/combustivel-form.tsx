@@ -21,7 +21,8 @@ export function CombustivelForm({ onSubmit, isLoading }: CombustivelFormProps) {
             precoEtanol: 3.5,
             consumoGasolina: 10,
             consumoEtanol: 7,
-            distanciaMensal: 1000,
+            nome: '',
+            email: '',
         },
     });
 
@@ -43,6 +44,45 @@ export function CombustivelForm({ onSubmit, isLoading }: CombustivelFormProps) {
             <CardContent>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+                        {/* Dados Pessoais */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <FormField
+                                control={form.control}
+                                name="nome"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Nome Completo</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                type="text"
+                                                placeholder="Seu nome completo"
+                                                {...field}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                control={form.control}
+                                name="email"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>E-mail</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                type="email"
+                                                placeholder="seu@email.com"
+                                                {...field}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <FormField
                                 control={form.control}

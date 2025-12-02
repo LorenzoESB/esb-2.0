@@ -5,6 +5,8 @@ export const CombustivelInputSchema = z.object({
     precoEtanol: z.number().min(0).optional(),
     consumoGasolina: z.number().min(0).optional(),
     consumoEtanol: z.number().min(0).optional(),
+    nome: z.string().min(1, 'Nome é obrigatório'),
+    email: z.string().email('Email inválido'),
 });
 
 export const CombustivelOutputSchema = z.object({

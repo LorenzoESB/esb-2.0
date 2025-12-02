@@ -41,6 +41,8 @@ describe('JurosCompostosController', () => {
   describe('calculaJurosCompostos', () => {
     it('should call service and return formatted response', async () => {
       const input: JurosCompostosInputDto = {
+        nome: 'João da Silva',
+        email: 'joao@exemplo.com',
         valorInicial: 10000,
         aporteMensal: 500,
         tempoAplicacao: 3,
@@ -70,6 +72,8 @@ describe('JurosCompostosController', () => {
 
     it('should handle service errors', async () => {
       const input: JurosCompostosInputDto = {
+        nome: 'João da Silva',
+        email: 'joao@exemplo.com',
         valorInicial: 10000,
         aporteMensal: 500,
         tempoAplicacao: 3,

@@ -393,7 +393,8 @@ export class AposentadoriaService {
           simulatorType: SimulatorType.APOSENTADORIA,
           inputData: JSON.parse(JSON.stringify(input)),
           outputData: JSON.parse(JSON.stringify(output)),
-          email: null,
+          nome: input.nome,
+          email: input.email,
         },
       });
 

@@ -6,6 +6,8 @@ import {
   IsOptional,
   ValidateNested,
   IsArray,
+  IsString,
+  IsEmail,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
@@ -32,6 +34,22 @@ export class AmortizacaoExtraordinariaDto {
 }
 
 export class AmortizacaoInputDto {
+  @ApiProperty({
+    description: 'Nome completo do usuário',
+    example: 'João da Silva',
+  })
+  @IsString({ message: 'Nome deve ser uma string' })
+  @IsNotEmpty({ message: 'Nome é obrigatório' })
+  nome: string;
+
+  @ApiProperty({
+    description: 'E-mail do usuário',
+    example: 'joao@exemplo.com',
+  })
+  @IsEmail({}, { message: 'E-mail inválido' })
+  @IsNotEmpty({ message: 'E-mail é obrigatório' })
+  email: string;
+
   @ApiProperty({
     description: 'Original loan amount',
     example: 128000,

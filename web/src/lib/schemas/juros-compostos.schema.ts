@@ -21,7 +21,8 @@ export const JurosCompostosInputSchema = z.object({
         .min(0, 'Taxa de juros deve ser maior ou igual a zero')
         .max(100, 'Taxa de juros deve ser menor ou igual a 100')
         .transform((val) => Number(val)),
-    email: z.string().email('Email inválido').optional().or(z.literal('')),
+    nome: z.string().min(1, 'Nome é obrigatório'),
+    email: z.string().email('Email inválido'),
 });
 
 export const JurosCompostosMensalSchema = z.object({

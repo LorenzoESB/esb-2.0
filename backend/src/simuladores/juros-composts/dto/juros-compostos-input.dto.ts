@@ -1,4 +1,4 @@
-import { IsNumber, IsEnum, IsNotEmpty, Min, IsOptional } from 'class-validator';
+import { IsNumber, IsEnum, IsNotEmpty, Min, IsOptional, IsString, IsEmail } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
@@ -8,6 +8,22 @@ export enum TempoAplicacaoUnidade {
 }
 
 export class JurosCompostosInputDto {
+  @ApiProperty({
+    description: 'Nome completo do usuário',
+    example: 'João da Silva',
+  })
+  @IsString({ message: 'Nome deve ser uma string' })
+  @IsNotEmpty({ message: 'Nome é obrigatório' })
+  nome: string;
+
+  @ApiProperty({
+    description: 'E-mail do usuário',
+    example: 'joao@exemplo.com',
+  })
+  @IsEmail({}, { message: 'E-mail inválido' })
+  @IsNotEmpty({ message: 'E-mail é obrigatório' })
+  email: string;
+
   @ApiProperty({
     description: 'Initial investment amount',
     example: 10000,
@@ -60,11 +76,4 @@ export class JurosCompostosInputDto {
   @Min(0)
   @Type(() => Number)
   taxaJuros: number;
-
-  @ApiPropertyOptional({
-    description: 'User email (optional)',
-    example: 'user@example.com',
-  })
-  @IsOptional()
-  email?: string;
 }

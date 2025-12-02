@@ -52,6 +52,8 @@ describe('AposentadoriaService', () => {
   describe('simular - Modo RECEBER', () => {
     it('deve calcular contribuição necessária para renda desejada de R$ 12.000', async () => {
       const dto: SimularAposentadoriaDto = {
+        nome: 'João da Silva',
+        email: 'joao@exemplo.com',
         modoCalculo: ModoCalculoAposentadoria.RECEBER,
         idadeAtual: 28,
         idadeAposentadoria: 50,
@@ -96,6 +98,8 @@ describe('AposentadoriaService', () => {
 
     it('deve calcular corretamente sem reserva inicial', async () => {
       const dto: SimularAposentadoriaDto = {
+        nome: 'João da Silva',
+        email: 'joao@exemplo.com',
         modoCalculo: ModoCalculoAposentadoria.RECEBER,
         idadeAtual: 24,
         idadeAposentadoria: 50,
@@ -113,6 +117,8 @@ describe('AposentadoriaService', () => {
 
     it('deve calcular renda menor com menos tempo de acumulação', async () => {
       const dto1: SimularAposentadoriaDto = {
+        nome: 'João da Silva',
+        email: 'joao@exemplo.com',
         modoCalculo: ModoCalculoAposentadoria.RECEBER,
         idadeAtual: 40,
         idadeAposentadoria: 50,
@@ -121,6 +127,8 @@ describe('AposentadoriaService', () => {
       };
 
       const dto2: SimularAposentadoriaDto = {
+        nome: 'João da Silva',
+        email: 'joao@exemplo.com',
         modoCalculo: ModoCalculoAposentadoria.RECEBER,
         idadeAtual: 25,
         idadeAposentadoria: 50,
@@ -141,6 +149,8 @@ describe('AposentadoriaService', () => {
   describe('simular - Modo CONTRIBUIR', () => {
     it('deve calcular renda futura com contribuição de R$ 2.000/mês', async () => {
       const dto: SimularAposentadoriaDto = {
+        nome: 'João da Silva',
+        email: 'joao@exemplo.com',
         modoCalculo: ModoCalculoAposentadoria.CONTRIBUIR,
         idadeAtual: 30,
         idadeAposentadoria: 55,
@@ -170,6 +180,8 @@ describe('AposentadoriaService', () => {
 
     it('deve gerar renda maior com mais tempo de acumulação', async () => {
       const dtoMenosTempo: SimularAposentadoriaDto = {
+        nome: 'João da Silva',
+        email: 'joao@exemplo.com',
         modoCalculo: ModoCalculoAposentadoria.CONTRIBUIR,
         idadeAtual: 45,
         idadeAposentadoria: 55,
@@ -178,6 +190,8 @@ describe('AposentadoriaService', () => {
       };
 
       const dtoMaisTempo: SimularAposentadoriaDto = {
+        nome: 'João da Silva',
+        email: 'joao@exemplo.com',
         modoCalculo: ModoCalculoAposentadoria.CONTRIBUIR,
         idadeAtual: 25,
         idadeAposentadoria: 55,
@@ -201,6 +215,8 @@ describe('AposentadoriaService', () => {
   describe('Validações de negócio', () => {
     it('deve rejeitar idade de aposentadoria menor ou igual à idade atual', async () => {
       const dto: SimularAposentadoriaDto = {
+        nome: 'João da Silva',
+        email: 'joao@exemplo.com',
         modoCalculo: ModoCalculoAposentadoria.RECEBER,
         idadeAtual: 50,
         idadeAposentadoria: 50,
@@ -208,14 +224,16 @@ describe('AposentadoriaService', () => {
         rendaMensalDesejada: 5000,
       };
 
-      expect(() => service.simular(dto)).toThrow(BadRequestException);
-      expect(() => service.simular(dto)).toThrow(
+      await expect(service.simular(dto)).rejects.toThrow(BadRequestException);
+      await expect(service.simular(dto)).rejects.toThrow(
         'Idade de aposentadoria deve ser maior que idade atual',
       );
     });
 
     it('deve rejeitar idade de aposentadoria maior que expectativa de vida', async () => {
       const dto: SimularAposentadoriaDto = {
+        nome: 'João da Silva',
+        email: 'joao@exemplo.com',
         modoCalculo: ModoCalculoAposentadoria.RECEBER,
         idadeAtual: 30,
         idadeAposentadoria: 90,
@@ -223,12 +241,14 @@ describe('AposentadoriaService', () => {
         rendaMensalDesejada: 5000,
       };
 
-      expect(() => service.simular(dto)).toThrow(BadRequestException);
-      expect(() => service.simular(dto)).toThrow(/expectativa de vida/);
+      await expect(service.simular(dto)).rejects.toThrow(BadRequestException);
+      await expect(service.simular(dto)).rejects.toThrow(/expectativa de vida/);
     });
 
     it('deve rejeitar modo RECEBER sem renda desejada', async () => {
       const dto: SimularAposentadoriaDto = {
+        nome: 'João da Silva',
+        email: 'joao@exemplo.com',
         modoCalculo: ModoCalculoAposentadoria.RECEBER,
         idadeAtual: 30,
         idadeAposentadoria: 55,
@@ -236,12 +256,14 @@ describe('AposentadoriaService', () => {
         // rendaMensalDesejada: undefined
       };
 
-      expect(() => service.simular(dto)).toThrow(BadRequestException);
-      expect(() => service.simular(dto)).toThrow(/Renda mensal desejada/);
+      await expect(service.simular(dto)).rejects.toThrow(BadRequestException);
+      await expect(service.simular(dto)).rejects.toThrow(/Renda mensal desejada/);
     });
 
     it('deve rejeitar modo CONTRIBUIR sem contribuição mensal', async () => {
       const dto: SimularAposentadoriaDto = {
+        nome: 'João da Silva',
+        email: 'joao@exemplo.com',
         modoCalculo: ModoCalculoAposentadoria.CONTRIBUIR,
         idadeAtual: 30,
         idadeAposentadoria: 55,
@@ -249,14 +271,16 @@ describe('AposentadoriaService', () => {
         // contribuicaoMensal: undefined
       };
 
-      expect(() => service.simular(dto)).toThrow(BadRequestException);
-      expect(() => service.simular(dto)).toThrow(/Contribuição mensal/);
+      await expect(service.simular(dto)).rejects.toThrow(BadRequestException);
+      await expect(service.simular(dto)).rejects.toThrow(/Contribuição mensal/);
     });
   });
 
   describe('Sustentabilidade', () => {
     it('deve gerar cenários de saque quando solicitado', async () => {
       const dto: SimularAposentadoriaDto = {
+        nome: 'João da Silva',
+        email: 'joao@exemplo.com',
         modoCalculo: ModoCalculoAposentadoria.RECEBER,
         idadeAtual: 30,
         idadeAposentadoria: 55,
@@ -281,6 +305,8 @@ describe('AposentadoriaService', () => {
 
     it('não deve gerar cenários quando não solicitado', async () => {
       const dto: SimularAposentadoriaDto = {
+        nome: 'João da Silva',
+        email: 'joao@exemplo.com',
         modoCalculo: ModoCalculoAposentadoria.RECEBER,
         idadeAtual: 30,
         idadeAposentadoria: 55,
@@ -296,6 +322,8 @@ describe('AposentadoriaService', () => {
 
     it('deve identificar saques sustentáveis vs que consomem principal', async () => {
       const dto: SimularAposentadoriaDto = {
+        nome: 'João da Silva',
+        email: 'joao@exemplo.com',
         modoCalculo: ModoCalculoAposentadoria.CONTRIBUIR,
         idadeAtual: 30,
         idadeAposentadoria: 50,
@@ -327,6 +355,8 @@ describe('AposentadoriaService', () => {
   describe('Resumo', () => {
     it('deve calcular resumo executivo corretamente', async () => {
       const dto: SimularAposentadoriaDto = {
+        nome: 'João da Silva',
+        email: 'joao@exemplo.com',
         modoCalculo: ModoCalculoAposentadoria.RECEBER,
         idadeAtual: 30,
         idadeAposentadoria: 50,
@@ -354,6 +384,8 @@ describe('AposentadoriaService', () => {
     it('deve incluir reserva inicial no total investido', async () => {
       const reserva = 50000;
       const dto: SimularAposentadoriaDto = {
+        nome: 'João da Silva',
+        email: 'joao@exemplo.com',
         modoCalculo: ModoCalculoAposentadoria.CONTRIBUIR,
         idadeAtual: 35,
         idadeAposentadoria: 55,
@@ -391,6 +423,14 @@ describe('AposentadoriaService', () => {
             provide: ConfigService,
             useValue: customConfigService,
           },
+          {
+            provide: PrismaService,
+            useValue: {
+              simulation: {
+                create: jest.fn().mockResolvedValue({}),
+              },
+            },
+          },
         ],
       }).compile();
 
@@ -398,6 +438,8 @@ describe('AposentadoriaService', () => {
         module.get<AposentadoriaService>(AposentadoriaService);
 
       const dto: SimularAposentadoriaDto = {
+        nome: 'João da Silva',
+        email: 'joao@exemplo.com',
         modoCalculo: ModoCalculoAposentadoria.RECEBER,
         idadeAtual: 30,
         idadeAposentadoria: 50,

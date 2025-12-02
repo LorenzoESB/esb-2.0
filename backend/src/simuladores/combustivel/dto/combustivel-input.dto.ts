@@ -1,8 +1,24 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { IsNumber, IsOptional, IsString, Min } from "class-validator";
+import { IsNumber, IsOptional, IsString, Min, IsEmail, IsNotEmpty } from "class-validator";
 
 export class CombustivelInputDto {
+    @ApiProperty({
+        description: 'Nome completo do usuário',
+        example: 'João da Silva',
+    })
+    @IsString({ message: 'Nome deve ser uma string' })
+    @IsNotEmpty({ message: 'Nome é obrigatório' })
+    nome: string;
+
+    @ApiProperty({
+        description: 'E-mail do usuário',
+        example: 'joao@exemplo.com',
+    })
+    @IsEmail({}, { message: 'E-mail inválido' })
+    @IsNotEmpty({ message: 'E-mail é obrigatório' })
+    email: string;
+
     @ApiProperty({
         description: 'Price of gasoline per liter',
         example: 5.49,
@@ -35,12 +51,4 @@ export class CombustivelInputDto {
     @Min(0)
     @Type(() => Number)
     consumoEtanol: number;
-
-    @ApiPropertyOptional({
-        description: 'User email (optional)',
-        example: 'user@example.com',
-    })
-    @IsString()
-    @IsOptional()
-    email?: string;
 }

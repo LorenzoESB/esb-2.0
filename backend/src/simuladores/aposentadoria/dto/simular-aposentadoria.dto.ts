@@ -4,6 +4,9 @@ import {
   IsNumber,
   IsOptional,
   IsBoolean,
+  IsString,
+  IsEmail,
+  IsNotEmpty,
   Min,
   Max,
   ValidateIf,
@@ -17,6 +20,22 @@ export enum ModoCalculoAposentadoria {
 }
 
 export class SimularAposentadoriaDto {
+  @ApiProperty({
+    description: 'Nome completo do usuário',
+    example: 'João da Silva',
+  })
+  @IsString({ message: 'Nome deve ser uma string' })
+  @IsNotEmpty({ message: 'Nome é obrigatório' })
+  nome: string;
+
+  @ApiProperty({
+    description: 'E-mail do usuário',
+    example: 'joao@exemplo.com',
+  })
+  @IsEmail({}, { message: 'E-mail inválido' })
+  @IsNotEmpty({ message: 'E-mail é obrigatório' })
+  email: string;
+
   @ApiProperty({
     enum: ModoCalculoAposentadoria,
     description:

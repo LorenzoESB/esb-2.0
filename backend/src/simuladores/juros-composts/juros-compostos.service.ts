@@ -90,7 +90,8 @@ export class JurosCompostosService {
   ): Promise<void> {
     const simulationData = {
       simulatorType: SimulatorType.JUROS_COMPOSTOS,
-      email: input.email || null,
+      email: input.email,
+      nome: input.nome,
       inputData: JSON.parse(JSON.stringify(input)),
       outputData: JSON.parse(JSON.stringify(output)),
     };
