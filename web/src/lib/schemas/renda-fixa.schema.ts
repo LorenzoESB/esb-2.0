@@ -27,6 +27,29 @@ export const ResultadoModalidadeSchema = z.object({
   percentualRendimento: z.number(),
 });
 
+/**
+ * Schema para oferta individual de investimento (CDB/LCI)
+ */
+export const InvestimentoOfertaSchema = z.object({
+  corretora: z.string(),
+  emissor: z.string(),
+  taxa: z.string(),
+  vencimento: z.string(),
+  qtdMinima: z.number(),
+  vl: z.number(),
+});
+
+/**
+ * Schema para oferta de Tesouro Direto/SELIC
+ */
+export const OfertaTesouroSchema = z.object({
+  nom: z.string(),
+  tipo: z.string(),
+  tx: z.number(),
+  data_vencto: z.string(),
+  vlr: z.number(),
+});
+
 export const RendaFixaOutputSchema = z.object({
   poupanca: ResultadoModalidadeSchema,
   tesouroDireto: ResultadoModalidadeSchema,
@@ -38,8 +61,13 @@ export const RendaFixaOutputSchema = z.object({
   taxaSelic: z.number(),
   taxaCdi: z.number(),
   taxaTr: z.number(),
+  ofertasDetalhadas: z
+    .union([z.array(InvestimentoOfertaSchema), z.array(OfertaTesouroSchema)])
+    .optional(),
 });
 
 export type RendaFixaInput = z.infer<typeof RendaFixaInputSchema>;
 export type RendaFixaOutput = z.infer<typeof RendaFixaOutputSchema>;
 export type ResultadoModalidade = z.infer<typeof ResultadoModalidadeSchema>;
+export type InvestimentoOferta = z.infer<typeof InvestimentoOfertaSchema>;
+export type OfertaTesouro = z.infer<typeof OfertaTesouroSchema>;

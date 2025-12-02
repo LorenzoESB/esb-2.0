@@ -1,4 +1,8 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  InvestimentoOfertaDto,
+  OfertaTesouroDto,
+} from './investimento-oferta.dto';
 
 export class ResultadoModalidadeDto {
   @ApiProperty({
@@ -92,4 +96,21 @@ export class ResultadoRendaFixaDto {
     example: 0.001,
   })
   taxaTr: number;
+
+  @ApiPropertyOptional({
+    description:
+      'Lista de ofertas detalhadas de investimento do melhor tipo (CDB/LCI/Tesouro)',
+    type: [InvestimentoOfertaDto],
+    example: [
+      {
+        corretora: 'XP Investimentos',
+        emissor: 'Banco Daycoval',
+        taxa: '115% CDI',
+        vencimento: '2027-12-15',
+        qtdMinima: 1000.0,
+        vl: 12500.5,
+      },
+    ],
+  })
+  ofertasDetalhadas?: InvestimentoOfertaDto[] | OfertaTesouroDto[];
 }

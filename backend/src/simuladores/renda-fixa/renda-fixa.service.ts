@@ -9,11 +9,20 @@ import {
   ResultadoModalidadeDto,
 } from './dto/resultado-renda-fixa.dto';
 import {
+  InvestimentoOfertaDto,
+  OfertaTesouroDto,
+} from './dto/investimento-oferta.dto';
+import {
   calcularInvestimentosRendaFixa,
   InvestimentosRendaFixa,
 } from './calc/renda-fixa.calc';
 import { PrismaService } from '../../prisma/prisma.service';
 import { SimulatorType } from 'generated/prisma';
+import {
+  RendaFixaApiClient,
+  OfertaInvestimento,
+  OfertaTesouro,
+} from './clients/renda-fixa-api.client';
 
 /**
  * Interface para resposta da API do Banco Central
@@ -30,6 +39,7 @@ export class RendaFixaService {
   constructor(
     private readonly httpService: HttpService,
     private readonly prisma: PrismaService,
+    private readonly rendaFixaApiClient: RendaFixaApiClient,
   ) {}
 
   /**
@@ -83,6 +93,22 @@ export class RendaFixaService {
       this.logger.log('Fixed income simulation completed successfully');
       this.logger.debug(`Best investment: ${resultado.melhorInvestimento}`);
 
+      // Buscar ofertas detalhadas da API externa
+      try {
+        const ofertas = await this.buscarOfertasDetalhadas(
+          dto.investimentoInicial,
+          dto.prazoMeses,
+          resultado.melhorInvestimento,
+        );
+        resultado.ofertasDetalhadas = ofertas;
+      } catch (error) {
+        this.logger.warn(
+          'Failed to fetch detailed offers, continuing without them',
+          error.message,
+        );
+        // Continue sem ofertas - não é crítico
+      }
+
       // Salvar simulação no banco
       await this.salvarSimulacao(dto, resultado);
 
@@ -91,6 +117,74 @@ export class RendaFixaService {
       this.logger.error('Error in fixed income simulation', error.stack);
       throw error;
     }
+  }
+
+  /**
+   * Busca ofertas detalhadas de investimento da API externa
+   *
+   * @param investimento - Valor do investimento
+   * @param prazoMeses - Prazo em meses
+   * @param melhorInvestimento - Tipo do melhor investimento
+   * @returns Lista de ofertas formatadas
+   */
+  private async buscarOfertasDetalhadas(
+    investimento: number,
+    prazoMeses: number,
+    melhorInvestimento: string,
+  ): Promise<InvestimentoOfertaDto[] | OfertaTesouroDto[]> {
+    this.logger.debug(
+      `Fetching detailed offers for ${melhorInvestimento}: investimento=${investimento}, prazo=${prazoMeses}`,
+    );
+
+    const apiResponse = await this.rendaFixaApiClient.consultarOfertas(
+      investimento,
+      prazoMeses,
+    );
+
+    if (!this.rendaFixaApiClient.hasValidOffers(apiResponse)) {
+      this.logger.warn('No valid offers returned from API');
+      return [];
+    }
+
+    const ofertas = apiResponse.resultados.listamelhortitulo;
+
+    // Verificar se é oferta de Tesouro/SELIC ou CDB/LCI
+    if (melhorInvestimento === 'Tesouro Direto' || melhorInvestimento === 'SELIC') {
+      return this.transformarOfertasTesouro(ofertas as OfertaTesouro[]);
+    } else {
+      return this.transformarOfertasInvestimento(ofertas as OfertaInvestimento[]);
+    }
+  }
+
+  /**
+   * Transforma ofertas de CDB/LCI para DTO
+   */
+  private transformarOfertasInvestimento(
+    ofertas: OfertaInvestimento[],
+  ): InvestimentoOfertaDto[] {
+    return ofertas.map((oferta) => ({
+      corretora: oferta.corretora,
+      emissor: oferta.emissor,
+      taxa: oferta.taxa,
+      vencimento: oferta.vencimento,
+      qtdMinima: oferta.qtdMinima,
+      vl: oferta.vl,
+    }));
+  }
+
+  /**
+   * Transforma ofertas de Tesouro Direto/SELIC para DTO
+   */
+  private transformarOfertasTesouro(
+    ofertas: OfertaTesouro[],
+  ): OfertaTesouroDto[] {
+    return ofertas.map((oferta) => ({
+      nom: oferta.nom,
+      tipo: oferta.tipo,
+      tx: oferta.tx,
+      data_vencto: oferta.data_vencto,
+      vlr: oferta.vlr,
+    }));
   }
 
   /**

@@ -1,15 +1,19 @@
 'use client';
 
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { RendaFixaOutput } from '@/lib/schemas/renda-fixa.schema';
-import { Trophy, TrendingUp, AlertCircle } from 'lucide-react';
+import { Trophy, TrendingUp, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { RendaFixaDetailedOptions } from './renda-fixa-detailed-options';
 
 interface RendaFixaResultsProps {
   data: RendaFixaOutput;
 }
 
 export function RendaFixaResults({ data }: RendaFixaResultsProps) {
+  const [showDetailedOptions, setShowDetailedOptions] = useState(false);
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
@@ -167,6 +171,38 @@ export function RendaFixaResults({ data }: RendaFixaResultsProps) {
         })}
       </div>
 
+      {/* Botão para Detalhar Opções */}
+      {data.ofertasDetalhadas && data.ofertasDetalhadas.length > 0 && (
+        <div className="flex justify-center">
+          <Button
+            variant="outline"
+            size="lg"
+            onClick={() => setShowDetailedOptions(!showDetailedOptions)}
+            className="w-full md:w-auto"
+          >
+            {showDetailedOptions ? (
+              <>
+                <ChevronUp className="mr-2 h-4 w-4" />
+                Ocultar Ofertas Detalhadas
+              </>
+            ) : (
+              <>
+                <ChevronDown className="mr-2 h-4 w-4" />
+                Ver Ofertas Detalhadas do Mercado
+              </>
+            )}
+          </Button>
+        </div>
+      )}
+
+      {/* Ofertas Detalhadas */}
+      {showDetailedOptions && data.ofertasDetalhadas && (
+        <RendaFixaDetailedOptions
+          ofertas={data.ofertasDetalhadas}
+          melhorInvestimento={data.melhorInvestimento}
+        />
+      )}
+
       {/* Card de Observações */}
       <Card className="bg-blue-50 border-blue-200">
         <CardHeader>
@@ -182,6 +218,9 @@ export function RendaFixaResults({ data }: RendaFixaResultsProps) {
             <li>Tesouro Direto e CDB têm IR regressivo (22,5% a 15%)</li>
             <li>Não consideramos taxas de administração ou custódia</li>
             <li>Simulação considera aportes mensais constantes</li>
+            {data.ofertasDetalhadas && data.ofertasDetalhadas.length > 0 && (
+              <li>Ofertas detalhadas fornecidas por App Renda Fixa em tempo real</li>
+            )}
             <li>Esta é uma simulação educacional, consulte um especialista</li>
           </ul>
         </CardContent>
