@@ -16,6 +16,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 
 import { Calculator, Home } from 'lucide-react';
 import { AmortizacaoSacInput, AmortizacaoSacInputSchema } from '@/lib/schemas/amortizacao.schema';
+import { formatCurrency, parseCurrency, maskCurrency } from '@/lib/utils/input-masks';
 
 
 interface AmortizacaoSacFormProps {
@@ -109,15 +110,16 @@ export function AmortizacaoSacForm({ onSubmit, isLoading }: AmortizacaoSacFormPr
                                 name="saldoDevedorAtual"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Saldo Devedor Atual (R$)</FormLabel>
+                                        <FormLabel>Saldo Devedor Atual</FormLabel>
                                         <FormControl>
                                             <Input
                                                 type="text"
                                                 placeholder="R$ 128.000,00"
-                                                value={(field.value ?? 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                                                value={field.value ? formatCurrency(field.value) : ''}
                                                 onChange={(e) => {
-                                                    const numericValue = e.target.value.replace(/\D/g, '');
-                                                    field.onChange(parseFloat(numericValue) / 100 || 0);
+                                                    const masked = maskCurrency(e.target.value);
+                                                    const numericValue = parseCurrency(masked);
+                                                    field.onChange(numericValue);
                                                 }}
                                             />
                                         </FormControl>
@@ -131,15 +133,16 @@ export function AmortizacaoSacForm({ onSubmit, isLoading }: AmortizacaoSacFormPr
                                 name="amortizacaoExtraordinaria"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Amortização Extraordinária (R$)</FormLabel>
+                                        <FormLabel>Amortização Extraordinária</FormLabel>
                                         <FormControl>
                                             <Input
                                                 type="text"
                                                 placeholder="R$ 22.000,00"
-                                                value={(field.value ?? 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                                                value={field.value ? formatCurrency(field.value) : ''}
                                                 onChange={(e) => {
-                                                    const numericValue = e.target.value.replace(/\D/g, '');
-                                                    field.onChange(parseFloat(numericValue) / 100 || 0);
+                                                    const masked = maskCurrency(e.target.value);
+                                                    const numericValue = parseCurrency(masked);
+                                                    field.onChange(numericValue);
                                                 }}
                                             />
                                         </FormControl>
@@ -153,15 +156,16 @@ export function AmortizacaoSacForm({ onSubmit, isLoading }: AmortizacaoSacFormPr
                                 name="amortizacaoMensalAtual"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Amortização Mensal Atual (R$)</FormLabel>
+                                        <FormLabel>Amortização Mensal Atual</FormLabel>
                                         <FormControl>
                                             <Input
                                                 type="text"
                                                 placeholder="R$ 355,56"
-                                                value={(field.value ?? 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                                                value={field.value ? formatCurrency(field.value) : ''}
                                                 onChange={(e) => {
-                                                    const numericValue = e.target.value.replace(/\D/g, '');
-                                                    field.onChange(parseFloat(numericValue) / 100 || 0);
+                                                    const masked = maskCurrency(e.target.value);
+                                                    const numericValue = parseCurrency(masked);
+                                                    field.onChange(numericValue);
                                                 }}
                                             />
                                         </FormControl>

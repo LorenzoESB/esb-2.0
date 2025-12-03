@@ -23,6 +23,7 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { JurosCompostosInput, JurosCompostosInputSchema } from '@/lib/schemas/juros-compostos.schema';
 import { Calculator, TrendingUp } from 'lucide-react';
+import { formatCurrency, parseCurrency, maskCurrency, formatPercentage, parsePercentage, maskPercentage } from '@/lib/utils/input-masks';
 
 interface JurosCompostosFormProps {
     onSubmit: (data: JurosCompostosInput) => Promise<void>;
@@ -106,15 +107,16 @@ export function JurosCompostosForm({ onSubmit, isLoading }: JurosCompostosFormPr
                                 name="valorInicial"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Valor Inicial (R$)</FormLabel>
+                                        <FormLabel>Valor Inicial</FormLabel>
                                         <FormControl>
                                             <Input
                                                 type="text"
                                                 placeholder="R$ 10.000,00"
-                                                value={field.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                                                value={field.value ? formatCurrency(field.value) : ''}
                                                 onChange={(e) => {
-                                                    const numericValue = e.target.value.replace(/\D/g, '');
-                                                    field.onChange(parseFloat(numericValue) / 100 || 0);
+                                                    const masked = maskCurrency(e.target.value);
+                                                    const numericValue = parseCurrency(masked);
+                                                    field.onChange(numericValue);
                                                 }}
                                             />
                                         </FormControl>
@@ -131,15 +133,16 @@ export function JurosCompostosForm({ onSubmit, isLoading }: JurosCompostosFormPr
                                 name="aporteMensal"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Aporte Mensal (R$)</FormLabel>
+                                        <FormLabel>Aporte Mensal</FormLabel>
                                         <FormControl>
                                             <Input
                                                 type="text"
                                                 placeholder="R$ 500,00"
-                                                value={field.value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                                                value={field.value ? formatCurrency(field.value) : ''}
                                                 onChange={(e) => {
-                                                    const numericValue = e.target.value.replace(/\D/g, '');
-                                                    field.onChange(parseFloat(numericValue) / 100 || 0);
+                                                    const masked = maskCurrency(e.target.value);
+                                                    const numericValue = parseCurrency(masked);
+                                                    field.onChange(numericValue);
                                                 }}
                                             />
                                         </FormControl>
@@ -205,14 +208,17 @@ export function JurosCompostosForm({ onSubmit, isLoading }: JurosCompostosFormPr
                                 name="taxaJuros"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Taxa de Juros Anual (%)</FormLabel>
+                                        <FormLabel>Taxa de Juros Anual</FormLabel>
                                         <FormControl>
                                             <Input
-                                                type="number"
-                                                step="0.1"
-                                                placeholder="11"
-                                                {...field}
-                                                onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                                                type="text"
+                                                placeholder="11%"
+                                                value={field.value ? `${field.value}%` : ''}
+                                                onChange={(e) => {
+                                                    const cleaned = e.target.value.replace(/%/g, '').replace(',', '.');
+                                                    const numericValue = parseFloat(cleaned);
+                                                    field.onChange(isNaN(numericValue) ? 0 : numericValue);
+                                                }}
                                             />
                                         </FormControl>
                                         <FormDescription>

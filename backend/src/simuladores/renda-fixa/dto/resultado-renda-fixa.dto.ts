@@ -36,10 +36,16 @@ export class ResultadoModalidadeDto {
   percentualRendimento: number;
 
   @ApiProperty({
-    description: 'Percentual de rendimento mensal médio (taxa efetiva mensal)',
-    example: 1.85,
+    description: 'Percentual de rendimento mensal (taxa do instrumento)',
+    example: 1.08,
   })
   percentualRendimentoMensal: number;
+
+  @ApiProperty({
+    description: 'Percentual de rendimento anual equivalente (taxa anualizada)',
+    example: 13.62,
+  })
+  percentualRendimentoAnual: number;
 }
 
 export class ResultadoRendaFixaDto {

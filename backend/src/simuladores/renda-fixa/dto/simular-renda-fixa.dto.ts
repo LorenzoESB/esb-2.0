@@ -38,8 +38,8 @@ export class SimularRendaFixaDto {
   investimentoInicial: number;
 
   @ApiPropertyOptional({
-    description: 'Valor do aporte mensal em reais',
-    example: 500,
+    description: 'Valor do aporte mensal em reais (opcional, não utilizado no cálculo)',
+    example: 0,
     minimum: 0,
     default: 0,
   })

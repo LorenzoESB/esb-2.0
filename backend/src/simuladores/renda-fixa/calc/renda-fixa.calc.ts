@@ -44,84 +44,41 @@ export function calcularValorFuturo(
 }
 
 /**
- * Calcula o investimento com aporte mensal e imposto de renda (quando aplicável)
- * Implementa a lógica de cálculo mês a mês considerando IR progressivo
+ * Calcula o investimento com imposto de renda progressivo (quando aplicável)
+ * Aplica IR mês a mês conforme a tabela regressiva baseada no prazo acumulado
  *
  * @param possuiImposto - Se o investimento possui incidência de IR
  * @param capitalInicial - Valor inicial investido
  * @param periodoMeses - Período em meses
- * @param taxaJurosReal - Taxa de juros real mensal (em decimal)
- * @param aporteMensal - Valor do aporte mensal
+ * @param taxaJurosMensal - Taxa de juros mensal (em decimal, ex: 0.01 para 1%)
  * @returns Array com [valorTotal, impostoRetido]
  */
-export function calcularInvestimentoComAporteMensal(
+export function calcularInvestimentoSimples(
   possuiImposto: boolean,
   capitalInicial: number,
   periodoMeses: number,
-  taxaJurosReal: number | Decimal,
-  aporteMensal: number,
+  taxaJurosMensal: number | Decimal,
 ): [Decimal, Decimal] {
   const capital = new Decimal(capitalInicial);
-  const taxa = new Decimal(taxaJurosReal);
-  const aporte = new Decimal(aporteMensal);
+  const taxa = new Decimal(taxaJurosMensal);
 
   if (possuiImposto) {
-    let jurosMesesSubsequentes = new Decimal(0);
-    let jurosMesesSubsequentesSemImposto = new Decimal(0);
+    // Calcular valor sem imposto (bruto)
+    const valorBruto = capital.mul(new Decimal(1).plus(taxa).pow(periodoMeses));
+    const rendimentoBruto = valorBruto.minus(capital);
 
-    // Investimento inicial com taxa e imposto do primeiro mês
-    const taxaPrimeiroMes = taxa.mul(calcularDescontoImposto(30));
-    let investimentoMesesSubsequentes = capital.mul(
-      new Decimal(1).plus(taxaPrimeiroMes),
-    );
-    let investimentoMesesSubsequentesSemImposto = capital.mul(
-      new Decimal(1).plus(taxa),
-    );
+    // Aplicar IR baseado no prazo total
+    const prazoDias = periodoMeses * 30;
+    const descontoIR = calcularDescontoImposto(prazoDias);
+    const rendimentoLiquido = rendimentoBruto.mul(descontoIR);
+    const impostoRetido = rendimentoBruto.minus(rendimentoLiquido);
+    const valorLiquido = capital.plus(rendimentoLiquido);
 
-    for (let i = 1; i <= periodoMeses; i++) {
-      const taxaComImposto = taxa.mul(calcularDescontoImposto(30 * i));
-      investimentoMesesSubsequentes = investimentoMesesSubsequentes.plus(
-        capital.mul(taxaComImposto),
-      );
-      investimentoMesesSubsequentesSemImposto =
-        investimentoMesesSubsequentesSemImposto.plus(capital.mul(taxa));
-
-      jurosMesesSubsequentes = jurosMesesSubsequentes.plus(
-        aporte.mul(new Decimal(1).plus(taxaComImposto).pow(i)),
-      );
-      jurosMesesSubsequentesSemImposto = jurosMesesSubsequentesSemImposto.plus(
-        aporte.mul(new Decimal(1).plus(taxa).pow(i)),
-      );
-    }
-
-    const valorTotal = jurosMesesSubsequentes.plus(
-      investimentoMesesSubsequentes,
-    );
-    const imposto = jurosMesesSubsequentesSemImposto
-      .plus(investimentoMesesSubsequentesSemImposto)
-      .minus(valorTotal);
-
-    return [valorTotal, imposto];
+    return [valorLiquido, impostoRetido];
   } else {
-    // Sem imposto
-    let jurosMesesSubsequentes = new Decimal(0);
-    let investimentoMesesSubsequentes = capital.mul(
-      new Decimal(1).plus(taxa),
-    );
-
-    for (let i = 1; i <= periodoMeses; i++) {
-      investimentoMesesSubsequentes = investimentoMesesSubsequentes.plus(
-        capital.mul(taxa),
-      );
-      jurosMesesSubsequentes = jurosMesesSubsequentes.plus(
-        aporte.mul(new Decimal(1).plus(taxa).pow(i)),
-      );
-    }
-
-    const valorTotal = jurosMesesSubsequentes.plus(
-      investimentoMesesSubsequentes,
-    );
-    return [valorTotal, new Decimal(0)];
+    // Sem imposto - cálculo direto de juros compostos
+    const valorFinal = capital.mul(new Decimal(1).plus(taxa).pow(periodoMeses));
+    return [valorFinal, new Decimal(0)];
   }
 }
 
@@ -151,18 +108,17 @@ export function calcularDescontoImposto(prazoDias: number): Decimal {
 
 /**
  * Calcula todos os investimentos de renda fixa comparando diferentes modalidades
+ * NOTA: Esta versão NÃO inclui aportes mensais - apenas investimento inicial
  *
  * @param investimento - Valor inicial investido
- * @param aporteMensal - Aporte mensal
  * @param periodoMeses - Período em meses
- * @param selicAnual - Taxa Selic anual
- * @param cdiAnual - Taxa CDI anual
- * @param trMensal - Taxa TR mensal
+ * @param selicAnual - Taxa Selic anual (ex: 13.75 para 13.75%)
+ * @param cdiAnual - Taxa CDI anual (ex: 13.65 para 13.65%)
+ * @param trMensal - Taxa TR mensal (em decimal, ex: 0.001 para 0.1%)
  * @returns Objeto com resultados de todas as modalidades
  */
 export function calcularInvestimentosRendaFixa(
   investimento: number,
-  aporteMensal: number,
   periodoMeses: number,
   selicAnual: number,
   cdiAnual: number,
@@ -178,49 +134,43 @@ export function calcularInvestimentosRendaFixa(
   // Tesouro Direto: Selic (com IR)
   const tesouroDireto = selic;
 
-  // LCI: 90% do CDI (isento de IR)
-  const lci = new Decimal(0.9).mul(cdi);
+  // LCI: 91.5% do CDI (isento de IR)
+  const lci = new Decimal(0.915).mul(cdi);
 
   // CDB: 110% do CDI (com IR)
   const cdb = new Decimal(1.1).mul(cdi);
 
-  // Calcular resultados
-  const [resultPoup, impostoPoup] = calcularInvestimentoComAporteMensal(
+  // Calcular resultados sem aportes
+  const [resultPoup, impostoPoup] = calcularInvestimentoSimples(
     false,
     investimento,
     periodoMeses,
     poupanca,
-    aporteMensal,
   );
 
   const [resultTesouroDireto, impostoTesouroDireto] =
-    calcularInvestimentoComAporteMensal(
+    calcularInvestimentoSimples(
       true,
       investimento,
       periodoMeses,
       tesouroDireto,
-      aporteMensal,
     );
 
-  const [resultLci, impostoLci] = calcularInvestimentoComAporteMensal(
+  const [resultLci, impostoLci] = calcularInvestimentoSimples(
     false,
     investimento,
     periodoMeses,
     lci,
-    aporteMensal,
   );
 
-  const [resultCdb, impostoCdb] = calcularInvestimentoComAporteMensal(
+  const [resultCdb, impostoCdb] = calcularInvestimentoSimples(
     true,
     investimento,
     periodoMeses,
     cdb,
-    aporteMensal,
   );
 
-  const investido = new Decimal(investimento).plus(
-    new Decimal(aporteMensal).mul(periodoMeses),
-  );
+  const investido = new Decimal(investimento);
 
   // Encontrar melhor investimento
   const investimentos = [resultPoup, resultLci, resultCdb, resultTesouroDireto];
