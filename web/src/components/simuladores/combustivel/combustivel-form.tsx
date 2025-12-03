@@ -6,6 +6,7 @@ import { CombustivelInput, CombustivelInputSchema } from "@/lib/schemas/combusti
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Fuel, Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { formatCurrency, parseCurrency, maskCurrency } from '@/lib/utils/input-masks';
 
 interface CombustivelFormProps {
     onSubmit: (data: CombustivelInput) => Promise<void>;
@@ -89,15 +90,16 @@ export function CombustivelForm({ onSubmit, isLoading }: CombustivelFormProps) {
                                 name="precoGasolina"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Preço da Gasolina (R$)</FormLabel>
+                                        <FormLabel>Preço da Gasolina</FormLabel>
                                         <FormControl>
                                             <Input
                                                 type="text"
                                                 placeholder="R$ 5,00"
-                                                value={field.value!.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                                                value={field.value ? formatCurrency(field.value) : ''}
                                                 onChange={(e) => {
-                                                    const numericValue = e.target.value.replace(/\D/g, '');
-                                                    field.onChange(parseFloat(numericValue) / 100 || 0);
+                                                    const masked = maskCurrency(e.target.value);
+                                                    const numericValue = parseCurrency(masked);
+                                                    field.onChange(numericValue);
                                                 }}
                                             />
                                         </FormControl>
@@ -114,15 +116,16 @@ export function CombustivelForm({ onSubmit, isLoading }: CombustivelFormProps) {
                                 name="precoEtanol"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Preço do Etanol (R$)</FormLabel>
+                                        <FormLabel>Preço do Etanol</FormLabel>
                                         <FormControl>
                                             <Input
                                                 type="text"
                                                 placeholder="R$ 3,50"
-                                                value={field.value!.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                                                value={field.value ? formatCurrency(field.value) : ''}
                                                 onChange={(e) => {
-                                                    const numericValue = e.target.value.replace(/\D/g, '');
-                                                    field.onChange(parseFloat(numericValue) / 100 || 0);
+                                                    const masked = maskCurrency(e.target.value);
+                                                    const numericValue = parseCurrency(masked);
+                                                    field.onChange(numericValue);
                                                 }}
                                             />
                                         </FormControl>
