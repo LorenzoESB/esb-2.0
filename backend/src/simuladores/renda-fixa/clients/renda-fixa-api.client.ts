@@ -116,7 +116,7 @@ export class RendaFixaApiClient {
         await firstValueFrom(
           this.httpService.post<RendaFixaApiResponse>(this.API_URL, payload, {
             headers: { 'Content-Type': 'application/json' },
-            timeout: 10000, // 10 segundos timeout
+            timeout: 5000, // 5 seconds timeout
           }),
         );
 

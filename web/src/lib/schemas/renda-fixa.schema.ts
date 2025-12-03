@@ -3,18 +3,13 @@ import { z } from 'zod';
 export const RendaFixaInputSchema = z.object({
   investimentoInicial: z
     .number()
-    .min(0, 'Investimento inicial deve ser maior ou igual a zero')
-    .transform((val) => Number(val)),
+    .min(0, 'Investimento inicial deve ser maior ou igual a zero'),
   aporteMensal: z
     .number()
-    .min(0, 'Aporte mensal deve ser maior ou igual a zero')
-    .optional()
-    .default(0)
-    .transform((val) => Number(val)),
+    .min(0, 'Aporte mensal deve ser maior ou igual a zero'),
   prazoMeses: z
     .number()
-    .min(1, 'Prazo deve ser pelo menos 1 mês')
-    .transform((val) => Number(val)),
+    .min(1, 'Prazo deve ser pelo menos 1 mês'),
   nome: z.string().min(1, 'Nome é obrigatório'),
   email: z.string().email('Email inválido'),
 });
@@ -26,6 +21,7 @@ export const ResultadoModalidadeSchema = z.object({
   rendimentoLiquido: z.number(),
   percentualRendimento: z.number(),
   percentualRendimentoMensal: z.number(),
+  percentualRendimentoAnual: z.number(),
 });
 
 /**

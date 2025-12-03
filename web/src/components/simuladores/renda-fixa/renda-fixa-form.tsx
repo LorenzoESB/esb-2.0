@@ -16,6 +16,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { RendaFixaInput, RendaFixaInputSchema } from '@/lib/schemas/renda-fixa.schema';
 import { TrendingUp, DollarSign } from 'lucide-react';
+import { formatCurrency, parseCurrency, maskCurrency } from '@/lib/utils/input-masks';
 
 interface RendaFixaFormProps {
   onSubmit: (data: RendaFixaInput) => Promise<void>;
@@ -27,7 +28,7 @@ export function RendaFixaForm({ onSubmit, isLoading }: RendaFixaFormProps) {
     resolver: zodResolver(RendaFixaInputSchema),
     defaultValues: {
       investimentoInicial: 10000,
-      aporteMensal: 500,
+      aporteMensal: 0,
       prazoMeses: 24,
       nome: '',
       email: '',
@@ -98,18 +99,20 @@ export function RendaFixaForm({ onSubmit, isLoading }: RendaFixaFormProps) {
                 name="investimentoInicial"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Investimento Inicial (R$)</FormLabel>
+                    <FormLabel>Investimento Inicial</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                         <Input
-                          type="number"
-                          step="0.01"
-                          min="0"
+                          type="text"
                           className="pl-10"
-                          placeholder="10000"
-                          {...field}
-                          onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                          placeholder="R$ 10.000,00"
+                          value={field.value ? formatCurrency(field.value) : ''}
+                          onChange={(e) => {
+                            const masked = maskCurrency(e.target.value);
+                            const numericValue = parseCurrency(masked);
+                            field.onChange(numericValue);
+                          }}
                         />
                       </div>
                     </FormControl>
@@ -126,23 +129,25 @@ export function RendaFixaForm({ onSubmit, isLoading }: RendaFixaFormProps) {
                 name="aporteMensal"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Aporte Mensal (R$)</FormLabel>
+                    <FormLabel>Aporte Mensal</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                         <Input
-                          type="number"
-                          step="0.01"
-                          min="0"
+                          type="text"
                           className="pl-10"
-                          placeholder="500"
-                          {...field}
-                          onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                          placeholder="R$ 0,00"
+                          value={field.value ? formatCurrency(field.value) : ''}
+                          onChange={(e) => {
+                            const masked = maskCurrency(e.target.value);
+                            const numericValue = parseCurrency(masked);
+                            field.onChange(numericValue);
+                          }}
                         />
                       </div>
                     </FormControl>
                     <FormDescription>
-                      Valor a investir todo mês (opcional)
+                      Opcional (não usado no cálculo)
                     </FormDescription>
                     <FormMessage />
                   </FormItem>

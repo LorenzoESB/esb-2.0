@@ -5,7 +5,12 @@ import { RendaFixaService } from './renda-fixa.service';
 import { RendaFixaApiClient } from './clients/renda-fixa-api.client';
 
 @Module({
-  imports: [HttpModule],
+  imports: [
+    HttpModule.register({
+      timeout: 5000, // 5 seconds default timeout
+      maxRedirects: 5,
+    }),
+  ],
   controllers: [RendaFixaController],
   providers: [RendaFixaService, RendaFixaApiClient],
   exports: [RendaFixaService],

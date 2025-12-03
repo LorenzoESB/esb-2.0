@@ -71,11 +71,9 @@ export class RendaFixaService {
         `Economic rates: Selic=${selicAnual}%, CDI=${cdiAnual}%, TR=${trMensal}`,
       );
 
-      // Realizar os cálculos
-      const aporteMensal = dto.aporteMensal ?? 0;
+      // Realizar os cálculos (SEM aportes mensais)
       const resultados = calcularInvestimentosRendaFixa(
         dto.investimentoInicial,
-        aporteMensal,
         dto.prazoMeses,
         selicAnual,
         cdiAnual,
@@ -86,7 +84,6 @@ export class RendaFixaService {
       const resultado = this.formatarResultado(
         resultados,
         dto.investimentoInicial,
-        aporteMensal,
         dto.prazoMeses,
         trMensal,
       );
@@ -233,7 +230,9 @@ export class RendaFixaService {
         'https://api.bcb.gov.br/dados/serie/bcdata.sgs.432/dados/ultimos/1?formato=json';
 
       const response: AxiosResponse<BancoCentralApiResponse[]> = await firstValueFrom(
-        this.httpService.get<BancoCentralApiResponse[]>(url),
+        this.httpService.get<BancoCentralApiResponse[]>(url, {
+          timeout: 5000, // 5 seconds timeout
+        }),
       );
       const valorStr = response.data[0]?.valor?.replace(',', '.');
 
@@ -260,7 +259,9 @@ export class RendaFixaService {
         'https://api.bcb.gov.br/dados/serie/bcdata.sgs.12/dados/ultimos/1?formato=json';
 
       const response: AxiosResponse<BancoCentralApiResponse[]> = await firstValueFrom(
-        this.httpService.get<BancoCentralApiResponse[]>(url),
+        this.httpService.get<BancoCentralApiResponse[]>(url, {
+          timeout: 5000, // 5 seconds timeout
+        }),
       );
       const valorStr = response.data[0]?.valor?.replace(',', '.');
 
@@ -291,7 +292,9 @@ export class RendaFixaService {
         'https://api.bcb.gov.br/dados/serie/bcdata.sgs.226/dados/ultimos/1?formato=json';
 
       const response: AxiosResponse<BancoCentralApiResponse[]> = await firstValueFrom(
-        this.httpService.get<BancoCentralApiResponse[]>(url),
+        this.httpService.get<BancoCentralApiResponse[]>(url, {
+          timeout: 5000, // 5 seconds timeout
+        }),
       );
       const valorStr = response.data[0]?.valor?.replace(',', '.');
 
@@ -317,12 +320,10 @@ export class RendaFixaService {
   private formatarResultado(
     calculos: InvestimentosRendaFixa,
     investimentoInicial: number,
-    aporteMensal: number,
     prazoMeses: number,
     trMensal: number,
   ): ResultadoRendaFixaDto {
-    const totalInvestido =
-      investimentoInicial + aporteMensal * prazoMeses;
+    const totalInvestido = investimentoInicial;
 
     return {
       poupanca: this.formatarModalidade(
@@ -363,14 +364,17 @@ export class RendaFixaService {
     const percentualRendimento =
       totalInvestido > 0 ? (rendimentoLiquido / totalInvestido) * 100 : 0;
 
-    // Calcular percentual de rendimento mensal médio (taxa efetiva mensal)
-    // Fórmula LEGACY: rlm = ((rlp/100 + 1)^(1/prazoMeses) - 1) * 100
-    // Onde rlp = percentualRendimento (ex: 45 para 45%)
-    let percentualRendimentoMensal = 0;
-    if (totalInvestido > 0 && prazoMeses > 0 && percentualRendimento !== 0) {
-      percentualRendimentoMensal =
-        (Math.pow(percentualRendimento / 100 + 1, 1 / prazoMeses) - 1) * 100;
-    }
+    // Taxa mensal é a taxa do instrumento já em percentual (não blended average)
+    const percentualRendimentoMensal = this.arredondar(modalidade.taxa.mul(100));
+
+    // Calcular rendimento anual a partir da taxa mensal
+    // Fórmula: ((1 + taxa_mensal)^12 - 1) * 100
+    const taxaMensalDecimal = modalidade.taxa; // já em decimal
+    const percentualRendimentoAnual = new Decimal(1)
+      .plus(taxaMensalDecimal)
+      .pow(12)
+      .minus(1)
+      .mul(100);
 
     return {
       taxa: this.arredondar(modalidade.taxa),
@@ -378,7 +382,8 @@ export class RendaFixaService {
       imposto: this.arredondar(modalidade.imposto),
       rendimentoLiquido: this.arredondar(rendimentoLiquido),
       percentualRendimento: this.arredondar(percentualRendimento),
-      percentualRendimentoMensal: this.arredondar(percentualRendimentoMensal),
+      percentualRendimentoMensal,
+      percentualRendimentoAnual: this.arredondar(percentualRendimentoAnual),
     };
   }
 
