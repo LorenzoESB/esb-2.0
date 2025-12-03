@@ -179,15 +179,16 @@ export function AmortizacaoSacForm({ onSubmit, isLoading }: AmortizacaoSacFormPr
                                 name="valorSeguroMensal"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Valor do Seguro Mensal (R$)</FormLabel>
+                                        <FormLabel>Valor do Seguro Mensal</FormLabel>
                                         <FormControl>
                                             <Input
                                                 type="text"
                                                 placeholder="R$ 40,00"
-                                                value={(field.value ?? 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                                                value={field.value ? formatCurrency(field.value) : ''}
                                                 onChange={(e) => {
-                                                    const numericValue = e.target.value.replace(/\D/g, '');
-                                                    field.onChange(parseFloat(numericValue) / 100 || 0);
+                                                    const masked = maskCurrency(e.target.value);
+                                                    const numericValue = parseCurrency(masked);
+                                                    field.onChange(numericValue);
                                                 }}
                                             />
                                         </FormControl>
@@ -201,15 +202,16 @@ export function AmortizacaoSacForm({ onSubmit, isLoading }: AmortizacaoSacFormPr
                                 name="taxaAdministracaoMensal"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Taxa de Administração Mensal (R$)</FormLabel>
+                                        <FormLabel>Taxa de Administração Mensal</FormLabel>
                                         <FormControl>
                                             <Input
                                                 type="text"
                                                 placeholder="R$ 25,00"
-                                                value={(field.value ?? 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                                                value={field.value ? formatCurrency(field.value) : ''}
                                                 onChange={(e) => {
-                                                    const numericValue = e.target.value.replace(/\D/g, '');
-                                                    field.onChange(parseFloat(numericValue) / 100 || 0);
+                                                    const masked = maskCurrency(e.target.value);
+                                                    const numericValue = parseCurrency(masked);
+                                                    field.onChange(numericValue);
                                                 }}
                                             />
                                         </FormControl>
@@ -242,16 +244,16 @@ export function AmortizacaoSacForm({ onSubmit, isLoading }: AmortizacaoSacFormPr
                                 name="taxaJurosAnual"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Taxa de Juros Anual (%)</FormLabel>
+                                        <FormLabel>Taxa de Juros Anual</FormLabel>
                                         <FormControl>
                                             <Input
                                                 type="text"
-                                                placeholder="9,0 %"
-                                                value={`${new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(field.value ?? 0)} %`}
+                                                placeholder="9%"
+                                                value={field.value ? `${field.value}%` : ''}
                                                 onChange={(e) => {
-                                                    const raw = String(e.target.value).replace(/[^0-9,.-]/g, '').replace(',', '.');
-                                                    const parsed = parseFloat(raw);
-                                                    field.onChange(Number.isFinite(parsed) ? parsed : 0);
+                                                    const cleaned = e.target.value.replace(/%/g, '').replace(',', '.');
+                                                    const numericValue = parseFloat(cleaned);
+                                                    field.onChange(isNaN(numericValue) ? 0 : numericValue);
                                                 }}
                                             />
                                         </FormControl>
