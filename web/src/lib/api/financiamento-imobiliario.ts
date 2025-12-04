@@ -18,7 +18,7 @@ export async function simularFinanciamentoImobiliario(
   data: FinanciamentoImobiliarioInput,
 ): Promise<FinanciamentoImobiliarioOutput> {
   const response = await fetch(
-    `${API_BASE_URL}simuladores/financiamento-imovel/simular`,
+    `${API_BASE_URL}/simuladores/financiamento-imovel/simular`,
     {
       method: 'POST',
       headers: {
