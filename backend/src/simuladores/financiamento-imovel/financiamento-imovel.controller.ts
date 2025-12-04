@@ -11,7 +11,7 @@ import { ResultadoFinanciamentoImovelDto } from './dto/resultado-financiamento-i
  * Toda lógica de negócio está no FinanciamentoImovelService
  */
 @ApiTags('Simuladores')
-@Controller('simuladores/financiamento-imovel')
+@Controller('/simuladores/financiamento-imovel')
 export class FinanciamentoImovelController {
   constructor(
     private readonly financiamentoImovelService: FinanciamentoImovelService,
