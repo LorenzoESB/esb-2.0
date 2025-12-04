@@ -17,7 +17,7 @@ const API_BASE_URL =
 export async function simularEmprestimo(
   data: EmprestimoInput,
 ): Promise<EmprestimoOutput> {
-  const response = await fetch(`${API_BASE_URL}simuladores/emprestimo/simular`, {
+  const response = await fetch(`${API_BASE_URL}/simuladores/emprestimo/simular`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
