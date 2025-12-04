@@ -3,6 +3,7 @@ import { AmortizacaoModule } from './amortizacao/amortizacao.module';
 import { AposentadoriaModule } from './aposentadoria/aposentadoria.module';
 import { CombustivelModule } from './combustivel/combustivel.module';
 import { EmprestimoModule } from './emprestimo/emprestimo.module';
+import { FinanciamentoImovelModule } from './financiamento-imovel/financiamento-imovel.module';
 import { InvestimentosModule } from './investimentos/investimentos.module';
 import { JurosCompostosModule } from './juros-composts/juros-compostos.module';
 import { RendaFixaModule } from './renda-fixa/renda-fixa.module';
@@ -13,6 +14,7 @@ import { RendaFixaModule } from './renda-fixa/renda-fixa.module';
     AposentadoriaModule,
     CombustivelModule,
     EmprestimoModule,
+    FinanciamentoImovelModule,
     InvestimentosModule,
     JurosCompostosModule,
     RendaFixaModule,
