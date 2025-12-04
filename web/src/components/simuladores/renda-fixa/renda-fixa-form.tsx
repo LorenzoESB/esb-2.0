@@ -28,7 +28,6 @@ export function RendaFixaForm({ onSubmit, isLoading }: RendaFixaFormProps) {
     resolver: zodResolver(RendaFixaInputSchema),
     defaultValues: {
       investimentoInicial: 10000,
-      aporteMensal: 0,
       prazoMeses: 24,
       nome: '',
       email: '',
@@ -93,7 +92,7 @@ export function RendaFixaForm({ onSubmit, isLoading }: RendaFixaFormProps) {
             </div>
 
             {/* Parâmetros do Investimento */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="investimentoInicial"
@@ -118,36 +117,6 @@ export function RendaFixaForm({ onSubmit, isLoading }: RendaFixaFormProps) {
                     </FormControl>
                     <FormDescription>
                       Quanto você tem para investir agora
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="aporteMensal"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Aporte Mensal</FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                        <Input
-                          type="text"
-                          className="pl-10"
-                          placeholder="R$ 0,00"
-                          value={field.value ? formatCurrency(field.value) : ''}
-                          onChange={(e) => {
-                            const masked = maskCurrency(e.target.value);
-                            const numericValue = parseCurrency(masked);
-                            field.onChange(numericValue);
-                          }}
-                        />
-                      </div>
-                    </FormControl>
-                    <FormDescription>
-                      Opcional (não usado no cálculo)
                     </FormDescription>
                     <FormMessage />
                   </FormItem>

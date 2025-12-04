@@ -110,11 +110,18 @@ export function calcularDescontoImposto(prazoDias: number): Decimal {
  * Calcula todos os investimentos de renda fixa comparando diferentes modalidades
  * NOTA: Esta versão NÃO inclui aportes mensais - apenas investimento inicial
  *
+ * CRITICAL: Segue exatamente a lógica do legacy:
+ * - Poupança: calculada localmente
+ * - Tesouro Direto/SELIC: calculado localmente
+ * - CDB: usa valores da API externa (se disponível)
+ * - LCI: usa valores da API externa (se disponível)
+ *
  * @param investimento - Valor inicial investido
  * @param periodoMeses - Período em meses
  * @param selicAnual - Taxa Selic anual (ex: 13.75 para 13.75%)
  * @param cdiAnual - Taxa CDI anual (ex: 13.65 para 13.65%)
  * @param trMensal - Taxa TR mensal (em decimal, ex: 0.001 para 0.1%)
+ * @param apiResponse - Resposta da API externa (opcional, contém CDB e LCI)
  * @returns Objeto com resultados de todas as modalidades
  */
 export function calcularInvestimentosRendaFixa(
@@ -123,24 +130,19 @@ export function calcularInvestimentosRendaFixa(
   selicAnual: number,
   cdiAnual: number,
   trMensal: number,
+  apiResponse?: any,
 ): InvestimentosRendaFixa {
   const selic = transformarTaxaAnualMensal(selicAnual).div(100);
   const cdi = transformarTaxaAnualMensal(cdiAnual).div(100);
   const tr = new Decimal(trMensal);
 
-  // Poupança: TR + 0,5% ao mês
+  // Poupança: TR + 0,5% ao mês (SEMPRE calculada localmente)
   const poupanca = tr.plus(new Decimal(0.005));
 
-  // Tesouro Direto: Selic (com IR)
+  // Tesouro Direto: Selic (com IR) (SEMPRE calculado localmente)
   const tesouroDireto = selic;
 
-  // LCI: 91.5% do CDI (isento de IR)
-  const lci = new Decimal(0.915).mul(cdi);
-
-  // CDB: 110% do CDI (com IR)
-  const cdb = new Decimal(1.1).mul(cdi);
-
-  // Calcular resultados sem aportes
+  // Calcular Poupança (sempre local)
   const [resultPoup, impostoPoup] = calcularInvestimentoSimples(
     false,
     investimento,
@@ -148,6 +150,7 @@ export function calcularInvestimentosRendaFixa(
     poupanca,
   );
 
+  // Calcular Tesouro Direto/SELIC (sempre local)
   const [resultTesouroDireto, impostoTesouroDireto] =
     calcularInvestimentoSimples(
       true,
@@ -156,19 +159,72 @@ export function calcularInvestimentosRendaFixa(
       tesouroDireto,
     );
 
-  const [resultLci, impostoLci] = calcularInvestimentoSimples(
-    false,
-    investimento,
-    periodoMeses,
-    lci,
-  );
+  // CDB e LCI: Usar valores da API externa SE disponíveis, senão calcular localmente
+  let resultLci: Decimal;
+  let impostoLci: Decimal;
+  let taxaLci: Decimal;
+  let resultCdb: Decimal;
+  let impostoCdb: Decimal;
+  let taxaCdb: Decimal;
 
-  const [resultCdb, impostoCdb] = calcularInvestimentoSimples(
-    true,
-    investimento,
-    periodoMeses,
-    cdb,
-  );
+  if (apiResponse && apiResponse.resultados) {
+    // Usar valores da API externa (como o legacy faz)
+    const apiLci = apiResponse.resultados.LCI;
+    const apiCdb = apiResponse.resultados.CDB;
+
+    // LCI da API (se disponível e válida)
+    if (apiLci && apiLci.vl && apiLci.vl > 0) {
+      resultLci = new Decimal(apiLci.vl);
+      impostoLci = new Decimal(0); // LCI is tax-exempt
+      // Calculate effective monthly rate from API values
+      taxaLci = new Decimal(apiLci.rlm || 0).div(100);
+    } else {
+      // Fallback: calcular localmente
+      taxaLci = new Decimal(0.9).mul(cdi);
+      [resultLci, impostoLci] = calcularInvestimentoSimples(
+        false,
+        investimento,
+        periodoMeses,
+        taxaLci,
+      );
+    }
+
+    // CDB da API (se disponível e válida)
+    if (apiCdb && apiCdb.vl && apiCdb.vl > 0) {
+      resultCdb = new Decimal(apiCdb.vl);
+      // Calculate tax from API values
+      const rendimentoBruto = resultCdb.minus(investimento);
+      impostoCdb = rendimentoBruto.mul(new Decimal(1).minus(calcularDescontoImposto(periodoMeses * 30)));
+      // Calculate effective monthly rate from API values
+      taxaCdb = new Decimal(apiCdb.rlm || 0).div(100);
+    } else {
+      // Fallback: calcular localmente
+      taxaCdb = new Decimal(1.1).mul(cdi);
+      [resultCdb, impostoCdb] = calcularInvestimentoSimples(
+        true,
+        investimento,
+        periodoMeses,
+        taxaCdb,
+      );
+    }
+  } else {
+    // Sem API: calcular localmente (fallback)
+    taxaLci = new Decimal(0.9).mul(cdi);
+    [resultLci, impostoLci] = calcularInvestimentoSimples(
+      false,
+      investimento,
+      periodoMeses,
+      taxaLci,
+    );
+
+    taxaCdb = new Decimal(1.1).mul(cdi);
+    [resultCdb, impostoCdb] = calcularInvestimentoSimples(
+      true,
+      investimento,
+      periodoMeses,
+      taxaCdb,
+    );
+  }
 
   const investido = new Decimal(investimento);
 
@@ -196,12 +252,12 @@ export function calcularInvestimentosRendaFixa(
       imposto: impostoTesouroDireto,
     },
     lci: {
-      taxa: lci,
+      taxa: taxaLci,
       resultado: resultLci,
       imposto: impostoLci,
     },
     cdb: {
-      taxa: cdb,
+      taxa: taxaCdb,
       resultado: resultCdb,
       imposto: impostoCdb,
     },

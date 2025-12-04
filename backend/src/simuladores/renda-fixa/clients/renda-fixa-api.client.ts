@@ -97,8 +97,9 @@ export class RendaFixaApiClient {
     prazoMeses: number,
   ): Promise<RendaFixaApiResponse> {
     try {
-      // Converter meses para dias (fórmula do legacy: 30.4167 dias/mês)
-      const prazoDias = Math.round(prazoMeses * 30.4167);
+      // Converter meses para dias (fórmula exata do legacy)
+      // Legacy: prazoDias = (prazo * 30) + floor(prazo/12) * 6
+      const prazoDias = prazoMeses * 30 + Math.floor(prazoMeses / 12) * 6;
 
       const payload: RendaFixaApiRequestPayload = {
         valor: investimento.toString(),

@@ -71,13 +71,31 @@ export class RendaFixaService {
         `Economic rates: Selic=${selicAnual}%, CDI=${cdiAnual}%, TR=${trMensal}`,
       );
 
-      // Realizar os cálculos (SEM aportes mensais)
+      // CRITICAL: Call external API FIRST to get CDB and LCI values (as legacy does)
+      let apiResponse: any = null;
+      try {
+        apiResponse = await this.rendaFixaApiClient.consultarOfertas(
+          dto.investimentoInicial,
+          dto.prazoMeses,
+        );
+        this.logger.debug(`External API response received: ${JSON.stringify(apiResponse)}`);
+      } catch (error) {
+        this.logger.warn(
+          'Failed to fetch from external API, will use local calculations as fallback',
+          error.message,
+        );
+      }
+
+      // Realizar os cálculos
+      // - Poupança e SELIC: calculados localmente (como legacy faz)
+      // - CDB e LCI: usar valores da API externa (como legacy faz)
       const resultados = calcularInvestimentosRendaFixa(
         dto.investimentoInicial,
         dto.prazoMeses,
         selicAnual,
         cdiAnual,
         trMensal,
+        apiResponse, // Pass API response to use its CDB/LCI values
       );
 
       // Formatar resultado
@@ -91,24 +109,28 @@ export class RendaFixaService {
       this.logger.log('Fixed income simulation completed successfully');
       this.logger.debug(`Best investment: ${resultado.melhorInvestimento}`);
 
-      // Buscar ofertas detalhadas da API externa
-      try {
-        const ofertasResult = await this.buscarOfertasDetalhadas(
-          dto.investimentoInicial,
-          dto.prazoMeses,
-          resultado.melhorInvestimento,
-        );
+      // Adicionar ofertas detalhadas se disponíveis
+      if (apiResponse && this.rendaFixaApiClient.hasValidOffers(apiResponse)) {
+        try {
+          const apiMelhorTitulo = apiResponse.resultados.melhor_titulo;
+          const apiMelhorTituloSistema = API_TO_SYSTEM_MAP[apiMelhorTitulo];
 
-        if (ofertasResult) {
-          resultado.ofertasDetalhadas = ofertasResult.ofertas;
-          resultado.tipoOfertasDetalhadas = ofertasResult.tipo;
+          if (apiMelhorTitulo !== 'POUP') {
+            const ofertas = apiResponse.resultados.listamelhortitulo;
+
+            if (apiMelhorTitulo === 'SELIC') {
+              resultado.ofertasDetalhadas = this.transformarOfertasTesouro(ofertas);
+            } else {
+              resultado.ofertasDetalhadas = this.transformarOfertasInvestimento(ofertas);
+            }
+            resultado.tipoOfertasDetalhadas = apiMelhorTituloSistema || apiMelhorTitulo;
+          }
+        } catch (error) {
+          this.logger.warn(
+            'Failed to process detailed offers',
+            error.message,
+          );
         }
-      } catch (error) {
-        this.logger.warn(
-          'Failed to fetch detailed offers, continuing without them',
-          error.message,
-        );
-        // Continue sem ofertas - não é crítico
       }
 
       // Salvar simulação no banco
@@ -119,74 +141,6 @@ export class RendaFixaService {
       this.logger.error('Error in fixed income simulation', error.stack);
       throw error;
     }
-  }
-
-  /**
-   * Busca ofertas detalhadas de investimento da API externa
-   *
-   * @param investimento - Valor do investimento
-   * @param prazoMeses - Prazo em meses
-   * @param melhorInvestimento - Tipo do melhor investimento calculado pelo nosso sistema
-   * @returns Objeto com ofertas formatadas e o tipo real das ofertas
-   */
-  private async buscarOfertasDetalhadas(
-    investimento: number,
-    prazoMeses: number,
-    melhorInvestimento: string,
-  ): Promise<{
-    ofertas: InvestimentoOfertaDto[] | OfertaTesouroDto[];
-    tipo: string;
-  } | null> {
-    this.logger.debug(
-      `Fetching detailed offers for ${melhorInvestimento}: investimento=${investimento}, prazo=${prazoMeses}`,
-    );
-
-    const apiResponse = await this.rendaFixaApiClient.consultarOfertas(
-      investimento,
-      prazoMeses,
-    );
-
-    if (!this.rendaFixaApiClient.hasValidOffers(apiResponse)) {
-      this.logger.warn('No valid offers returned from API');
-      return null;
-    }
-
-    // Obter o tipo de investimento que a API determinou como melhor
-    const apiMelhorTitulo = apiResponse.resultados.melhor_titulo;
-    const apiMelhorTituloSistema = API_TO_SYSTEM_MAP[apiMelhorTitulo];
-
-    this.logger.debug(
-      `API determined best: ${apiMelhorTitulo} (${apiMelhorTituloSistema}), Our calculation: ${melhorInvestimento}`,
-    );
-
-    // Se a API retornou Poupança, não temos ofertas detalhadas
-    if (apiMelhorTitulo === 'POUP') {
-      this.logger.debug('Best investment is Poupança, no detailed offers available');
-      return null;
-    }
-
-    const ofertas = apiResponse.resultados.listamelhortitulo;
-
-    // Transformar ofertas baseado no tipo retornado pela API
-    let ofertasTransformadas:
-      | InvestimentoOfertaDto[]
-      | OfertaTesouroDto[];
-
-    if (apiMelhorTitulo === 'SELIC') {
-      ofertasTransformadas = this.transformarOfertasTesouro(
-        ofertas as OfertaTesouro[],
-      );
-    } else {
-      // CDB ou LCI
-      ofertasTransformadas = this.transformarOfertasInvestimento(
-        ofertas as OfertaInvestimento[],
-      );
-    }
-
-    return {
-      ofertas: ofertasTransformadas,
-      tipo: apiMelhorTituloSistema || apiMelhorTitulo,
-    };
   }
 
   /**
@@ -364,8 +318,13 @@ export class RendaFixaService {
     const percentualRendimento =
       totalInvestido > 0 ? (rendimentoLiquido / totalInvestido) * 100 : 0;
 
-    // Taxa mensal é a taxa do instrumento já em percentual (não blended average)
-    const percentualRendimentoMensal = this.arredondar(modalidade.taxa.mul(100));
+    // Calcular rendimento mensal usando média geométrica (conforme legacy)
+    // Fórmula: ((resultado/investido)^(1/meses) - 1) * 100
+    const percentualRendimentoMensal = new Decimal(resultado)
+      .div(totalInvestido)
+      .pow(new Decimal(1).div(prazoMeses))
+      .minus(1)
+      .mul(100);
 
     // Calcular rendimento anual a partir da taxa mensal
     // Fórmula: ((1 + taxa_mensal)^12 - 1) * 100
@@ -382,7 +341,7 @@ export class RendaFixaService {
       imposto: this.arredondar(modalidade.imposto),
       rendimentoLiquido: this.arredondar(rendimentoLiquido),
       percentualRendimento: this.arredondar(percentualRendimento),
-      percentualRendimentoMensal,
+      percentualRendimentoMensal: this.arredondar(percentualRendimentoMensal),
       percentualRendimentoAnual: this.arredondar(percentualRendimentoAnual),
     };
   }
