@@ -4,9 +4,6 @@ export const RendaFixaInputSchema = z.object({
   investimentoInicial: z
     .number()
     .min(0, 'Investimento inicial deve ser maior ou igual a zero'),
-  aporteMensal: z
-    .number()
-    .min(0, 'Aporte mensal deve ser maior ou igual a zero'),
   prazoMeses: z
     .number()
     .min(1, 'Prazo deve ser pelo menos 1 mês'),

@@ -37,18 +37,6 @@ export class SimularRendaFixaDto {
   @Type(() => Number)
   investimentoInicial: number;
 
-  @ApiPropertyOptional({
-    description: 'Valor do aporte mensal em reais (opcional, não utilizado no cálculo)',
-    example: 0,
-    minimum: 0,
-    default: 0,
-  })
-  @IsOptional()
-  @IsNumber({}, { message: 'Aporte mensal deve ser um número' })
-  @Min(0, { message: 'Aporte mensal deve ser maior ou igual a zero' })
-  @Type(() => Number)
-  aporteMensal?: number;
-
   @ApiProperty({
     description: 'Prazo do investimento em meses',
     example: 24,
