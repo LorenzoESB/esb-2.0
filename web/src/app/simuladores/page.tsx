@@ -92,8 +92,8 @@ const simulators = [
         description: "Veja quanto vai pagar pela sua casa própria",
         icon: Home,
         href: "/simuladores/financiamento-imobiliario",
-        status: "Indisponível",
-        color: "bg-red-50 text-red-600 border-red-200",
+        status: "Disponível",
+        color: "bg-green-50 text-green-600 border-green-200",
         features: ["SAC vs PRICE", "Amortização", "Gráficos", "Planilha"],
     },
     {
