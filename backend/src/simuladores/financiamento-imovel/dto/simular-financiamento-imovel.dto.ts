@@ -26,7 +26,7 @@ export class SimularFinanciamentoImovelDto {
   valorImovel: number;
 
   @ApiProperty({
-    description: 'Valor da entrada (down payment)',
+    description: 'Valor da entrada',
     example: 100000,
     minimum: 0,
   })

@@ -143,7 +143,7 @@ export class FinanciamentoImovelService {
 
         // Criar oferta
         const oferta: ResultadoFinanciamentoImovelDto = {
-          nomeBanco: taxa.instituicao,
+          nomeBanco: taxa.instituicaoFinanceira,
           modalidade: taxa.modalidade,
           parcelaInicial: calculo.parcelaInicial,
           parcelaFinal: calculo.parcelaFinal,
@@ -157,7 +157,7 @@ export class FinanciamentoImovelService {
         ofertas.push(oferta);
       } catch (error) {
         this.logger.warn(
-          `Failed to calculate offer for ${taxa.instituicao}: ${error.message}`,
+          `Failed to calculate offer for ${taxa.instituicaoFinanceira}: ${error.message}`,
         );
         // Continue com as próximas ofertas
       }
