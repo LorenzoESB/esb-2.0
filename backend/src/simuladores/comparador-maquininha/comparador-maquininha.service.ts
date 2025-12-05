@@ -1,0 +1,172 @@
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { PrismaService } from '../../prisma/prisma.service';
+import { SimulatorType } from 'generated/prisma';
+import { CompararMaquininhaDto } from './dto/comparar-maquininha.dto';
+import {
+  ResultadoComparacaoDto,
+  CaracteristicasMaquininhaDto,
+} from './dto/resultado-comparacao.dto';
+import { MAQUININHAS } from '../taxa-maquininha/data/maquininhas.data';
+
+@Injectable()
+export class ComparadorMaquininhaService {
+  private readonly logger = new Logger(ComparadorMaquininhaService.name);
+
+  constructor(private readonly prisma: PrismaService) {}
+
+  /**
+   * Compara características de múltiplas maquininhas lado a lado
+   *
+   * Versão simplificada focada em comparação de features, sem cálculo de custos
+   * Útil para quando o usuário quer comparar especificações técnicas
+   *
+   * @param dto - IDs das maquininhas a comparar
+   * @returns Características de cada maquininha para comparação
+   */
+  async comparar(dto: CompararMaquininhaDto): Promise<ResultadoComparacaoDto> {
+    try {
+      this.logger.log(
+        `Starting card machine comparison for ${dto.maquininhas_ids.length} machines`,
+      );
+      this.logger.debug(`Input: ${JSON.stringify(dto)}`);
+
+      // Buscar maquininhas por ID
+      const maquininhas = MAQUININHAS.filter(
+        (m) => dto.maquininhas_ids.includes(m.id) && m.ativo,
+      );
+
+      if (maquininhas.length === 0) {
+        throw new NotFoundException('Nenhuma maquininha encontrada com os IDs informados');
+      }
+
+      if (maquininhas.length < 2) {
+        throw new NotFoundException('É necessário pelo menos 2 maquininhas para comparar');
+      }
+
+      this.logger.debug(
+        `Found ${maquininhas.length} card machines to compare`,
+      );
+
+      // Converter para DTOs de comparação
+      const maquininhasDtos: CaracteristicasMaquininhaDto[] =
+        maquininhas.map((m) => ({
+          id: m.id,
+          nome: m.nome,
+          empresa: m.empresa.nome,
+          logo: m.empresa.logo,
+          imagem: m.imagem,
+          preco: m.valor_leitor,
+          preco_promocional: m.valor_promocional,
+          mensalidade: m.valor_mensalidade,
+          chip: m.chip,
+          tarja: m.tarja,
+          nfc: m.NFC,
+          com_fio: m.fio,
+          imprime_recibo: m.imprime_recibo,
+          precisa_smartphone: m.precisa_de_telefone,
+          permite_antecipacao: m.possivel_antecipacao,
+          atende_pf: m.PF,
+          atende_pj: m.PJ,
+          vale_refeicao: m.vale_refeicao,
+          ecommerce: m.opcao_ecommerce,
+          max_parcelas: m.possibilidade_parcelamento,
+          garantia: m.garantia,
+          tipos_conexao: m.tipo_conexao.map((tc) => tc.nome),
+          bandeiras: m.bandeiras.map((b) => b.nome),
+          formas_recebimento: m.forma_recebimento.map((fr) => fr.nome),
+          observacoes: m.observacao,
+          url_contratacao:
+            m.planos.length > 0 ? m.planos[0].url : '#',
+          cupom: m.cupom,
+          transparencia: m.transparencia,
+          url_avaliacao: m.url_avaliacao,
+          data_atualizacao: m.atualizado_em.toLocaleDateString('pt-BR'),
+          planos: m.planos
+            .filter((p) => p.ativo)
+            .map((p) => ({
+              id: p.id,
+              nome: p.nome,
+              taxa_debito: this.formatarPercentual(p.taxa_desconto_debito),
+              taxa_credito_vista: this.formatarPercentual(
+                p.taxa_desconto_credito_vista,
+              ),
+              taxa_credito_parcelado_min: this.formatarPercentual(
+                p.taxa_desconto_credito_vista +
+                  p.taxa_adicional_parcela,
+              ),
+              dias_repasse_debito: p.dias_repasse_debito,
+              dias_repasse_credito: p.dias_repasse_credito,
+              avaliacao: p.avaliacao,
+            })),
+        }));
+
+      const resultado: ResultadoComparacaoDto = {
+        maquininhas: maquininhasDtos,
+        total: maquininhasDtos.length,
+      };
+
+      // Salvar comparação no banco
+      await this.salvarComparacao(dto, resultado);
+
+      this.logger.log(
+        `Comparison completed successfully for ${resultado.total} machines`,
+      );
+
+      return resultado;
+    } catch (error) {
+      this.logger.error('Error in card machine comparison', error.stack);
+      throw error;
+    }
+  }
+
+  /**
+   * Formata número decimal para percentual
+   * Exemplo: 0.0299 => "2,99%"
+   */
+  private formatarPercentual(valor: number): string {
+    return `${(valor * 100).toFixed(2).replace('.', ',')}%`;
+  }
+
+  /**
+   * Salva a comparação no banco de dados
+   */
+  private async salvarComparacao(
+    dto: CompararMaquininhaDto,
+    resultado: ResultadoComparacaoDto,
+  ): Promise<void> {
+    try {
+      await this.prisma.simulation.create({
+        data: {
+          simulatorType: SimulatorType.COMPARADOR_MAQUININHA,
+          nome: dto.nome,
+          email: dto.email,
+          inputData: {
+            maquininhas_ids: dto.maquininhas_ids,
+            compartilharDados: dto.compartilharDados || true,
+            origem: dto.origem || null,
+          },
+          outputData: {
+            total: resultado.total,
+            maquininhas: resultado.maquininhas.map((m) => ({
+              id: m.id,
+              nome: m.nome,
+              empresa: m.empresa,
+              preco: m.preco,
+              mensalidade: m.mensalidade,
+            })),
+          },
+        },
+      });
+
+      this.logger.log(
+        `Comparison saved successfully for ${dto.email} (${resultado.total} machines)`,
+      );
+    } catch (error) {
+      // Não falhar a comparação se o salvamento falhar
+      this.logger.error(
+        'Failed to save comparison to database',
+        error.stack,
+      );
+    }
+  }
+}
