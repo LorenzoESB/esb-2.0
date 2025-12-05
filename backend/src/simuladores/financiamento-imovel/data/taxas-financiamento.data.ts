@@ -14,7 +14,7 @@ import { AxiosResponse } from 'axios';
  * Interface para taxa de financiamento imobiliário
  */
 export interface TaxaFinanciamentoImovel {
-  instituicao: string;
+  instituicaoFinanceira: string;
   taxaJurosMensal: number;
   taxaJurosAnual: number;
   modalidade: string;
@@ -70,7 +70,7 @@ export class TaxasFinanciamentoData {
       // Tentar mês atual primeiro, depois mês anterior
       let taxas: BancoCentralTaxaResponse[] = [];
 
-      for (let monthsBack = 0; monthsBack <= 1; monthsBack++) {
+      for (let monthsBack = 0; monthsBack <= 2; monthsBack++) {
         const mesReferencia = this.obterMesReferencia(monthsBack);
 
         // Construir URL com filtros
@@ -90,6 +90,8 @@ export class TaxasFinanciamentoData {
           continue;
         }
 
+        console.log(response.data.value);
+
         taxas = response.data.value;
 
         if (taxas.length > 0) {
@@ -108,7 +110,7 @@ export class TaxasFinanciamentoData {
       // Transformar resposta para o formato esperado
       const taxasTransformadas: TaxaFinanciamentoImovel[] = taxas.map(
         (taxa) => ({
-          instituicao: taxa.Instituicao,
+          instituicaoFinanceira: taxa.Instituicao,
           taxaJurosMensal: taxa.TaxaJurosAoMes,
           taxaJurosAnual: taxa.TaxaJurosAoAno,
           modalidade: taxa.Modalidade,
@@ -144,18 +146,20 @@ export class TaxasFinanciamentoData {
   }
 
   /**
-   * Obtém o mês de referência no formato AAAAMM
-   * Exemplo: "202412" para dezembro de 2024
+   * Obtém o mês de referência no formato AAAA-MM
+   * Exemplo: "2024-12" para dezembro de 2024
+   *
+   * CRITICAL FIX: BCB API expects format "YYYY-MM" not "YYYYMM"
    *
    * @param monthsBack - Número de meses para voltar (0 = mês atual, 1 = mês anterior)
-   * @returns String no formato AAAAMM
+   * @returns String no formato AAAA-MM
    */
   private obterMesReferencia(monthsBack: number = 0): string {
     const dataAtual = new Date();
     dataAtual.setMonth(dataAtual.getMonth() - monthsBack);
     const ano = dataAtual.getFullYear();
     const mes = String(dataAtual.getMonth() + 1).padStart(2, '0');
-    return `${ano}${mes}`;
+    return `${ano}-${mes}`;  // FIXED: Added hyphen separator
   }
 
   /**
@@ -173,7 +177,7 @@ export class TaxasFinanciamentoData {
 
     return [
       {
-        instituicao: 'Banco do Brasil',
+        instituicaoFinanceira: 'Banco do Brasil',
         taxaJurosMensal: 0.84,
         taxaJurosAnual: 10.5,
         modalidade:
@@ -181,7 +185,7 @@ export class TaxasFinanciamentoData {
         cnpj: '00000000',
       },
       {
-        instituicao: 'Caixa Econômica Federal',
+        instituicaoFinanceira: 'Caixa Econômica Federal',
         taxaJurosMensal: 0.87,
         taxaJurosAnual: 10.95,
         modalidade:
@@ -189,7 +193,7 @@ export class TaxasFinanciamentoData {
         cnpj: '00360305',
       },
       {
-        instituicao: 'Itaú Unibanco',
+        instituicaoFinanceira: 'Itaú Unibanco',
         taxaJurosMensal: 0.91,
         taxaJurosAnual: 11.45,
         modalidade:
@@ -197,7 +201,7 @@ export class TaxasFinanciamentoData {
         cnpj: '60701190',
       },
       {
-        instituicao: 'Bradesco',
+        instituicaoFinanceira: 'Bradesco',
         taxaJurosMensal: 0.93,
         taxaJurosAnual: 11.75,
         modalidade:
@@ -205,7 +209,7 @@ export class TaxasFinanciamentoData {
         cnpj: '60746948',
       },
       {
-        instituicao: 'Santander',
+        instituicaoFinanceira: 'Santander',
         taxaJurosMensal: 0.96,
         taxaJurosAnual: 12.15,
         modalidade:
@@ -213,7 +217,7 @@ export class TaxasFinanciamentoData {
         cnpj: '90400888',
       },
       {
-        instituicao: 'Banco Safra',
+        instituicaoFinanceira: 'Banco Safra',
         taxaJurosMensal: 0.98,
         taxaJurosAnual: 12.45,
         modalidade:
@@ -221,7 +225,7 @@ export class TaxasFinanciamentoData {
         cnpj: '58160789',
       },
       {
-        instituicao: 'Banco Inter',
+        instituicaoFinanceira: 'Banco Inter',
         taxaJurosMensal: 0.89,
         taxaJurosAnual: 11.2,
         modalidade:

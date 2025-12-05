@@ -148,7 +148,7 @@ export function FinanciamentoImobiliarioForm({
                         />
                       </FormControl>
                       <FormDescription>
-                        Valor pago como entrada (down payment)
+                        Valor pago como entrada
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -157,7 +157,7 @@ export function FinanciamentoImobiliarioForm({
               </div>
 
               {/* Resumo do Financiamento */}
-              {valorImovel > 0 && !valorFinanciadoNegativo && (
+              {/* {valorImovel > 0 && !valorFinanciadoNegativo && (
                 <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
@@ -180,7 +180,7 @@ export function FinanciamentoImobiliarioForm({
                     </div>
                   </div>
                 </div>
-              )}
+              )} */}
 
               {/* Alertas de Validação */}
               {valorFinanciadoNegativo && (
@@ -229,7 +229,7 @@ export function FinanciamentoImobiliarioForm({
                         />
                       </FormControl>
                       <FormDescription>
-                        Período de pagamento (máximo 420 meses / 35 anos)
+                        Período de pagamento
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -258,7 +258,7 @@ export function FinanciamentoImobiliarioForm({
                         />
                       </FormControl>
                       <FormDescription>
-                        Sua renda mensal (para calcular comprometimento)
+                        Qual é a sua renda familiar bruta?
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -314,16 +314,6 @@ export function FinanciamentoImobiliarioForm({
                 />
               </div>
             </div>
-
-            {/* Sistema SAC Info */}
-            <Alert>
-              <Info className="h-4 w-4" />
-              <AlertDescription>
-                <strong>Sistema SAC:</strong> As parcelas diminuem ao longo do tempo.
-                A primeira parcela é a mais alta, e a última é a mais baixa, pois a
-                amortização é constante e os juros diminuem mensalmente.
-              </AlertDescription>
-            </Alert>
 
             <Button
               type="submit"
