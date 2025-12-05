@@ -27,7 +27,7 @@ export interface TaxaFinanciamentoImovel {
  */
 interface BancoCentralTaxaResponse {
   Modalidade: string;
-  Instituicao: string;
+  InstituicaoFinanceira: string;
   TaxaJurosAoMes: number;
   TaxaJurosAoAno: number;
   cnpj8: string;
@@ -110,7 +110,7 @@ export class TaxasFinanciamentoData {
       // Transformar resposta para o formato esperado
       const taxasTransformadas: TaxaFinanciamentoImovel[] = taxas.map(
         (taxa) => ({
-          instituicaoFinanceira: taxa.Instituicao,
+          instituicaoFinanceira: taxa.InstituicaoFinanceira,
           taxaJurosMensal: taxa.TaxaJurosAoMes,
           taxaJurosAnual: taxa.TaxaJurosAoAno,
           modalidade: taxa.Modalidade,
