@@ -1,6 +1,7 @@
 import {
   Controller,
   Post,
+  Get,
   Body,
   HttpCode,
   HttpStatus,
@@ -17,6 +18,7 @@ import {
 import { ComparadorMaquininhaService } from './comparador-maquininha.service';
 import { CompararMaquininhaDto } from './dto/comparar-maquininha.dto';
 import { ResultadoComparacaoDto } from './dto/resultado-comparacao.dto';
+import { ListaMaquininhasDto } from './dto/maquininha-opcao.dto';
 
 @ApiTags('Comparador Maquininha')
 @Controller('simuladores/comparador-maquininha')
@@ -26,6 +28,58 @@ export class ComparadorMaquininhaController {
   constructor(
     private readonly comparadorMaquininhaService: ComparadorMaquininhaService,
   ) {}
+
+  @Get('maquininhas')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Listar maquininhas disponíveis para comparação',
+    description: `
+      Retorna lista simplificada de todas as maquininhas ativas disponíveis
+      para seleção no comparador.
+
+      ## Informações Retornadas
+
+      Para cada maquininha:
+      - **ID**: Identificador único para usar na comparação
+      - **Nome**: Nome comercial da maquininha
+      - **Empresa**: Nome da adquirente/empresa
+      - **Logo**: URL do logo para exibição
+
+      ## Uso
+
+      Use este endpoint para popular a lista de seleção no frontend.
+      Os IDs retornados devem ser enviados no endpoint de comparação:
+      \`POST /simuladores/comparador-maquininha/comparar\`
+
+      ## Observações
+
+      - Apenas maquininhas ativas são retornadas
+      - A lista é ordenada alfabeticamente por nome
+      - Não requer autenticação
+    `,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de maquininhas disponíveis',
+    type: ListaMaquininhasDto,
+  })
+  async listarMaquininhas(): Promise<ListaMaquininhasDto> {
+    try {
+      this.logger.log('Received request to list available card machines');
+
+      const result =
+        await this.comparadorMaquininhaService.listarMaquinhasDisponiveis();
+
+      this.logger.log(
+        `Successfully returned ${result.total} available card machines`,
+      );
+
+      return result;
+    } catch (error) {
+      this.logger.error('Error listing available card machines', error.stack);
+      throw error;
+    }
+  }
 
   @Post('comparar')
   @HttpCode(HttpStatus.OK)

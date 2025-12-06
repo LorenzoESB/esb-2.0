@@ -63,17 +63,19 @@ export enum TipoPessoa {
 /**
  * Tipo de recebimento do crédito parcelado
  * Migrated from Django models.Plano.tipo_recebimento_parcelado
+ *
+ * Note: In the database this is stored as boolean, but we use constants here
  */
-export enum TipoRecebimentoParcelado {
+export const TipoRecebimentoParcelado = {
   /**
    * True: Recebe após cada parcela
    * Exemplo: 12 parcelas = recebe em 12 momentos diferentes
    */
-  APOS_CADA_PARCELA = true,
+  APOS_CADA_PARCELA: true,
 
   /**
    * False: Recebe tudo de uma vez em X dias
    * Exemplo: 12 parcelas = recebe tudo em 30 dias
    */
-  TUDO_DE_UMA_VEZ = false,
-}
+  TUDO_DE_UMA_VEZ: false,
+} as const;

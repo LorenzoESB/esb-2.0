@@ -6,6 +6,10 @@ import {
   ResultadoComparacaoDto,
   CaracteristicasMaquininhaDto,
 } from './dto/resultado-comparacao.dto';
+import {
+  ListaMaquininhasDto,
+  MaquininhaOpcaoDto,
+} from './dto/maquininha-opcao.dto';
 import { MAQUININHAS } from '../taxa-maquininha/data/maquininhas.data';
 
 @Injectable()
@@ -13,6 +17,44 @@ export class ComparadorMaquininhaService {
   private readonly logger = new Logger(ComparadorMaquininhaService.name);
 
   constructor(private readonly prisma: PrismaService) {}
+
+  /**
+   * Retorna lista de maquininhas disponíveis para comparação
+   *
+   * @returns Lista com id, nome, empresa e logo de cada maquininha ativa
+   */
+  async listarMaquinhasDisponiveis(): Promise<ListaMaquininhasDto> {
+    try {
+      this.logger.log('Fetching available card machines for comparison');
+
+      // Filtrar apenas maquininhas ativas
+      const maquininhasAtivas = MAQUININHAS.filter((m) => m.ativo);
+
+      const maquininhasOpcoes: MaquininhaOpcaoDto[] = maquininhasAtivas.map(
+        (m) => ({
+          id: m.id,
+          nome: m.nome,
+          empresa: m.empresa.nome,
+          logo: m.empresa.logo,
+        }),
+      );
+
+      // Ordenar por nome para melhor UX
+      maquininhasOpcoes.sort((a, b) => a.nome.localeCompare(b.nome));
+
+      this.logger.log(
+        `Found ${maquininhasOpcoes.length} active card machines available for comparison`,
+      );
+
+      return {
+        maquininhas: maquininhasOpcoes,
+        total: maquininhasOpcoes.length,
+      };
+    } catch (error) {
+      this.logger.error('Error fetching available card machines', error.stack);
+      throw error;
+    }
+  }
 
   /**
    * Compara características de múltiplas maquininhas lado a lado
