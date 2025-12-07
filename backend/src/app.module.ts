@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AmortizacaoModule } from './simuladores/amortizacao/amortizacao.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { SimuladoresModule } from './simuladores/simuladores.module';
+import { RankingsModule } from './rankings/rankings.module';
 
 @Module({
   imports: [
@@ -11,7 +12,8 @@ import { SimuladoresModule } from './simuladores/simuladores.module';
       isGlobal: true,
     }),
     PrismaModule,
-    SimuladoresModule
+    SimuladoresModule,
+    RankingsModule,
   ],
 })
 export class AppModule {}
