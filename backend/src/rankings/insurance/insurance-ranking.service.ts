@@ -9,7 +9,7 @@ import {
   InsurancePricingDto,
   InsuranceServicesDto,
   InsuranceScoreBreakdownDto,
-  RankingCriterionDto,
+  InsuranceRankingCriterionDto,
 } from './dto/ranking-response.dto';
 import { InsuranceRankingQueryDto } from './dto/ranking-request.dto';
 import { InsuranceData } from './interfaces/insurance-ranking.interface';
@@ -86,7 +86,7 @@ export class InsuranceRankingService {
    *
    * @returns Array of criteria with weights and descriptions
    */
-  async getCriteria(): Promise<RankingCriterionDto[]> {
+  async getCriteria(): Promise<InsuranceRankingCriterionDto[]> {
     this.logger.log('Fetching insurance ranking criteria');
     return this.getCriteriaDto();
   }
@@ -239,7 +239,7 @@ export class InsuranceRankingService {
   /**
    * Convert criteria data to DTOs
    */
-  private getCriteriaDto(): RankingCriterionDto[] {
+  private getCriteriaDto(): InsuranceRankingCriterionDto[] {
     return INSURANCE_CRITERIA.map((criterion) => ({
       key: criterion.key,
       name: criterion.name,

@@ -16,7 +16,7 @@ import {
 import { InsuranceRankingService } from './insurance-ranking.service';
 import {
   InsuranceRankingResponseDto,
-  RankingCriterionDto,
+  InsuranceRankingCriterionDto,
 } from './dto/ranking-response.dto';
 import { InsuranceRankingQueryDto } from './dto/ranking-request.dto';
 
@@ -117,9 +117,9 @@ export class InsuranceRankingController {
   @ApiResponse({
     status: 200,
     description: 'Criteria retrieved successfully',
-    type: [RankingCriterionDto],
+    type: [InsuranceRankingCriterionDto],
   })
-  async getCriteria(): Promise<RankingCriterionDto[]> {
+  async getCriteria(): Promise<InsuranceRankingCriterionDto[]> {
     try {
       this.logger.log('Received request for insurance ranking criteria');
 
