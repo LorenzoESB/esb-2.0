@@ -76,6 +76,9 @@ export default function Header() {
                         <Link href={"/rankings"} className="hover:opacity-70 transition-opacity">
                             Rankings
                         </Link>
+                        <Link href={"/blog"} className="hover:opacity-70 transition-opacity">
+                            Blog
+                        </Link>
                         <Link href={"/simuladores"} className="hover:opacity-70 transition-opacity">
                             Simuladores
                         </Link>
@@ -132,6 +135,13 @@ export default function Header() {
                                 onClick={() => setIsMobileMenuOpen(false)}
                             >
                                 Rankings
+                            </Link>
+                            <Link
+                                href={"/blog"}
+                                className="gradient-text font-bold text-lg hover:opacity-70 transition-opacity"
+                                onClick={() => setIsMobileMenuOpen(false)}
+                            >
+                                Blog
                             </Link>
                             <Link
                                 href={"/simuladores"}

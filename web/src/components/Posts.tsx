@@ -4,9 +4,10 @@ import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Calendar, User, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { WordpressPost } from "@/types/wordpress";
 
 interface PostCardProps {
-    post: any;
+    post: WordpressPost;
     index?: number;
 }
 
