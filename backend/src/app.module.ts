@@ -1,10 +1,9 @@
 import { Module } from '@nestjs/common';
-import { JurosCompostosModule } from './simuladores/juros-composts/juros-compostos.module';
 import { ConfigModule } from '@nestjs/config';
-import { AmortizacaoModule } from './simuladores/amortizacao/amortizacao.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { SimuladoresModule } from './simuladores/simuladores.module';
 import { RankingsModule } from './rankings/rankings.module';
+import { BlogModule } from './blog/blog.module';
 
 @Module({
   imports: [
@@ -14,6 +13,7 @@ import { RankingsModule } from './rankings/rankings.module';
     PrismaModule,
     SimuladoresModule,
     RankingsModule,
+    BlogModule,
   ],
 })
 export class AppModule {}

@@ -1,4 +1,13 @@
-const API_URL = process.env.WORDPRESS_API_URL;
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+function requireApiUrl() {
+  if (!API_URL) {
+    throw new Error(
+      "NEXT_PUBLIC_API_URL is not set. Define it in the environment so the blog can fetch posts."
+    );
+  }
+  return API_URL;
+}
 
 export async function getAllPosts(
   maxPosts: number,
@@ -6,6 +15,8 @@ export async function getAllPosts(
   currentPage: number = 1,
   categoryId?: number,
 ) {
+  const baseUrl = requireApiUrl();
+
   if (!maxPosts || maxPosts <= 0) {
     maxPosts = 10;
   }
@@ -14,56 +25,56 @@ export async function getAllPosts(
   const pageParam = `&page=${encodeURIComponent(currentPage)}`;
   const categoryParam =
     categoryId && categoryId > 0
-      ? `&categories=${encodeURIComponent(categoryId)}`
+      ? `&categoryId=${encodeURIComponent(categoryId)}`
       : "";
 
-  const res = await fetch(
-    `${API_URL}/posts?_embed&per_page=${maxPosts}${searchParam}${pageParam}${categoryParam}`,
-    {
-      next: { revalidate: 60 },
+  try {
+    const res = await fetch(
+      `${baseUrl}/blog/posts?perPage=${maxPosts}${searchParam}${pageParam}${categoryParam}`,
+      {
+        next: { revalidate: 60 },
+      }
+    );
+
+    if (!res.ok) {
+      throw new Error(
+        `Failed to fetch posts: ${res.status} ${res.statusText || ""}`.trim()
+      );
     }
-  );
 
-  if (!res.ok) {
-    throw new Error("Failed to fetch posts");
+    return res.json();
+  } catch (error) {
+    // Graceful fallback so static build doesn't fail if backend isn't reachable.
+    console.error(`getAllPosts: ${(error as Error).message}`);
+    return { posts: [], totalPages: 1, totalPosts: 0 };
   }
-
-  const totalPages = parseInt(res.headers.get("X-WP-TotalPages") || "1", 10);
-  const totalPosts = parseInt(res.headers.get("X-WP-Total") || "0", 10);
-
-  const posts = await res.json();
-
-  return {
-    posts,
-    totalPages,
-    totalPosts,
-  };
 }
 
 export async function getPostBySlug(slug: string) {
-  const res = await fetch(`${API_URL}/posts?slug=${slug}&_embed`, {
+  const baseUrl = requireApiUrl();
+  const res = await fetch(`${baseUrl}/blog/posts/${slug}`, {
     next: { revalidate: 60 },
   });
   if (!res.ok) {
     throw new Error("Failed to fetch post");
   }
-  const posts = await res.json();
-  return posts[0];
+  return res.json();
 }
 
 export async function getPageBySlug(slug: string) {
-  const res = await fetch(`${API_URL}/pages?slug=${slug}&_embed`, {
+  const baseUrl = requireApiUrl();
+  const res = await fetch(`${baseUrl}/blog/pages/${slug}`, {
     next: { revalidate: 60 },
   });
   if (!res.ok) {
     throw new Error("Failed to fetch page");
   }
-  const pages = await res.json();
-  return pages[0];
+  return res.json();
 }
 
 export async function getCategories() {
-  const res = await fetch(`${API_URL}/categories`, {
+  const baseUrl = requireApiUrl();
+  const res = await fetch(`${baseUrl}/blog/categories`, {
     next: { revalidate: 60 },
   });
   if (!res.ok) {
@@ -73,8 +84,9 @@ export async function getCategories() {
 }
 
 export async function getPostsByCategory(categoryId: number) {
+  const baseUrl = requireApiUrl();
   const res = await fetch(
-    `${API_URL}/posts?categories=${categoryId}&_embed`,
+    `${baseUrl}/blog/posts?categoryId=${categoryId}`,
     {
       next: { revalidate: 60 },
     }
@@ -100,7 +112,8 @@ export function getPostCategories(post: any) {
 }
 
 export async function getMedia() {
-  const res = await fetch(`${API_URL}/media`);
+  const baseUrl = requireApiUrl();
+  const res = await fetch(`${baseUrl}/blog/media`);
   if (!res.ok) {
     throw new Error("Failed to fetch media");
   }
