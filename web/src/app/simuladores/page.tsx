@@ -9,10 +9,13 @@ import {
     Users,
     Fuel,
     DollarSign,
+    ArrowRight,
 } from "lucide-react";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { getRandomAds } from "@/lib/ads";
+import { AdCard } from "@/components/ads/AdCard";
 import { Badge } from "@/components/ui/badge";
-import Footer from "@/components/Footer";
 
 const simulators = [
     {
@@ -29,8 +32,8 @@ const simulators = [
         description: "Descubra a maquininha ideal para o seu negócio",
         icon: CreditCard,
         href: "/simuladores/taxa-maquininha",
-        status: "Indisponível",
-        color: "bg-red-50 text-red-600 border-red-200",
+        status: "Disponível",
+        color: "bg-green-50 text-green-600 border-green-200",
         features: ["Taxas", "Volume", "Recebimento", "Economia"],
     },
     {
@@ -47,8 +50,8 @@ const simulators = [
         description: "Descubra a conta digital ideal para a sua necessidade",
         icon: Building2,
         href: "/simuladores/conta-digital",
-        status: "Indisponível",
-        color: "bg-red-50 text-red-600 border-red-200",
+        status: "Disponível",
+        color: "bg-green-50 text-green-600 border-green-200",
         features: ["Gratuidade", "Benefícios", "Reviews", "Pontuação"],
     },
     {
@@ -56,8 +59,8 @@ const simulators = [
         description: "Compare as várias máquinas do mercado",
         icon: CreditCard,
         href: "/simuladores/comparador-maquininha",
-        status: "Indisponível",
-        color: "bg-red-50 text-red-600 border-red-200",
+        status: "Disponível",
+        color: "bg-green-50 text-green-600 border-green-200",
         features: ["Comparativo", "Taxas", "Funcionalidades", "Custo"],
     },
     {
@@ -126,127 +129,77 @@ const simulators = [
 ];
 
 export default function SimuladoresHub() {
+    const ad = getRandomAds(1)[0];
     return (
         <div className="min-h-screen bg-background">
-            {/* Header */}
-            <section className="bg-muted/30 py-16">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <div className="flex items-center justify-center mb-6">
-                        <h1 className="text-2xl sm:text-4xl font-bold text-foreground">Simuladores Financeiros</h1>
-                    </div>
+            <section className="bg-muted/30 py-12">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-3">
+                    <h1 className="text-2xl sm:text-4xl font-bold text-foreground">Simuladores Financeiros</h1>
                     <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                         Ferramentas gratuitas para ajudar você a tomar as melhores decisões financeiras.
                     </p>
                 </div>
             </section>
 
-            <section className="py-20">
+            <section className="py-14">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-                        <div className="lg:col-span-3">
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                                {simulators.map((simulator, index) => {
-                                    const Icon = simulator.icon;
-                                    const isAvailable = simulator.status === "Disponível";
-
-                                    return (
-                                        <Card
-                                            key={simulator.title}
-                                            className={`group transition-all duration-300 ${isAvailable
-                                                ? "hover:scale-105 hover:shadow-lg cursor-pointer"
-                                                : "opacity-75"
-                                                }`}
-                                            style={{
-                                                animationDelay: `${index * 0.1}s`,
-                                                animation: "fadeInUp 0.6s ease-out forwards",
-                                            }}
-                                        >
-                                            {isAvailable ? (
-                                                <Link href={simulator.href} className="block p-6 h-full">
-                                                    <div className="flex items-start justify-between mb-4">
-                                                        <div
-                                                            className={`w-12 h-12 rounded-lg ${simulator.color} flex items-center justify-center group-hover:scale-110 transition-transform duration-200`}
-                                                        >
-                                                            <Icon className="w-6 h-6" />
-                                                        </div>
-                                                        <Badge className="bg-green-100 text-green-700 border-green-200 hover:bg-green-100">
-                                                            {simulator.status}
-                                                        </Badge>
-                                                    </div>
-
-                                                    <h3 className="text-xl font-semibold mb-3 group-hover:text-primary transition-colors">
-                                                        {simulator.title}
-                                                    </h3>
-
-                                                    <p className="text-muted-foreground mb-6 text-sm leading-relaxed">
-                                                        {simulator.description}
-                                                    </p>
-                                                </Link>
-                                            ) : (
-                                                <div className="p-6 h-full">
-                                                    <div className="flex items-start justify-between mb-4">
-                                                        <div
-                                                            className={`w-12 h-12 rounded-lg ${simulator.color} flex items-center justify-center`}
-                                                        >
-                                                            <Icon className="w-6 h-6" />
-                                                        </div>
-                                                        <Badge variant="outline" className="bg-muted/50">
-                                                            {simulator.status}
-                                                        </Badge>
-                                                    </div>
-
-                                                    <h3 className="text-xl font-semibold mb-3">{simulator.title}</h3>
-
-                                                    <p className="text-muted-foreground mb-6 text-sm leading-relaxed">
-                                                        {simulator.description}
-                                                    </p>
-                                                </div>
-                                            )}
-                                        </Card>
-                                    );
-                                })}
-                            </div>
-                        </div>
-
-                        {/* Ads */}
-                        <aside className="lg:col-span-1 space-y-6 lg:sticky lg:top-24 h-fit">
-                            <Card className="border-border">
-                                <div className="p-4">
-                                    <div className="text-center">
-                                        <div className="w-full h-32 bg-gradient-to-br from-primary/10 to-primary/5 rounded-lg flex items-center justify-center mb-3">
-                                            <span className="text-muted-foreground text-sm">Espaço Publicitário</span>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {simulators.map((simulator) => {
+                            const Icon = simulator.icon;
+                            const isAvailable = simulator.status === "Disponível";
+                            return (
+                                <Card
+                                    key={simulator.title}
+                                    className="flex flex-col h-full shadow-sm hover:shadow-md transition-all hover:border-primary"
+                                >
+                                    <CardHeader className="flex flex-row items-start gap-3 pb-3">
+                                        <div className="w-12 h-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+                                            <Icon className="w-6 h-6" />
                                         </div>
-                                        <p className="text-xs text-muted-foreground">Anuncie aqui</p>
-                                    </div>
-                                </div>
-                            </Card>
-
-                            <Card className="border-border">
-                                <div className="p-4">
-                                    <div className="text-center">
-                                        <div className="w-full h-40 bg-gradient-to-br from-secondary/10 to-secondary/5 rounded-lg flex items-center justify-center mb-3">
-                                            <span className="text-muted-foreground text-sm">Patrocinador Premium</span>
+                                        <div className="space-y-1">
+                                            <CardTitle className="text-lg font-semibold">
+                                                {simulator.title}
+                                            </CardTitle>
+                                            <CardDescription className="text-sm text-muted-foreground">
+                                                {simulator.description}
+                                            </CardDescription>
                                         </div>
-                                        <p className="text-xs text-muted-foreground">Seja nosso parceiro</p>
-                                    </div>
-                                </div>
-                            </Card>
-
-                            <Card className="border-border">
-                                <div className="p-4">
-                                    <div className="text-center">
-                                        <div className="w-full h-24 bg-gradient-to-r from-accent/10 to-accent/5 rounded-lg flex items-center justify-center mb-2">
-                                            <span className="text-muted-foreground text-xs">Banner 300x120</span>
+                                    </CardHeader>
+                                    <CardContent className="flex flex-col gap-3 flex-1 pt-0">
+                                        <div className="flex flex-wrap gap-2">
+                                            {simulator.features.map((feature) => (
+                                                <Badge key={feature} variant="secondary" className="text-xs">
+                                                    {feature}
+                                                </Badge>
+                                            ))}
                                         </div>
-                                        <p className="text-xs text-muted-foreground">Seu anúncio aqui</p>
-                                    </div>
-                                </div>
-                            </Card>
-                        </aside>
+                                        <div className="mt-auto">
+                                            <Button
+                                                className="w-full flex items-center justify-center gap-2"
+                                                variant="default"
+                                                asChild={isAvailable}
+                                                disabled={!isAvailable}
+                                            >
+                                                {isAvailable ? (
+                                                    <Link href={simulator.href}>
+                                                        Ver simulador
+                                                        <ArrowRight className="h-4 w-4" />
+                                                    </Link>
+                                                ) : (
+                                                    <>
+                                                        Em breve
+                                                        <ArrowRight className="h-4 w-4" />
+                                                    </>
+                                                )}
+                                            </Button>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            );
+                        })}
                     </div>
                 </div>
             </section>
-            <Footer />
         </div>
     );
 }

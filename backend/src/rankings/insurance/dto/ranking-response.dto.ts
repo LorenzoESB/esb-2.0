@@ -2,8 +2,10 @@ import { ApiProperty } from '@nestjs/swagger';
 
 /**
  * Criterion used in insurance ranking calculation
+ *
+ * Named specifically for insurance to avoid Swagger schema conflicts
  */
-export class RankingCriterionDto {
+export class InsuranceRankingCriterionDto {
   @ApiProperty({
     description: 'Unique key for the criterion',
     example: 'price_competitiveness',
@@ -276,9 +278,9 @@ export class InsuranceRankingResponseDto {
 
   @ApiProperty({
     description: 'Criteria used for the ranking',
-    type: [RankingCriterionDto],
+    type: [InsuranceRankingCriterionDto],
   })
-  criteria: RankingCriterionDto[];
+  criteria: InsuranceRankingCriterionDto[];
 
   @ApiProperty({
     description: 'Date of the last update',

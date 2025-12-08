@@ -11,15 +11,12 @@ import {
   TrendingUp,
   ArrowRight
 } from 'lucide-react';
+import { getRandomAds } from '@/lib/ads';
+import { AdCard } from '@/components/ads/AdCard';
 
-/**
- * Rankings Hub Page
- *
- * Landing page for all ranking features
- * Currently: Card Machines
- * Future: Insurance, Toll Tags, Digital Accounts, Car Subscription
- */
+
 export default function RankingsHubPage() {
+  const rankingAd = getRandomAds(1)[0];
   const rankings = [
     {
       id: 'maquinas-cartao',
@@ -49,7 +46,7 @@ export default function RankingsHubPage() {
       description: 'Comparação de operadoras de pedágio por taxas e conveniência',
       icon: Ticket,
       href: '/rankings/pedagios',
-      status: 'coming_soon',
+      status: 'available',
       count: 6,
       color: 'text-purple-600',
       bgColor: 'bg-purple-50 dark:bg-purple-950',
@@ -60,7 +57,7 @@ export default function RankingsHubPage() {
       description: 'Bancos digitais classificados por serviços, tarifas e benefícios',
       icon: Building2,
       href: '/rankings/contas-digitais',
-      status: 'coming_soon',
+      status: 'available',
       count: 10,
       color: 'text-orange-600',
       bgColor: 'bg-orange-50 dark:bg-orange-950',
@@ -71,7 +68,7 @@ export default function RankingsHubPage() {
       description: 'Serviços de assinatura de veículos por custo-benefício',
       icon: Car,
       href: '/rankings/assinatura-carro',
-      status: 'coming_soon',
+      status: 'available',
       count: 10,
       color: 'text-red-600',
       bgColor: 'bg-red-50 dark:bg-red-950',
@@ -79,9 +76,9 @@ export default function RankingsHubPage() {
   ];
 
   return (
-    <div className="container mx-auto py-8 px-4 max-w-7xl">
+    <div className="container mx-auto py-4 px-4 max-w-7xl">
       {/* Header */}
-      <div className="mb-8 space-y-4">
+      <div className="mb-8 space-y-2">
         <div className="flex items-center gap-3">
           <TrendingUp className="h-8 w-8 text-primary" />
           <h1 className="text-3xl md:text-4xl font-bold">
@@ -94,53 +91,38 @@ export default function RankingsHubPage() {
       </div>
 
       {/* Rankings Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 grid-flow-dense">
         {rankings.map((ranking) => {
           const Icon = ranking.icon;
-          const isAvailable = ranking.status === 'available';
 
           return (
             <Card
               key={ranking.id}
-              className={`transition-all hover:shadow-lg ${
-                isAvailable
-                  ? 'hover:border-primary cursor-pointer'
-                  : 'opacity-75'
-              }`}
+              className="transition-all hover:shadow-lg hover:border-primary cursor-pointer flex flex-col"
             >
-              <CardHeader>
+              <CardHeader className="flex-1">
                 <div className="flex items-start justify-between mb-2">
                   <div className={`p-3 rounded-lg ${ranking.bgColor}`}>
                     <Icon className={`h-6 w-6 ${ranking.color}`} />
                   </div>
-                  {isAvailable ? (
-                    <Badge className="bg-green-600">Disponível</Badge>
-                  ) : (
-                    <Badge variant="secondary">Em Breve</Badge>
-                  )}
+                  <Badge className="bg-green-600">Disponível</Badge>
                 </div>
                 <CardTitle className="text-xl">{ranking.title}</CardTitle>
                 <CardDescription className="min-h-[48px]">
                   {ranking.description}
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="text-sm text-muted-foreground">
-                    {ranking.count} opções ranqueadas
-                  </div>
-                  {isAvailable ? (
-                    <Button className="w-full" asChild>
-                      <Link href={ranking.href}>
-                        Ver Ranking
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                      </Link>
-                    </Button>
-                  ) : (
-                    <Button className="w-full" disabled>
-                      Em Breve
-                    </Button>
-                  )}
+              <CardContent className="pt-0 flex flex-col h-full">
+                <div className="text-sm text-muted-foreground mb-4">
+                  {ranking.count} opções ranqueadas
+                </div>
+                <div className="mt-auto">
+                  <Button className="w-full" asChild>
+                    <Link href={ranking.href}>
+                      Ver Ranking
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
                 </div>
               </CardContent>
             </Card>

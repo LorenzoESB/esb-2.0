@@ -139,9 +139,10 @@ export class CardMachinesRankingService {
     }
 
     // Filter by companies
-    if (query.companies && query.companies.length > 0) {
+    const companies = query.companies;
+    if (companies && companies.length > 0) {
       filtered = filtered.filter((m) =>
-        query.companies.some(
+        companies.some(
           (company) => m.empresa.toLowerCase() === company.toLowerCase(),
         ),
       );

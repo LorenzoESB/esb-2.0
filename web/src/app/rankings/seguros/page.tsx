@@ -8,9 +8,12 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAutoIframeHeight } from '@/lib/hooks/use-auto-iframe-height';
 import { ShieldCheck, AlertCircle, Info, Sparkles } from 'lucide-react';
+import { AdCard } from '@/components/ads/AdCard';
+import { getRandomAds } from '@/lib/ads';
 
 export default function InsuranceRankingPage() {
   const { data, isLoading, error } = useInsuranceRanking();
+  const ad = getRandomAds(1)[0];
 
   useAutoIframeHeight([data]);
 
@@ -31,6 +34,11 @@ export default function InsuranceRankingPage() {
         <p className="text-lg text-muted-foreground">
           As seguradoras mais completas ranqueadas por preço, cobertura, atendimento e confiança
         </p>
+        {ad && (
+          <div className="max-w-md">
+            <AdCard ad={ad} />
+          </div>
+        )}
       </div>
 
       <Alert className="mb-6">

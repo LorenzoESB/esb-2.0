@@ -7,6 +7,8 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AlertCircle, TrendingUp, Info } from 'lucide-react';
 import { useAutoIframeHeight } from '@/lib/hooks/use-auto-iframe-height';
+import { AdCard } from '@/components/ads/AdCard';
+import { getRandomAds } from '@/lib/ads';
 
 /**
  * Card Machines Ranking Page
@@ -22,6 +24,7 @@ import { useAutoIframeHeight } from '@/lib/hooks/use-auto-iframe-height';
  */
 export default function CardMachinesRankingPage() {
   const { data, isLoading, error } = useCardMachinesRanking();
+  const ad = getRandomAds(1)[0];
 
   // Auto adjust iframe height for embedded views
   useAutoIframeHeight([data]);
@@ -39,6 +42,11 @@ export default function CardMachinesRankingPage() {
         <p className="text-lg text-muted-foreground">
           As melhores maquininhas de cartão classificadas por taxas, transparência, funcionalidades e reputação
         </p>
+        {ad && (
+          <div className="max-w-md">
+            <AdCard ad={ad} />
+          </div>
+        )}
       </div>
 
       {/* Methodology Info */}

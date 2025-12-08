@@ -12,10 +12,11 @@ import Link from "next/link"; // Import Next.js Link
 interface PaginationProps {
     currentPage: number;
     totalPages: number;
-    searchQuery: string;
+    searchQuery?: string;
+    onPageChange?: (page: number) => void;
 }
 
-export function PaginationPosts({ currentPage, totalPages, searchQuery }: PaginationProps) {
+export function PaginationPosts({ currentPage, totalPages, searchQuery = "", onPageChange }: PaginationProps) {
     const getPageLink = (page: number) => {
         const params = new URLSearchParams();
         if (searchQuery) params.set("search", searchQuery);
@@ -38,7 +39,16 @@ export function PaginationPosts({ currentPage, totalPages, searchQuery }: Pagina
                     {/* Previous Button */}
                     <PaginationItem>
                         {currentPage > 1 ? (
+                            onPageChange ? (
+                                <button
+                                    onClick={() => onPageChange(currentPage - 1)}
+                                    className="px-3 py-2 rounded-md border hover:bg-muted"
+                                >
+                                    Anterior
+                                </button>
+                            ) : (
                             <PaginationPrevious href={getPageLink(currentPage - 1)} />
+                            )
                         ) : (
                             <PaginationPrevious href="#" className="pointer-events-none opacity-50" />
                         )}
@@ -54,9 +64,20 @@ export function PaginationPosts({ currentPage, totalPages, searchQuery }: Pagina
                     {/* Dynamic Page Links */}
                     {pagesToShow.map((page) => (
                         <PaginationItem key={page}>
-                            <PaginationLink href={getPageLink(page)} isActive={page === currentPage}>
-                                {page}
-                            </PaginationLink>
+                            {onPageChange ? (
+                                <button
+                                    onClick={() => onPageChange(page)}
+                                    className={`px-3 py-2 rounded-md border ${
+                                        page === currentPage ? "bg-primary text-primary-foreground" : "hover:bg-muted"
+                                    }`}
+                                >
+                                    {page}
+                                </button>
+                            ) : (
+                                <PaginationLink href={getPageLink(page)} isActive={page === currentPage}>
+                                    {page}
+                                </PaginationLink>
+                            )}
                         </PaginationItem>
                     ))}
 
@@ -70,7 +91,16 @@ export function PaginationPosts({ currentPage, totalPages, searchQuery }: Pagina
                     {/* Next Button */}
                     <PaginationItem>
                         {currentPage < totalPages ? (
+                            onPageChange ? (
+                                <button
+                                    onClick={() => onPageChange(currentPage + 1)}
+                                    className="px-3 py-2 rounded-md border hover:bg-muted"
+                                >
+                                    Próxima
+                                </button>
+                            ) : (
                             <PaginationNext href={getPageLink(currentPage + 1)} />
+                            )
                         ) : (
                             <PaginationNext href="#" className="pointer-events-none opacity-50" />
                         )}

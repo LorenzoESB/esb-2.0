@@ -3,7 +3,8 @@ const API_URL = process.env.WORDPRESS_API_URL;
 export async function getAllPosts(
   maxPosts: number,
   search?: string,
-  currentPage: number = 1
+  currentPage: number = 1,
+  categoryId?: number,
 ) {
   if (!maxPosts || maxPosts <= 0) {
     maxPosts = 10;
@@ -11,12 +12,15 @@ export async function getAllPosts(
 
   const searchParam = search ? `&search=${encodeURIComponent(search)}` : "";
   const pageParam = `&page=${encodeURIComponent(currentPage)}`;
+  const categoryParam =
+    categoryId && categoryId > 0
+      ? `&categories=${encodeURIComponent(categoryId)}`
+      : "";
 
   const res = await fetch(
-    `${API_URL}/posts?_embed&per_page=${maxPosts}${searchParam}${pageParam}`,
+    `${API_URL}/posts?_embed&per_page=${maxPosts}${searchParam}${pageParam}${categoryParam}`,
     {
-      cache: "no-store",
-      // ou: next: { revalidate: 60 } // cache controlado de 60s
+      next: { revalidate: 60 },
     }
   );
 
@@ -37,7 +41,9 @@ export async function getAllPosts(
 }
 
 export async function getPostBySlug(slug: string) {
-  const res = await fetch(`${API_URL}/posts?slug=${slug}&_embed`);
+  const res = await fetch(`${API_URL}/posts?slug=${slug}&_embed`, {
+    next: { revalidate: 60 },
+  });
   if (!res.ok) {
     throw new Error("Failed to fetch post");
   }
@@ -46,7 +52,9 @@ export async function getPostBySlug(slug: string) {
 }
 
 export async function getPageBySlug(slug: string) {
-  const res = await fetch(`${API_URL}/pages?slug=${slug}&_embed`);
+  const res = await fetch(`${API_URL}/pages?slug=${slug}&_embed`, {
+    next: { revalidate: 60 },
+  });
   if (!res.ok) {
     throw new Error("Failed to fetch page");
   }
@@ -55,7 +63,9 @@ export async function getPageBySlug(slug: string) {
 }
 
 export async function getCategories() {
-  const res = await fetch(`${API_URL}/categories`);
+  const res = await fetch(`${API_URL}/categories`, {
+    next: { revalidate: 60 },
+  });
   if (!res.ok) {
     throw new Error("Failed to fetch categories");
   }
@@ -63,7 +73,12 @@ export async function getCategories() {
 }
 
 export async function getPostsByCategory(categoryId: number) {
-  const res = await fetch(`${API_URL}/posts?categories=${categoryId}&_embed`);
+  const res = await fetch(
+    `${API_URL}/posts?categories=${categoryId}&_embed`,
+    {
+      next: { revalidate: 60 },
+    }
+  );
   if (!res.ok) {
     throw new Error("Failed to fetch posts");
   }
