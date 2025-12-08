@@ -4,7 +4,8 @@ WORKDIR /app
 
 RUN apk add --no-cache dumb-init git openssh bash openssl
 
-RUN corepack enable && corepack prepare pnpm@9.0.0 --activate
+ARG PNPM_VERSION=9.12.3
+RUN corepack enable && corepack prepare pnpm@${PNPM_VERSION} --activate
 
 ARG DATABASE_URL="postgresql://user:password@localhost:5432/postgres?schema=public"
 ENV DATABASE_URL=${DATABASE_URL}
