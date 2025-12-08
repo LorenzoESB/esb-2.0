@@ -191,22 +191,18 @@ export class ContasDigitaisService {
             debito: dto.debito,
             // Campos específicos de PF
             ...(dto.tipoPessoa === TipoPessoa.FISICA && {
-              nDepositos: (dto as SimularContasDigitaisFisicaDto).nDepositos,
-              credito: (dto as SimularContasDigitaisFisicaDto).credito,
-              investimentos: (dto as SimularContasDigitaisFisicaDto)
-                .investimentos,
-              transferencias: (dto as SimularContasDigitaisFisicaDto)
-                .transferencias,
-              depCheque: (dto as SimularContasDigitaisFisicaDto).depCheque,
+              nDepositos: dto.nDepositos,
+              credito: dto.credito,
+              investimentos: dto.investimentos,
+              transferencias: dto.transferencias,
+              depCheque: dto.depCheque,
             }),
             // Campos específicos de PJ
             ...(dto.tipoPessoa === TipoPessoa.JURIDICA && {
-              boletos: (dto as SimularContasDigitaisJuridicaDto).boletos,
-              maquininha: (dto as SimularContasDigitaisJuridicaDto).maquininha,
-              folhaPagamento: (dto as SimularContasDigitaisJuridicaDto)
-                .folhaPagamento,
-              cartaoVirtual: (dto as SimularContasDigitaisJuridicaDto)
-                .cartaoVirtual,
+              boletos: dto.boletos,
+              maquininha: dto.maquininha,
+              folhaPagamento: dto.folhaPagamento,
+              cartaoVirtual: dto.cartaoVirtual,
             }),
           },
           outputData: {
@@ -236,10 +232,7 @@ export class ContasDigitaisService {
       );
     } catch (error) {
       // Não falhar a simulação se o salvamento falhar
-      this.logger.error(
-        'Failed to save simulation to database',
-        error.stack,
-      );
+      this.logger.error('Failed to save simulation to database', error.stack);
     }
   }
 }

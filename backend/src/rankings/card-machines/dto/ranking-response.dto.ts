@@ -112,7 +112,10 @@ export class MachineFeaturesDto {
   @ApiProperty({ description: 'Requires smartphone', example: false })
   precisa_smartphone: boolean;
 
-  @ApiProperty({ description: 'Allows receivables anticipation', example: true })
+  @ApiProperty({
+    description: 'Allows receivables anticipation',
+    example: true,
+  })
   permite_antecipacao: boolean;
 
   @ApiProperty({ description: 'Serves individuals (PF)', example: true })

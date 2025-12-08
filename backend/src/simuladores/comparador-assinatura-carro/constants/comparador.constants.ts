@@ -69,7 +69,9 @@ export const AJUSTES_ASSINATURA = {
  * - Após 2 anos: Vale R$ 60.000 (perdeu 25% do original)
  * - Após 3 anos: Vale R$ 56.000 (perdeu 30% do original)
  */
-export const CURVA_DEPRECIACAO_PERCENT = [20.0, 25.0, 30.0, 35.0, 39.0] as const;
+export const CURVA_DEPRECIACAO_PERCENT = [
+  20.0, 25.0, 30.0, 35.0, 39.0,
+] as const;
 
 /**
  * URLs de redirecionamento (links educacionais)

@@ -1,4 +1,7 @@
-import { BaseRankingItem, RawScores } from '../../shared/interfaces/base-ranking.interface';
+import {
+  BaseRankingItem,
+  RawScores,
+} from '../../shared/interfaces/base-ranking.interface';
 
 /**
  * Coverage details for an insurance company
@@ -43,17 +46,17 @@ export interface InsurancePricing {
  * Used for score calculation
  */
 export interface InsuranceRawScores extends RawScores {
-  price_competitiveness: number;    // 0-10 scale (lower price = higher score)
-  coverage_completeness: number;     // 0-10 scale
-  claim_process: number;             // 0-10 scale
-  customer_service: number;          // 0-10 scale
-  financial_strength: number;        // 0-10 scale
-  network_coverage: number;          // 0-10 scale (number of workshops)
-  digital_services: number;          // 0-10 scale
-  additional_benefits: number;       // 0-10 scale
-  transparency: number;              // 0-10 scale
-  claim_approval_rate: number;       // 0-10 scale
-  reputation: number;                // 0-10 scale
+  price_competitiveness: number; // 0-10 scale (lower price = higher score)
+  coverage_completeness: number; // 0-10 scale
+  claim_process: number; // 0-10 scale
+  customer_service: number; // 0-10 scale
+  financial_strength: number; // 0-10 scale
+  network_coverage: number; // 0-10 scale (number of workshops)
+  digital_services: number; // 0-10 scale
+  additional_benefits: number; // 0-10 scale
+  transparency: number; // 0-10 scale
+  claim_approval_rate: number; // 0-10 scale
+  reputation: number; // 0-10 scale
 }
 
 /**
@@ -66,7 +69,7 @@ export interface InsuranceRankingItem extends BaseRankingItem {
   coverage: InsuranceCoverage;
   services: InsuranceServices;
   pricing: InsurancePricing;
-  avaliacao_clientes: number;        // 0-5 scale
+  avaliacao_clientes: number; // 0-5 scale
   tempo_mercado_anos: number;
   sinistros_aprovados_percentual: number;
   observacoes: string | null;

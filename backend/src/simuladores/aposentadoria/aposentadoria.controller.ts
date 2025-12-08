@@ -1,4 +1,13 @@
-import { Controller, Post, Body, HttpCode, HttpStatus, Logger, UsePipes, ValidationPipe } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  HttpCode,
+  HttpStatus,
+  Logger,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
@@ -78,10 +87,7 @@ export class AposentadoriaController {
 
       return result;
     } catch (error) {
-      this.logger.error(
-        'Error calculating retirement simulation',
-        error.stack,
-      );
+      this.logger.error('Error calculating retirement simulation', error.stack);
       throw error;
     }
   }

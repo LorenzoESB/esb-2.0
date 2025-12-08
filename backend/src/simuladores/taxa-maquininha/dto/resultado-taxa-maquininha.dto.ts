@@ -1,5 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { TipoConexao, Bandeira, FormaRecebimento } from '../interfaces/maquininha.interface';
+import {
+  TipoConexao,
+  Bandeira,
+  FormaRecebimento,
+} from '../interfaces/maquininha.interface';
 
 /**
  * DTO para o resultado de uma maquininha calculada
@@ -43,7 +47,7 @@ export class MaquininhaCalculadaDto {
 
   @ApiProperty({
     description: 'Custo mensal total (principal métrica de comparação)',
-    example: 125.50,
+    example: 125.5,
   })
   valor_mensal: number;
 
@@ -275,7 +279,8 @@ export class MaquininhaCalculadaDto {
  */
 export class ResultadoTaxaMaquininhaDto {
   @ApiProperty({
-    description: 'Lista de maquininhas calculadas, ordenadas por custo mensal (menor primeiro)',
+    description:
+      'Lista de maquininhas calculadas, ordenadas por custo mensal (menor primeiro)',
     type: [MaquininhaCalculadaDto],
   })
   maquininhas: MaquininhaCalculadaDto[];

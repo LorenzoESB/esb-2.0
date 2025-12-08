@@ -74,7 +74,8 @@ export class OfertaEmprestimoDto {
   logo?: string;
 
   @ApiProperty({
-    description: 'Percentual de comprometimento da renda (se renda foi informada)',
+    description:
+      'Percentual de comprometimento da renda (se renda foi informada)',
     example: 10.41,
     required: false,
   })
@@ -88,7 +89,8 @@ export class OfertaEmprestimoDto {
  */
 export class ResultadoEmprestimoDto {
   @ApiProperty({
-    description: 'Lista de ofertas de empréstimo disponíveis, ordenadas por taxa mensal (menor para maior)',
+    description:
+      'Lista de ofertas de empréstimo disponíveis, ordenadas por taxa mensal (menor para maior)',
     type: [OfertaEmprestimoDto],
   })
   ofertas: OfertaEmprestimoDto[];

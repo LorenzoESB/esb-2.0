@@ -44,9 +44,7 @@ export class CardMachineScoreCalculator {
       const rawScore = rawScores[criterion.key];
 
       if (rawScore === undefined) {
-        throw new Error(
-          `Missing raw score for criterion: ${criterion.key}`,
-        );
+        throw new Error(`Missing raw score for criterion: ${criterion.key}`);
       }
 
       // Validate raw score is in 0-10 range
@@ -133,7 +131,9 @@ export class CardMachineScoreCalculator {
    */
   static rankMachines(machines: MachineData[]): MachineData[] {
     // Sort by static_score descending (highest first)
-    const sorted = [...machines].sort((a, b) => b.static_score - a.static_score);
+    const sorted = [...machines].sort(
+      (a, b) => b.static_score - a.static_score,
+    );
 
     // Assign ranks
     sorted.forEach((machine, index) => {
@@ -194,7 +194,8 @@ export class CardMachineScoreCalculator {
 
     for (const criterion of CARD_MACHINE_CRITERIA) {
       const rawScore = rawScores[criterion.key];
-      const contribution = (rawScore * criterion.weight) / TOTAL_CRITERIA_WEIGHT;
+      const contribution =
+        (rawScore * criterion.weight) / TOTAL_CRITERIA_WEIGHT;
       const percentage = (contribution / totalScore) * 100;
 
       contributions[criterion.key] = {

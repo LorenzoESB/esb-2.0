@@ -1,4 +1,8 @@
-import { ModeloCobranca, TipoFaixa, TipoRecebimentoParcelado } from '../enums/modelo-cobranca.enum';
+import {
+  ModeloCobranca,
+  TipoFaixa,
+  TipoRecebimentoParcelado,
+} from '../enums/modelo-cobranca.enum';
 
 /**
  * Bandeira de cartão aceita pela maquininha

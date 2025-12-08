@@ -11,7 +11,10 @@ import {
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { AmortizacaoService } from './amortizacao.service';
 import { AmortizacaoInputDto } from './dto/amortizacao-input.dto';
-import { AmortizacaoSimplesOutputDto, SimulacaoComparativaDto } from './dto/amortizacao-output.dto';
+import {
+  AmortizacaoSimplesOutputDto,
+  SimulacaoComparativaDto,
+} from './dto/amortizacao-output.dto';
 
 @ApiTags('Amortization')
 @Controller('simuladores/amortizacao')
@@ -58,8 +61,14 @@ export class AmortizacaoController {
       'Returns two simplified amortization scenarios (por prazo e por prestação) and a small comparative analysis',
   })
   @ApiBody({ type: AmortizacaoInputDto })
-  @ApiResponse({ status: HttpStatus.OK, description: 'Comparison result', type: SimulacaoComparativaDto })
-  async compararSistemas(@Body() input: AmortizacaoInputDto): Promise<SimulacaoComparativaDto> {
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Comparison result',
+    type: SimulacaoComparativaDto,
+  })
+  async compararSistemas(
+    @Body() input: AmortizacaoInputDto,
+  ): Promise<SimulacaoComparativaDto> {
     try {
       this.logger.log('Received simplified amortization comparison request');
       return await this.amortizacaoService.compararSistemas(input);

@@ -140,17 +140,30 @@ export class ResumoSimplesDto {
 
   @ApiProperty({ description: 'Current outstanding balance' })
   saldoDevedor: number;
-  
-  @ApiProperty({ description: 'New monthly amortization amount', required: false })
+
+  @ApiProperty({
+    description: 'New monthly amortization amount',
+    required: false,
+  })
   novaAmortizacaoMensal?: number;
 
-  @ApiProperty({ description: 'Reduction in term (months) compared to original remaining term', required: false })
+  @ApiProperty({
+    description:
+      'Reduction in term (months) compared to original remaining term',
+    required: false,
+  })
   reducaoPrazo?: number;
 
-  @ApiProperty({ description: 'Reduction in installment amount (if applicable)', required: false })
+  @ApiProperty({
+    description: 'Reduction in installment amount (if applicable)',
+    required: false,
+  })
   reducaoPrestacao?: number;
-  
-  @ApiProperty({ description: 'Interest savings compared to the original schedule', required: false })
+
+  @ApiProperty({
+    description: 'Interest savings compared to the original schedule',
+    required: false,
+  })
   economiaJuros?: number;
 }
 

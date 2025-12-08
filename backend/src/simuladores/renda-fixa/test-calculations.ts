@@ -40,13 +40,19 @@ const resultado = calcularInvestimentosRendaFixa(
 
 console.log('ECONOMIC RATES (MONTHLY):');
 console.log(`  SELIC monthly: ${resultado.poupanca.taxa.mul(100).toFixed(4)}%`);
-console.log(`  CDI monthly: ${resultado.cdb.taxa.div(1.1).mul(100).toFixed(4)}%`);
+console.log(
+  `  CDI monthly: ${resultado.cdb.taxa.div(1.1).mul(100).toFixed(4)}%`,
+);
 console.log();
 
 // Helper function to format results
 function formatModalidade(nome: string, modalidade: any) {
   const taxaMensal = modalidade.taxa.mul(100);
-  const taxaAnual = new Decimal(1).plus(modalidade.taxa).pow(12).minus(1).mul(100);
+  const taxaAnual = new Decimal(1)
+    .plus(modalidade.taxa)
+    .pow(12)
+    .minus(1)
+    .mul(100);
   const rendimentoLiquido = modalidade.resultado.minus(investimento);
   const percentualRetorno = rendimentoLiquido.div(investimento).mul(100);
 
@@ -54,7 +60,9 @@ function formatModalidade(nome: string, modalidade: any) {
   console.log(`  Monthly Rate: ${taxaMensal.toFixed(4)}%`);
   console.log(`  Annual Rate: ${taxaAnual.toFixed(2)}%`);
   console.log(`  Final Value: R$ ${modalidade.resultado.toFixed(2)}`);
-  console.log(`  Net Return: R$ ${rendimentoLiquido.toFixed(2)} (${percentualRetorno.toFixed(2)}%)`);
+  console.log(
+    `  Net Return: R$ ${rendimentoLiquido.toFixed(2)} (${percentualRetorno.toFixed(2)}%)`,
+  );
   console.log(`  IR Withheld: R$ ${modalidade.imposto.toFixed(2)}`);
   console.log();
 }
@@ -82,25 +90,39 @@ console.log('COMPARISON WITH LEGACY EXPECTATIONS:');
 console.log('='.repeat(80));
 console.log();
 
-const lciAnual = new Decimal(1).plus(resultado.lci.taxa).pow(12).minus(1).mul(100);
-const cdbAnual = new Decimal(1).plus(resultado.cdb.taxa).pow(12).minus(1).mul(100);
+const lciAnual = new Decimal(1)
+  .plus(resultado.lci.taxa)
+  .pow(12)
+  .minus(1)
+  .mul(100);
+const cdbAnual = new Decimal(1)
+  .plus(resultado.cdb.taxa)
+  .pow(12)
+  .minus(1)
+  .mul(100);
 
 // Calculate CDB net annual (with IR applied)
-const cdbGrossReturn = resultado.cdb.resultado.plus(resultado.cdb.imposto).minus(investimento);
+const cdbGrossReturn = resultado.cdb.resultado
+  .plus(resultado.cdb.imposto)
+  .minus(investimento);
 const cdbNetReturn = resultado.cdb.resultado.minus(investimento);
 const cdbNetAnual = cdbNetReturn.div(investimento).mul(100);
 
 console.log('LCI:');
 console.log(`  Calculated: ${lciAnual.toFixed(2)}%`);
 console.log(`  Expected: ~13.62%`);
-console.log(`  Match: ${Math.abs(lciAnual.toNumber() - 13.62) < 0.5 ? '✅' : '⚠️'}`);
+console.log(
+  `  Match: ${Math.abs(lciAnual.toNumber() - 13.62) < 0.5 ? '✅' : '⚠️'}`,
+);
 console.log();
 
 console.log('CDB:');
 console.log(`  Gross Annual Rate: ${cdbAnual.toFixed(2)}%`);
 console.log(`  Net Annual Return (with IR): ${cdbNetAnual.toFixed(2)}%`);
 console.log(`  Expected: ~13.09%`);
-console.log(`  Match: ${Math.abs(cdbNetAnual.toNumber() - 13.09) < 1.0 ? '⚠️ Close' : '❌'}`);
+console.log(
+  `  Match: ${Math.abs(cdbNetAnual.toNumber() - 13.09) < 1.0 ? '⚠️ Close' : '❌'}`,
+);
 console.log();
 
 console.log('='.repeat(80));
@@ -108,7 +130,9 @@ console.log('NOTES:');
 console.log('='.repeat(80));
 console.log('• LCI uses 91.5% of CDI (corrected from 90%)');
 console.log('• CDB uses 110% of CDI with IR applied on gains');
-console.log('• Monthly rates reflect actual instrument yields (not blended averages)');
+console.log(
+  '• Monthly rates reflect actual instrument yields (not blended averages)',
+);
 console.log('• No monthly contributions (aportes) included');
 console.log('• IR applied at end of period based on total days');
 console.log('• Expected values may vary with current BCB rates');

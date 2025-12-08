@@ -1,13 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import {
-  IsString,
-  IsNumber,
-  IsEmail,
-  IsEnum,
-  Min,
-  Max,
-} from 'class-validator';
+import { IsString, IsNumber, IsEmail, IsEnum, Min, Max } from 'class-validator';
 
 /**
  * Tipo de veículo para financiamento

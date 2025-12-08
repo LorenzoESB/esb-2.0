@@ -95,9 +95,7 @@ export class FinanciamentoImovelService {
    */
   private validarDados(dto: SimularFinanciamentoImovelDto): void {
     if (dto.valorEntrada >= dto.valorImovel) {
-      throw new Error(
-        'Down payment must be less than property value',
-      );
+      throw new Error('Down payment must be less than property value');
     }
 
     const valorFinanciado = dto.valorImovel - dto.valorEntrada;
@@ -226,10 +224,7 @@ export class FinanciamentoImovelService {
       );
     } catch (error) {
       // Não falhar a simulação se o salvamento falhar
-      this.logger.error(
-        'Failed to save simulation to database',
-        error.stack,
-      );
+      this.logger.error('Failed to save simulation to database', error.stack);
     }
   }
 }

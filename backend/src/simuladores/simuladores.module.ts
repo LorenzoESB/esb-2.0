@@ -33,4 +33,4 @@ import { TaxaMaquininhaModule } from './taxa-maquininha/taxa-maquininha.module';
   providers: [],
   exports: [],
 })
-export class SimuladoresModule { }
+export class SimuladoresModule {}

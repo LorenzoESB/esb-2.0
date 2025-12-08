@@ -7,12 +7,7 @@ import {
   Logger,
   ValidationPipe,
 } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiQuery,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { CardMachinesRankingService } from './card-machines-ranking.service';
 import {
   CardMachineRankingResponseDto,
@@ -25,9 +20,7 @@ import { CardMachineRankingQueryDto } from './dto/ranking-request.dto';
 export class CardMachinesRankingController {
   private readonly logger = new Logger(CardMachinesRankingController.name);
 
-  constructor(
-    private readonly rankingService: CardMachinesRankingService,
-  ) {}
+  constructor(private readonly rankingService: CardMachinesRankingService) {}
 
   @Get()
   @HttpCode(HttpStatus.OK)
@@ -116,7 +109,8 @@ export class CardMachinesRankingController {
     name: 'companies',
     required: false,
     type: String,
-    description: 'Filter by company names (comma-separated, e.g., "InfinitePay,PagSeguro")',
+    description:
+      'Filter by company names (comma-separated, e.g., "InfinitePay,PagSeguro")',
   })
   @ApiQuery({
     name: 'sem_mensalidade',

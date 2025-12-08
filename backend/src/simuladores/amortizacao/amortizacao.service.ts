@@ -12,7 +12,7 @@ import { SimulatorType } from '@prisma/client';
 export class AmortizacaoService {
   private readonly logger = new Logger(AmortizacaoService.name);
 
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async calcularAmortizacao(
     input: AmortizacaoInputDto,
@@ -50,7 +50,12 @@ export class AmortizacaoService {
     return Math.pow(1 + anualDecimal, 1 / 12) - 1;
   }
 
-  private computeTotalInterest(saldoInicial: number, amortizacaoMensal: number, taxaMensal: number, meses: number): number {
+  private computeTotalInterest(
+    saldoInicial: number,
+    amortizacaoMensal: number,
+    taxaMensal: number,
+    meses: number,
+  ): number {
     // Sum interest over 'meses' months using constant amortizacaoMensal.
     // Adjust the last amortization so the balance never goes negative.
     let saldo = saldoInicial;
@@ -80,7 +85,10 @@ export class AmortizacaoService {
     const taxaAdm = input.taxaAdministracao || 0;
 
     let saldoDevedor = saldoInicial;
-    if (input.amortizacoesExtraordinarias && input.amortizacoesExtraordinarias.length > 0) {
+    if (
+      input.amortizacoesExtraordinarias &&
+      input.amortizacoesExtraordinarias.length > 0
+    ) {
       for (const ae of input.amortizacoesExtraordinarias) {
         if ((ae.mesOcorrencia || 0) <= parcelaAtual) {
           saldoDevedor = Math.max(0, saldoDevedor - (ae.valor || 0));
@@ -89,7 +97,8 @@ export class AmortizacaoService {
     }
 
     const jurosAtual = saldoDevedor * taxaMensal;
-    const amortizacaoMensal = prazoRestante > 0 ? saldoDevedor / prazoRestante : saldoDevedor;
+    const amortizacaoMensal =
+      prazoRestante > 0 ? saldoDevedor / prazoRestante : saldoDevedor;
     const novaPrestacao = jurosAtual + amortizacaoMensal + seguro + taxaAdm;
 
     const resumo: ResumoSimplesDto = {
@@ -123,11 +132,17 @@ export class AmortizacaoService {
 
     // Apply only extraordinary amortizations that have already occurred (mesOcorrencia <= parcelaAtual)
     let somaExtra = 0;
-    if (input.amortizacoesExtraordinarias && input.amortizacoesExtraordinarias.length > 0) {
-      somaExtra = input.amortizacoesExtraordinarias.reduce((s: number, a: any) => {
-        const occ = a?.mesOcorrencia || 0;
-        return s + ((occ <= parcelaAtual) ? (a?.valor || 0) : 0);
-      }, 0);
+    if (
+      input.amortizacoesExtraordinarias &&
+      input.amortizacoesExtraordinarias.length > 0
+    ) {
+      somaExtra = input.amortizacoesExtraordinarias.reduce(
+        (s: number, a: any) => {
+          const occ = a?.mesOcorrencia || 0;
+          return s + (occ <= parcelaAtual ? a?.valor || 0 : 0);
+        },
+        0,
+      );
     }
 
     const novoSaldo = Math.max(0, saldoInicial - somaExtra);
@@ -135,7 +150,8 @@ export class AmortizacaoService {
     const seguro = input.seguroMensal || 0;
     const taxaAdm = input.taxaAdministracao || 0;
 
-    const amortizacaoMensalOriginal = prazoTotal > 0 ? input.valorFinanciamento / prazoTotal : 0;
+    const amortizacaoMensalOriginal =
+      prazoTotal > 0 ? input.valorFinanciamento / prazoTotal : 0;
 
     // ---- POR_PRAZO calculation following the original algorithm ----
     const trEstimada = 1.00116;
@@ -143,22 +159,23 @@ export class AmortizacaoService {
     const amortExtra = somaExtra;
 
     // saldoTr = (saldoDev - amortExtra) * trEstimada
-    const saldoTr = Math.max(0, (saldoDev - amortExtra)) * trEstimada;
+    const saldoTr = Math.max(0, saldoDev - amortExtra) * trEstimada;
     // saldoAmortizacao = saldoTr - amortMes (use current amortizacao; assume original constant if not provided)
     const amortMes = amortizacaoMensalOriginal;
     const saldoAmortizacao = Math.max(0, saldoTr - amortMes);
 
     // taxaMensal is already decimal (e.g., 0.0075)
-    const prestacaoTemp = amortMes + (taxaMensal * saldoDev);
+    const prestacaoTemp = amortMes + taxaMensal * saldoDev;
     const taxasSeguro = seguro + taxaAdm;
     const valorPagoTemp = prestacaoTemp + taxasSeguro;
 
-    let aux = (prazoTotal - parcelaAtual) + 1;
-    aux = aux > 0 ? (saldoDev / aux) : saldoDev;
+    let aux = prazoTotal - parcelaAtual + 1;
+    aux = aux > 0 ? saldoDev / aux : saldoDev;
     aux = valorPagoTemp + aux;
     const prestacaoVirtual = Math.round(aux * 100) / 100 - amortMes;
 
-    const val = prestacaoVirtual - seguro - taxaAdm - (saldoAmortizacao * taxaMensal);
+    const val =
+      prestacaoVirtual - seguro - taxaAdm - saldoAmortizacao * taxaMensal;
 
     let prazoPrazo: number;
     if (val <= 0) {
@@ -170,21 +187,36 @@ export class AmortizacaoService {
       prazoPrazo = Math.min(prazoRest, prazoRestanteOriginal);
     }
 
-    const novaAmortizacaoPrazo = prazoPrazo > 0 ? (saldoAmortizacao / prazoPrazo) : amortizacaoMensalOriginal;
-    const novaPrestacaoPrazo = (saldoAmortizacao * taxaMensal) + novaAmortizacaoPrazo + taxasSeguro;
+    const novaAmortizacaoPrazo =
+      prazoPrazo > 0
+        ? saldoAmortizacao / prazoPrazo
+        : amortizacaoMensalOriginal;
+    const novaPrestacaoPrazo =
+      saldoAmortizacao * taxaMensal + novaAmortizacaoPrazo + taxasSeguro;
 
     // ---- POR_PRESTACAO (unchanged) ----
-    const novaAmortizacaoPrestacao = prazoRestanteOriginal > 0
-      ? novoSaldo / prazoRestanteOriginal
-      : 0;
+    const novaAmortizacaoPrestacao =
+      prazoRestanteOriginal > 0 ? novoSaldo / prazoRestanteOriginal : 0;
 
-    const novaPrestacaoPrestacao = (novoSaldo * taxaMensal) + novaAmortizacaoPrestacao + seguro + taxaAdm;
+    const novaPrestacaoPrestacao =
+      novoSaldo * taxaMensal + novaAmortizacaoPrestacao + seguro + taxaAdm;
 
     // compute interest economy: compare interest over remaining term using original amortizacao vs new schedule
     const mesesOriginais = prazoRestanteOriginal;
-    const totalJurosOrig = this.computeTotalInterest(novoSaldo, amortizacaoMensalOriginal, taxaMensal, mesesOriginais);
-    const totalJurosPrazo = this.computeTotalInterest(novoSaldo, novaAmortizacaoPrazo, taxaMensal, prazoPrazo);
-    const economiaJurosPrazo = Math.round((totalJurosOrig - totalJurosPrazo) * 100) / 100;
+    const totalJurosOrig = this.computeTotalInterest(
+      novoSaldo,
+      amortizacaoMensalOriginal,
+      taxaMensal,
+      mesesOriginais,
+    );
+    const totalJurosPrazo = this.computeTotalInterest(
+      novoSaldo,
+      novaAmortizacaoPrazo,
+      taxaMensal,
+      prazoPrazo,
+    );
+    const economiaJurosPrazo =
+      Math.round((totalJurosOrig - totalJurosPrazo) * 100) / 100;
 
     const simulacaoPrazo: AmortizacaoSimplesOutputDto = {
       resumo: {
@@ -200,13 +232,26 @@ export class AmortizacaoService {
     };
 
     // economia para prestacao: compare interest using original amortizacao vs new amortizacao over original remaining months
-  const totalJurosPrestacaoNew = this.computeTotalInterest(novoSaldo, novaAmortizacaoPrestacao, taxaMensal, prazoRestanteOriginal);
-  const economiaJurosPrestacao = Math.round((totalJurosOrig - totalJurosPrestacaoNew) * 100) / 100;
+    const totalJurosPrestacaoNew = this.computeTotalInterest(
+      novoSaldo,
+      novaAmortizacaoPrestacao,
+      taxaMensal,
+      prazoRestanteOriginal,
+    );
+    const economiaJurosPrestacao =
+      Math.round((totalJurosOrig - totalJurosPrestacaoNew) * 100) / 100;
 
-    const amortizacaoAtual = prazoRestanteOriginal > 0 ? (saldoInicial / prazoRestanteOriginal) : saldoInicial;
+    const amortizacaoAtual =
+      prazoRestanteOriginal > 0
+        ? saldoInicial / prazoRestanteOriginal
+        : saldoInicial;
     const jurosAtualParaReducao = saldoInicial * taxaMensal;
-    const prestacaoAtualCalc = jurosAtualParaReducao + amortizacaoAtual + seguro + taxaAdm;
-    const reducaoPrestacaoVal = Math.round(Math.max(0, prestacaoAtualCalc - novaPrestacaoPrestacao) * 100) / 100;
+    const prestacaoAtualCalc =
+      jurosAtualParaReducao + amortizacaoAtual + seguro + taxaAdm;
+    const reducaoPrestacaoVal =
+      Math.round(
+        Math.max(0, prestacaoAtualCalc - novaPrestacaoPrestacao) * 100,
+      ) / 100;
 
     const simulacaoPrestacao: AmortizacaoSimplesOutputDto = {
       resumo: {
@@ -224,9 +269,23 @@ export class AmortizacaoService {
     const simulacoes = [simulacaoPrazo, simulacaoPrestacao];
 
     const analiseComparativa = {
-      sistemaComMenorPrestacao: simulacaoPrazo.resumo.novaPrestacao <= simulacaoPrestacao.resumo.novaPrestacao ? simulacaoPrazo.resumo.sistemaAmortizacao : simulacaoPrestacao.resumo.sistemaAmortizacao,
-      sistemaComMenorPrazo: simulacaoPrazo.resumo.prazoRestante <= simulacaoPrestacao.resumo.prazoRestante ? simulacaoPrazo.resumo.sistemaAmortizacao : simulacaoPrestacao.resumo.sistemaAmortizacao,
-      diferencaPrestacao: Math.round(Math.abs(simulacaoPrazo.resumo.novaPrestacao - simulacaoPrestacao.resumo.novaPrestacao) * 100) / 100,
+      sistemaComMenorPrestacao:
+        simulacaoPrazo.resumo.novaPrestacao <=
+        simulacaoPrestacao.resumo.novaPrestacao
+          ? simulacaoPrazo.resumo.sistemaAmortizacao
+          : simulacaoPrestacao.resumo.sistemaAmortizacao,
+      sistemaComMenorPrazo:
+        simulacaoPrazo.resumo.prazoRestante <=
+        simulacaoPrestacao.resumo.prazoRestante
+          ? simulacaoPrazo.resumo.sistemaAmortizacao
+          : simulacaoPrestacao.resumo.sistemaAmortizacao,
+      diferencaPrestacao:
+        Math.round(
+          Math.abs(
+            simulacaoPrazo.resumo.novaPrestacao -
+              simulacaoPrestacao.resumo.novaPrestacao,
+          ) * 100,
+        ) / 100,
     };
 
     return { simulacoes, analiseComparativa };

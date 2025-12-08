@@ -224,10 +224,7 @@ export class FinanciamentoVeiculosService {
       );
     } catch (error) {
       // Não falhar a simulação se o salvamento falhar
-      this.logger.error(
-        'Failed to save simulation to database',
-        error.stack,
-      );
+      this.logger.error('Failed to save simulation to database', error.stack);
     }
   }
 }

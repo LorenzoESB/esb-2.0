@@ -1,12 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import {
-  IsString,
-  IsNumber,
-  IsEmail,
-  Min,
-  Max,
-} from 'class-validator';
+import { IsString, IsNumber, IsEmail, Min, Max } from 'class-validator';
 
 /**
  * DTO para simulação de financiamento imobiliário

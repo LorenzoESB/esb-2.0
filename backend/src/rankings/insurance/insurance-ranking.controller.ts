@@ -7,12 +7,7 @@ import {
   Query,
   ValidationPipe,
 } from '@nestjs/common';
-import {
-  ApiOperation,
-  ApiQuery,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { InsuranceRankingService } from './insurance-ranking.service';
 import {
   InsuranceRankingResponseDto,
@@ -25,9 +20,7 @@ import { InsuranceRankingQueryDto } from './dto/ranking-request.dto';
 export class InsuranceRankingController {
   private readonly logger = new Logger(InsuranceRankingController.name);
 
-  constructor(
-    private readonly rankingService: InsuranceRankingService,
-  ) {}
+  constructor(private readonly rankingService: InsuranceRankingService) {}
 
   @Get()
   @HttpCode(HttpStatus.OK)
@@ -112,7 +105,8 @@ export class InsuranceRankingController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Get insurance ranking criteria',
-    description: 'Returns criteria details used for insurance ranking calculation.',
+    description:
+      'Returns criteria details used for insurance ranking calculation.',
   })
   @ApiResponse({
     status: 200,
@@ -129,7 +123,10 @@ export class InsuranceRankingController {
 
       return result;
     } catch (error) {
-      this.logger.error('Error getting insurance ranking criteria', error.stack);
+      this.logger.error(
+        'Error getting insurance ranking criteria',
+        error.stack,
+      );
       throw error;
     }
   }

@@ -42,9 +42,11 @@ describe('InsuranceRankingService', () => {
     });
 
     expect(result.total).toBe(3);
-    expect(result.items.every((item) => item.pricing.preco_mensal_estimado_max <= 450)).toBe(
-      true,
-    );
+    expect(
+      result.items.every(
+        (item) => item.pricing.preco_mensal_estimado_max <= 450,
+      ),
+    ).toBe(true);
     expect(result.items[0].rank).toBe(1);
   });
 });

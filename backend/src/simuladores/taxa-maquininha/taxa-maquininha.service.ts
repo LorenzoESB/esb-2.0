@@ -65,53 +65,51 @@ export class TaxaMaquininhaService {
       );
 
       // Converter para DTOs
-      const maquininhasDtos: MaquininhaCalculadaDto[] = resultados.map(
-        (r) => ({
-          nome: r.nome,
-          id_maq: r.id_maq,
-          empresa: r.empresa,
-          empresa_cnpj: r.empresa_cnpj,
-          logo: r.logo,
-          imagem_maquina: r.imagem_maquina,
-          valor_mensal: r.valor_mensal,
-          valor_mensalidade: r.valor_mensalidade,
-          valor_transacao: r.valor_transacao,
-          valor_selo: r.valor_selo,
-          dias_debito: r.dias_debito,
-          dias_credito: r.dias_credito,
-          tipo_dias_credito: r.tipo_dias_credito,
-          dias_credito_parcelado: r.dias_credito_parcelado,
-          tipo_recebimento_parcelado: r.tipo_recebimento_parcelado,
-          co_cartao: r.co_cartao,
-          site: r.site,
-          observacao: r.observacao,
-          cupom: r.cupom,
-          possibilidade_parcelamento: r.possibilidade_parcelamento,
-          afiliacao_a_banco: r.afiliacao_a_banco,
-          chip: r.chip,
-          tarja: r.tarja,
-          NFC: r.NFC,
-          PF: r.PF,
-          PJ: r.PJ,
-          precisa_de_telefone: r.precisa_de_telefone,
-          fio: r.fio,
-          imprime_recibo: r.imprime_recibo,
-          garantia: r.garantia,
-          possivel_antecipacao: r.possivel_antecipacao,
-          antecipado: r.antecipado,
-          opcao_ecommerce: r.opcao_ecommerce,
-          taxas_transparentes: r.taxas_transparentes,
-          vale_refeicao: r.vale_refeicao,
-          tipo_conexoes: r.tipo_conexoes,
-          forma_recebimento: r.forma_recebimento,
-          bandeiras: r.bandeiras,
-          avaliacao: r.avaliacao,
-          data_atualizacao: r.data_atualizacao,
-          url_avaliacao: r.url_avaliacao,
-          cruzamentos: r.cruzamentos,
-          tem_parceria: r.tem_parceria,
-        }),
-      );
+      const maquininhasDtos: MaquininhaCalculadaDto[] = resultados.map((r) => ({
+        nome: r.nome,
+        id_maq: r.id_maq,
+        empresa: r.empresa,
+        empresa_cnpj: r.empresa_cnpj,
+        logo: r.logo,
+        imagem_maquina: r.imagem_maquina,
+        valor_mensal: r.valor_mensal,
+        valor_mensalidade: r.valor_mensalidade,
+        valor_transacao: r.valor_transacao,
+        valor_selo: r.valor_selo,
+        dias_debito: r.dias_debito,
+        dias_credito: r.dias_credito,
+        tipo_dias_credito: r.tipo_dias_credito,
+        dias_credito_parcelado: r.dias_credito_parcelado,
+        tipo_recebimento_parcelado: r.tipo_recebimento_parcelado,
+        co_cartao: r.co_cartao,
+        site: r.site,
+        observacao: r.observacao,
+        cupom: r.cupom,
+        possibilidade_parcelamento: r.possibilidade_parcelamento,
+        afiliacao_a_banco: r.afiliacao_a_banco,
+        chip: r.chip,
+        tarja: r.tarja,
+        NFC: r.NFC,
+        PF: r.PF,
+        PJ: r.PJ,
+        precisa_de_telefone: r.precisa_de_telefone,
+        fio: r.fio,
+        imprime_recibo: r.imprime_recibo,
+        garantia: r.garantia,
+        possivel_antecipacao: r.possivel_antecipacao,
+        antecipado: r.antecipado,
+        opcao_ecommerce: r.opcao_ecommerce,
+        taxas_transparentes: r.taxas_transparentes,
+        vale_refeicao: r.vale_refeicao,
+        tipo_conexoes: r.tipo_conexoes,
+        forma_recebimento: r.forma_recebimento,
+        bandeiras: r.bandeiras,
+        avaliacao: r.avaliacao,
+        data_atualizacao: r.data_atualizacao,
+        url_avaliacao: r.url_avaliacao,
+        cruzamentos: r.cruzamentos,
+        tem_parceria: r.tem_parceria,
+      }));
 
       // Ordenar por custo mensal (menor primeiro) - para exibição
       // No Django ordena por avaliação, mas para usuário final faz mais sentido por custo
@@ -249,10 +247,7 @@ export class TaxaMaquininhaService {
       );
     } catch (error) {
       // Não falhar a simulação se o salvamento falhar
-      this.logger.error(
-        'Failed to save simulation to database',
-        error.stack,
-      );
+      this.logger.error('Failed to save simulation to database', error.stack);
     }
   }
 }

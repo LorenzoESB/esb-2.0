@@ -257,7 +257,9 @@ describe('AposentadoriaService', () => {
       };
 
       await expect(service.simular(dto)).rejects.toThrow(BadRequestException);
-      await expect(service.simular(dto)).rejects.toThrow(/Renda mensal desejada/);
+      await expect(service.simular(dto)).rejects.toThrow(
+        /Renda mensal desejada/,
+      );
     });
 
     it('deve rejeitar modo CONTRIBUIR sem contribuição mensal', async () => {

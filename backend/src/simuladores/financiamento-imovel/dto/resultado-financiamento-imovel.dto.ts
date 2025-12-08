@@ -15,7 +15,8 @@ export class ResultadoFinanciamentoImovelDto {
 
   @ApiProperty({
     description: 'Modalidade do financiamento',
-    example: 'Financiamento imobiliário com taxas de mercado - Pós-fixado referenciado em TR',
+    example:
+      'Financiamento imobiliário com taxas de mercado - Pós-fixado referenciado em TR',
   })
   modalidade: string;
 
@@ -50,7 +51,8 @@ export class ResultadoFinanciamentoImovelDto {
   taxaJurosMensal: number;
 
   @ApiProperty({
-    description: 'Percentual de comprometimento da renda mensal com a primeira parcela',
+    description:
+      'Percentual de comprometimento da renda mensal com a primeira parcela',
     example: 32.46,
   })
   comprometimentoRenda: number;

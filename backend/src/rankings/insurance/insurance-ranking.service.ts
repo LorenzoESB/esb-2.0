@@ -114,14 +114,16 @@ export class InsuranceRankingService {
     // Filter by full coverage
     if (query.cobertura_total !== undefined) {
       filtered = filtered.filter(
-        (insurance) => insurance.coverage.cobertura_total === query.cobertura_total,
+        (insurance) =>
+          insurance.coverage.cobertura_total === query.cobertura_total,
       );
     }
 
     // Filter by 24h assistance
     if (query.assistencia_24h !== undefined) {
       filtered = filtered.filter(
-        (insurance) => insurance.coverage.assistencia_24h === query.assistencia_24h,
+        (insurance) =>
+          insurance.coverage.assistencia_24h === query.assistencia_24h,
       );
     }
 
@@ -136,7 +138,8 @@ export class InsuranceRankingService {
     if (query.max_preco_mensal !== undefined) {
       filtered = filtered.filter(
         (insurance) =>
-          insurance.pricing.preco_mensal_estimado_max <= query.max_preco_mensal!,
+          insurance.pricing.preco_mensal_estimado_max <=
+          query.max_preco_mensal!,
       );
     }
 

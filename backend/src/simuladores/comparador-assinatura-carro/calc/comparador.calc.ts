@@ -234,9 +234,7 @@ export function calcularCustoOportunidade(
   const meses = anos * 12;
 
   // Montante = Capital × (1 + i)^n
-  const montante = capital.times(
-    new Decimal(1).plus(taxaMensalCDI).pow(meses),
-  );
+  const montante = capital.times(new Decimal(1).plus(taxaMensalCDI).pow(meses));
 
   // Rendimento = Montante - Capital
   return montante.minus(capital);

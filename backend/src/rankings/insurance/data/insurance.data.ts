@@ -29,7 +29,7 @@ export const INSURANCE_DATA: InsuranceData[] = [
     nome: 'Azul Seguros',
     company: 'Azul Companhia de Seguros Gerais',
     logo: 'https://example.com/logos/azul-seguros.png',
-    static_score: 5.00,
+    static_score: 5.0,
     raw_scores: {
       price_competitiveness: 9.0,
       coverage_completeness: 9.5,
@@ -141,7 +141,7 @@ export const INSURANCE_DATA: InsuranceData[] = [
     nome: 'HDI Seguros',
     company: 'HDI Seguros',
     logo: 'https://example.com/logos/hdi.png',
-    static_score: 4.50,
+    static_score: 4.5,
     raw_scores: {
       price_competitiveness: 7.5,
       coverage_completeness: 9.0,
@@ -197,7 +197,7 @@ export const INSURANCE_DATA: InsuranceData[] = [
     nome: 'Porto Seguro',
     company: 'Porto Seguro Companhia de Seguros Gerais',
     logo: 'https://example.com/logos/porto-seguro.png',
-    static_score: 4.20,
+    static_score: 4.2,
     raw_scores: {
       price_competitiveness: 6.5,
       coverage_completeness: 8.5,
@@ -253,7 +253,7 @@ export const INSURANCE_DATA: InsuranceData[] = [
     nome: 'Liberty Seguros',
     company: 'Liberty Seguros',
     logo: 'https://example.com/logos/liberty.png',
-    static_score: 3.90,
+    static_score: 3.9,
     raw_scores: {
       price_competitiveness: 7.0,
       coverage_completeness: 8.0,
@@ -365,7 +365,7 @@ export const INSURANCE_DATA: InsuranceData[] = [
     nome: 'Tokio Marine',
     company: 'Tokio Marine Seguradora',
     logo: 'https://example.com/logos/tokio-marine.png',
-    static_score: 3.50,
+    static_score: 3.5,
     raw_scores: {
       price_competitiveness: 6.5,
       coverage_completeness: 7.5,
@@ -408,7 +408,8 @@ export const INSURANCE_DATA: InsuranceData[] = [
     avaliacao_clientes: 3.7,
     tempo_mercado_anos: 25,
     sinistros_aprovados_percentual: 78,
-    observacoes: 'Seguradora japonesa tradicional com boa estabilidade financeira',
+    observacoes:
+      'Seguradora japonesa tradicional com boa estabilidade financeira',
     url_contratacao: 'https://tokiomarine.com.br',
     url_avaliacao: null,
     data_atualizacao: new Date('2024-11-10'),
@@ -421,7 +422,7 @@ export const INSURANCE_DATA: InsuranceData[] = [
     nome: 'Mapfre Seguros',
     company: 'Mapfre Seguros',
     logo: 'https://example.com/logos/mapfre.png',
-    static_score: 3.30,
+    static_score: 3.3,
     raw_scores: {
       price_competitiveness: 7.0,
       coverage_completeness: 7.0,
@@ -464,7 +465,8 @@ export const INSURANCE_DATA: InsuranceData[] = [
     avaliacao_clientes: 3.5,
     tempo_mercado_anos: 22,
     sinistros_aprovados_percentual: 75,
-    observacoes: 'Rede limitada, mas preços competitivos para perfis específicos',
+    observacoes:
+      'Rede limitada, mas preços competitivos para perfis específicos',
     url_contratacao: 'https://mapfre.com.br',
     url_avaliacao: null,
     data_atualizacao: new Date('2024-11-05'),
@@ -477,7 +479,7 @@ export const INSURANCE_DATA: InsuranceData[] = [
     nome: 'SulAmérica',
     company: 'SulAmérica Seguros',
     logo: 'https://example.com/logos/sulamerica.png',
-    static_score: 3.10,
+    static_score: 3.1,
     raw_scores: {
       price_competitiveness: 5.5,
       coverage_completeness: 7.5,
@@ -520,7 +522,8 @@ export const INSURANCE_DATA: InsuranceData[] = [
     avaliacao_clientes: 3.3,
     tempo_mercado_anos: 35,
     sinistros_aprovados_percentual: 72,
-    observacoes: 'Marca tradicional, mas com preços elevados e serviços limitados',
+    observacoes:
+      'Marca tradicional, mas com preços elevados e serviços limitados',
     url_contratacao: 'https://sulamerica.com.br',
     url_avaliacao: null,
     data_atualizacao: new Date('2024-10-30'),

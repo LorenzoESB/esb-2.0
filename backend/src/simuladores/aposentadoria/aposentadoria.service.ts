@@ -57,14 +57,15 @@ export class AposentadoriaService {
    * @param dto - Dados da simulação
    * @returns Resultado completo com acumulação, usufruto e sustentabilidade
    */
-  async simular(dto: SimularAposentadoriaDto): Promise<ResultadoAposentadoriaDto> {
+  async simular(
+    dto: SimularAposentadoriaDto,
+  ): Promise<ResultadoAposentadoriaDto> {
     // Validações de negócio
     this.validarDados(dto);
 
     // Cálculo dos prazos
     const mesesContribuicao = (dto.idadeAposentadoria - dto.idadeAtual) * 12;
-    const mesesUsufruto =
-      (this.expectativaVida - dto.idadeAposentadoria) * 12;
+    const mesesUsufruto = (this.expectativaVida - dto.idadeAposentadoria) * 12;
 
     // Calcular valor futuro da reserva atual (se houver)
     const valorFuturoReserva =
@@ -184,7 +185,8 @@ export class AposentadoriaService {
     };
 
     const usufruto: UsufrutoDto = {
-      idadeInicio: Math.floor(mesesContribuicao / 12) + acumulacao.anosContribuicao,
+      idadeInicio:
+        Math.floor(mesesContribuicao / 12) + acumulacao.anosContribuicao,
       idadeFim: this.expectativaVida,
       mesesBeneficio: mesesUsufruto,
       rendaMensal: this.arredondar(rendaDesejada),
@@ -233,13 +235,12 @@ export class AposentadoriaService {
     };
 
     const usufruto: UsufrutoDto = {
-      idadeInicio: Math.floor(mesesContribuicao / 12) + acumulacao.anosContribuicao,
+      idadeInicio:
+        Math.floor(mesesContribuicao / 12) + acumulacao.anosContribuicao,
       idadeFim: this.expectativaVida,
       mesesBeneficio: mesesUsufruto,
       rendaMensal: this.arredondar(rendaMensal),
-      valorTotalRecebido: this.arredondar(
-        rendaMensal.mul(mesesUsufruto),
-      ),
+      valorTotalRecebido: this.arredondar(rendaMensal.mul(mesesUsufruto)),
     };
 
     return { acumulacao, usufruto };

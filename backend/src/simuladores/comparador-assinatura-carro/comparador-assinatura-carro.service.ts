@@ -11,9 +11,7 @@ import { URLS_REDIRECIONAMENTO } from './constants/comparador.constants';
 
 @Injectable()
 export class ComparadorAssinaturaCarroService {
-  private readonly logger = new Logger(
-    ComparadorAssinaturaCarroService.name,
-  );
+  private readonly logger = new Logger(ComparadorAssinaturaCarroService.name);
 
   constructor(private readonly prisma: PrismaService) {}
 
@@ -175,10 +173,7 @@ export class ComparadorAssinaturaCarroService {
       );
     } catch (error) {
       // Não falhar a simulação se o salvamento falhar
-      this.logger.error(
-        'Failed to save simulation to database',
-        error.stack,
-      );
+      this.logger.error('Failed to save simulation to database', error.stack);
     }
   }
 }

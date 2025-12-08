@@ -1,5 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { CARD_MACHINES_DATA, getActiveCardMachines } from './data/machines.data';
+import {
+  CARD_MACHINES_DATA,
+  getActiveCardMachines,
+} from './data/machines.data';
 import { CARD_MACHINE_CRITERIA } from './data/criteria.data';
 import { CardMachineScoreCalculator } from './calc/score-calculator';
 import {

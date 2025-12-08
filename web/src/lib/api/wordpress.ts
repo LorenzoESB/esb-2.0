@@ -74,13 +74,20 @@ export async function getPageBySlug(slug: string) {
 
 export async function getCategories() {
   const baseUrl = requireApiUrl();
-  const res = await fetch(`${baseUrl}/blog/categories`, {
-    next: { revalidate: 60 },
-  });
-  if (!res.ok) {
-    throw new Error("Failed to fetch categories");
+  try {
+    const res = await fetch(`${baseUrl}/blog/categories`, {
+      next: { revalidate: 60 },
+    });
+    if (!res.ok) {
+      throw new Error(
+        `Failed to fetch categories: ${res.status} ${res.statusText || ""}`.trim()
+      );
+    }
+    return res.json();
+  } catch (error) {
+    console.error(`getCategories: ${(error as Error).message}`);
+    return [];
   }
-  return res.json();
 }
 
 export async function getPostsByCategory(categoryId: number) {

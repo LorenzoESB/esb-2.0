@@ -72,7 +72,8 @@ export class SimularTaxaMaquininhaDto {
   sem_mensalidade?: boolean;
 
   @ApiProperty({
-    description: 'Filtrar apenas maquininhas que aceitam cartão de tarja magnética',
+    description:
+      'Filtrar apenas maquininhas que aceitam cartão de tarja magnética',
     example: false,
     required: false,
   })
@@ -126,7 +127,8 @@ export class SimularTaxaMaquininhaDto {
   wifi?: boolean;
 
   @ApiProperty({
-    description: 'Filtrar apenas maquininhas que permitem antecipação de recebíveis',
+    description:
+      'Filtrar apenas maquininhas que permitem antecipação de recebíveis',
     example: false,
     required: false,
   })

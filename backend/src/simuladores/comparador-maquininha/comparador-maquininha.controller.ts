@@ -186,10 +186,7 @@ export class ComparadorMaquininhaController {
 
       return result;
     } catch (error) {
-      this.logger.error(
-        'Error in card machine comparison',
-        error.stack,
-      );
+      this.logger.error('Error in card machine comparison', error.stack);
       throw error;
     }
   }

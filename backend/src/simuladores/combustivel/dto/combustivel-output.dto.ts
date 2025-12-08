@@ -39,7 +39,8 @@ class CustosDto {
 class EconomiaDto {
   @ApiProperty({
     example: 0.03,
-    description: 'Economia por quilômetro entre o combustível mais caro e o mais barato',
+    description:
+      'Economia por quilômetro entre o combustível mais caro e o mais barato',
   })
   @IsNumber()
   valor: number;

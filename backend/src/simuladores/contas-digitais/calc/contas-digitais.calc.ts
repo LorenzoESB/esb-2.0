@@ -143,7 +143,7 @@ export function calcularTarifaTotal(
 
   // ===== DEPÓSITOS (apenas para Pessoa Física) =====
   if (dados.tipoPessoa === TipoPessoa.FISICA) {
-    const dadosPF = dados as DadosSimulacaoFisica;
+    const dadosPF = dados;
 
     if (dadosPF.nDepositos > 0) {
       if (!conta.aceitaDeposito) {
@@ -162,7 +162,7 @@ export function calcularTarifaTotal(
 
   // ===== BOLETOS (apenas para PJ) =====
   if (dados.tipoPessoa === TipoPessoa.JURIDICA) {
-    const dadosPJ = dados as DadosSimulacaoJuridica;
+    const dadosPJ = dados;
 
     if (dadosPJ.boletos > 0) {
       if (!conta.emiteBoleto) {
@@ -192,7 +192,7 @@ export function verificarRequisitos(
 ): boolean {
   // Verificar requisitos de Pessoa Física
   if (dados.tipoPessoa === TipoPessoa.FISICA) {
-    const dadosPF = dados as DadosSimulacaoFisica;
+    const dadosPF = dados;
 
     // Cartão de crédito
     if (dadosPF.credito && !conta.ofereceCartaoCredito) {
@@ -222,7 +222,7 @@ export function verificarRequisitos(
 
   // Verificar requisitos de Pessoa Jurídica
   if (dados.tipoPessoa === TipoPessoa.JURIDICA) {
-    const dadosPJ = dados as DadosSimulacaoJuridica;
+    const dadosPJ = dados;
 
     // Cartão de débito
     if (dadosPJ.debito && !conta.ofereceCartaoDebito) {

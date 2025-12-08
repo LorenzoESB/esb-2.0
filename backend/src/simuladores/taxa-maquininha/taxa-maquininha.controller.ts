@@ -23,9 +23,7 @@ import { ResultadoTaxaMaquininhaDto } from './dto/resultado-taxa-maquininha.dto'
 export class TaxaMaquininhaController {
   private readonly logger = new Logger(TaxaMaquininhaController.name);
 
-  constructor(
-    private readonly taxaMaquininhaService: TaxaMaquininhaService,
-  ) {}
+  constructor(private readonly taxaMaquininhaService: TaxaMaquininhaService) {}
 
   @Post('simular')
   @HttpCode(HttpStatus.OK)

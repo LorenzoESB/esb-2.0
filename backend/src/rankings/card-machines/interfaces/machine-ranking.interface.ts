@@ -1,4 +1,7 @@
-import { BaseRankingItem, RawScores } from '../../shared/interfaces/base-ranking.interface';
+import {
+  BaseRankingItem,
+  RawScores,
+} from '../../shared/interfaces/base-ranking.interface';
 
 /**
  * Features of a card machine
@@ -50,14 +53,14 @@ export interface MachinePlan {
  * Used for score calculation
  */
 export interface MachineRawScores extends RawScores {
-  competitive_rates: number;        // 0-10 scale
-  transparency: number;              // 0-10 scale
-  features: number;                  // 0-10 scale
-  receivables_anticipation: number;  // 0-10 scale (boolean: 10 or 0)
-  reputation: number;                // 0-10 scale
-  support_quality: number;           // 0-10 scale
-  installment_options: number;       // 0-10 scale
-  meal_vouchers: number;             // 0-10 scale (boolean: 10 or 0)
+  competitive_rates: number; // 0-10 scale
+  transparency: number; // 0-10 scale
+  features: number; // 0-10 scale
+  receivables_anticipation: number; // 0-10 scale (boolean: 10 or 0)
+  reputation: number; // 0-10 scale
+  support_quality: number; // 0-10 scale
+  installment_options: number; // 0-10 scale
+  meal_vouchers: number; // 0-10 scale (boolean: 10 or 0)
 }
 
 /**

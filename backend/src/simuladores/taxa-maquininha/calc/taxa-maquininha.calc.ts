@@ -28,9 +28,9 @@ export function calcularAntecipacao(
   plano: Plano,
 ): number {
   try {
-    const taxa_desc_credito = new Decimal(plano.taxa_desconto_credito_vista).div(
-      100,
-    );
+    const taxa_desc_credito = new Decimal(
+      plano.taxa_desconto_credito_vista,
+    ).div(100);
     const taxa_adicional_parc = new Decimal(plano.taxa_adicional_parcela).div(
       100,
     );
@@ -53,9 +53,7 @@ export function calcularAntecipacao(
     // Retorna multiplicado por 100 (em centavos)
     return val_credito_parcelado.times(100).toNumber();
   } catch (error) {
-    throw new Error(
-      `Erro ao calcular antecipação simples: ${error.message}`,
-    );
+    throw new Error(`Erro ao calcular antecipação simples: ${error.message}`);
   }
 }
 
@@ -74,10 +72,12 @@ export function calcularAntecipacaoComposto(
   plano: Plano,
 ): number {
   try {
-    const taxa_desc_credito = new Decimal(plano.taxa_desconto_credito_vista).div(
+    const taxa_desc_credito = new Decimal(
+      plano.taxa_desconto_credito_vista,
+    ).div(100);
+    const taxa_adic_parcela = new Decimal(plano.taxa_adicional_parcela).div(
       100,
     );
-    const taxa_adic_parcela = new Decimal(plano.taxa_adicional_parcela).div(100);
     const valor_parcela = new Decimal(val_credito_p).div(num_parcelas);
 
     // parcela_liq_taxa_desc = valor_parcela * (1 - taxa_desc_credito)
@@ -124,9 +124,7 @@ export function calcularAntecipacaoComposto(
     // Retorna multiplicado por 100 (em centavos)
     return valor_credito_parc.times(100).toNumber();
   } catch (error) {
-    throw new Error(
-      `Erro ao calcular antecipação composta: ${error.message}`,
-    );
+    throw new Error(`Erro ao calcular antecipação composta: ${error.message}`);
   }
 }
 
@@ -311,7 +309,11 @@ export function calcularMaq(
         const modelo_cobranca = plano.modelo_cobranca === ModeloCobranca.FAIXA;
 
         // Verifica se há débito ou se o plano tem taxa de débito
-        if (val_debito === 0 && !modelo_cobranca && plano.taxa_desconto_debito === 0) {
+        if (
+          val_debito === 0 &&
+          !modelo_cobranca &&
+          plano.taxa_desconto_debito === 0
+        ) {
           continue;
         }
 
@@ -332,7 +334,9 @@ export function calcularMaq(
 
         // ========== MODELOS DE COBRANÇA ==========
 
-        if (plano.modelo_cobranca === ModeloCobranca.ANTECIPACAO_JUROS_SIMPLES) {
+        if (
+          plano.modelo_cobranca === ModeloCobranca.ANTECIPACAO_JUROS_SIMPLES
+        ) {
           // Modelo 1: Antecipação por Juros Simples
           valor_credito_parc = calcularAntecipacao(
             val_credito_p,
@@ -414,14 +418,13 @@ export function calcularMaq(
         if (maq.valor_promocional && maq.valor_promocional > 0) {
           valor_leitor = maq.valor_promocional;
           valor_selo = Math.round(
-            ((maq.valor_promocional / maq.valor_leitor) - 1) * -100,
+            (maq.valor_promocional / maq.valor_leitor - 1) * -100,
           );
         }
 
         if (valor_leitor > 0) {
           if (maq.garantia && maq.garantia !== 0 && maq.garantia < 100) {
-            total_mensal_compra_maq =
-              valor_leitor / (maq.garantia * 12);
+            total_mensal_compra_maq = valor_leitor / (maq.garantia * 12);
           } else {
             total_mensal_compra_maq = valor_leitor / 12;
           }
@@ -468,7 +471,11 @@ export function calcularMaq(
 
           // Se é plano controle, pega o valor da primeira faixa
           if (plano.grupo === 5) {
-            if (maq.sem_mensalidade !== true && plano.faixa_faturamento && plano.faixa_faturamento.length > 0) {
+            if (
+              maq.sem_mensalidade !== true &&
+              plano.faixa_faturamento &&
+              plano.faixa_faturamento.length > 0
+            ) {
               val_mensalidade = plano.faixa_faturamento[0].valor;
             }
           }
@@ -525,7 +532,9 @@ export function calcularMaq(
     } // end for maquina
 
     if (retorno.length === 0) {
-      throw new Error('Nenhuma maquininha encontrada com os critérios informados');
+      throw new Error(
+        'Nenhuma maquininha encontrada com os critérios informados',
+      );
     }
 
     // Ordena por avaliação (decrescente) - igual ao Django

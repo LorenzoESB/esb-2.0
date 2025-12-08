@@ -78,20 +78,22 @@ export class ComparadorMaquininhaService {
       );
 
       if (maquininhas.length === 0) {
-        throw new NotFoundException('Nenhuma maquininha encontrada com os IDs informados');
+        throw new NotFoundException(
+          'Nenhuma maquininha encontrada com os IDs informados',
+        );
       }
 
       if (maquininhas.length < 2) {
-        throw new NotFoundException('É necessário pelo menos 2 maquininhas para comparar');
+        throw new NotFoundException(
+          'É necessário pelo menos 2 maquininhas para comparar',
+        );
       }
 
-      this.logger.debug(
-        `Found ${maquininhas.length} card machines to compare`,
-      );
+      this.logger.debug(`Found ${maquininhas.length} card machines to compare`);
 
       // Converter para DTOs de comparação
-      const maquininhasDtos: CaracteristicasMaquininhaDto[] =
-        maquininhas.map((m) => ({
+      const maquininhasDtos: CaracteristicasMaquininhaDto[] = maquininhas.map(
+        (m) => ({
           id: m.id,
           nome: m.nome,
           empresa: m.empresa.nome,
@@ -117,8 +119,7 @@ export class ComparadorMaquininhaService {
           bandeiras: m.bandeiras.map((b) => b.nome),
           formas_recebimento: m.forma_recebimento.map((fr) => fr.nome),
           observacoes: m.observacao,
-          url_contratacao:
-            m.planos.length > 0 ? m.planos[0].url : '#',
+          url_contratacao: m.planos.length > 0 ? m.planos[0].url : '#',
           cupom: m.cupom,
           transparencia: m.transparencia,
           url_avaliacao: m.url_avaliacao,
@@ -133,14 +134,14 @@ export class ComparadorMaquininhaService {
                 p.taxa_desconto_credito_vista,
               ),
               taxa_credito_parcelado_min: this.formatarPercentual(
-                p.taxa_desconto_credito_vista +
-                  p.taxa_adicional_parcela,
+                p.taxa_desconto_credito_vista + p.taxa_adicional_parcela,
               ),
               dias_repasse_debito: p.dias_repasse_debito,
               dias_repasse_credito: p.dias_repasse_credito,
               avaliacao: p.avaliacao,
             })),
-        }));
+        }),
+      );
 
       const resultado: ResultadoComparacaoDto = {
         maquininhas: maquininhasDtos,
@@ -205,10 +206,7 @@ export class ComparadorMaquininhaService {
       );
     } catch (error) {
       // Não falhar a comparação se o salvamento falhar
-      this.logger.error(
-        'Failed to save comparison to database',
-        error.stack,
-      );
+      this.logger.error('Failed to save comparison to database', error.stack);
     }
   }
 }

@@ -8,63 +8,73 @@ import { ApiProperty } from '@nestjs/swagger';
  */
 export class BreakdownCustos {
   @ApiProperty({
-    description: 'Custo de aquisição do veículo (compra ou financiamento). 0 para assinatura.',
+    description:
+      'Custo de aquisição do veículo (compra ou financiamento). 0 para assinatura.',
     example: 80000,
   })
   custoAquisicao: number;
 
   @ApiProperty({
-    description: 'Custo total com manutenção no período. 0 para assinatura (incluído na mensalidade).',
+    description:
+      'Custo total com manutenção no período. 0 para assinatura (incluído na mensalidade).',
     example: 2400,
   })
   manutencao: number;
 
   @ApiProperty({
-    description: 'Custo total com seguro no período. 0 para assinatura (incluído na mensalidade).',
+    description:
+      'Custo total com seguro no período. 0 para assinatura (incluído na mensalidade).',
     example: 9600,
   })
   seguro: number;
 
   @ApiProperty({
-    description: 'Custo total com IPVA no período. 0 para assinatura (incluído na mensalidade).',
+    description:
+      'Custo total com IPVA no período. 0 para assinatura (incluído na mensalidade).',
     example: 9600,
   })
   ipva: number;
 
   @ApiProperty({
-    description: 'Custos com emplacamento e licenciamento no período. 0 para assinatura (incluído na mensalidade).',
+    description:
+      'Custos com emplacamento e licenciamento no período. 0 para assinatura (incluído na mensalidade).',
     example: 990,
   })
   taxasLicenciamento: number;
 
   @ApiProperty({
-    description: 'Depreciação acumulada do veículo no período. 0 para assinatura (não é proprietário).',
+    description:
+      'Depreciação acumulada do veículo no período. 0 para assinatura (não é proprietário).',
     example: 24000,
   })
   depreciacao: number;
 
   @ApiProperty({
-    description: 'Custo de oportunidade (rendimento perdido do capital investido). 0 para assinatura (sem capital imobilizado).',
+    description:
+      'Custo de oportunidade (rendimento perdido do capital investido). 0 para assinatura (sem capital imobilizado).',
     example: 5200,
   })
   custoOportunidade: number;
 
   @ApiProperty({
-    description: 'Custo total com assinatura no período. 0 para compra à vista e financiamento.',
+    description:
+      'Custo total com assinatura no período. 0 para compra à vista e financiamento.',
     example: 90000,
     required: false,
   })
   custoAssinatura?: number;
 
   @ApiProperty({
-    description: 'Juros pagos no financiamento. Não presente em compra à vista e assinatura.',
+    description:
+      'Juros pagos no financiamento. Não presente em compra à vista e assinatura.',
     example: 15600,
     required: false,
   })
   jurosFinanciamento?: number;
 
   @ApiProperty({
-    description: 'IOF pago no financiamento. Não presente em compra à vista e assinatura.',
+    description:
+      'IOF pago no financiamento. Não presente em compra à vista e assinatura.',
     example: 156,
     required: false,
   })
@@ -90,7 +100,8 @@ export class CenarioComparador {
   custoTotal: number;
 
   @ApiProperty({
-    description: 'Valor de revenda do veículo ao final do período. 0 para assinatura (não é proprietário).',
+    description:
+      'Valor de revenda do veículo ao final do período. 0 para assinatura (não é proprietário).',
     example: 56000,
   })
   valorRevenda: number;
@@ -152,8 +163,10 @@ export class ResultadoComparadorDto {
   @ApiProperty({
     description: 'URLs de redirecionamento para mais informações',
     example: {
-      assinatura: 'https://educandoseubolso.blog.br/externo/localiza-meoo-comparador/',
-      financiamento: 'https://educandoseubolso.blog.br/externo/simulador-de-financiamento-compadador-assinatura/',
+      assinatura:
+        'https://educandoseubolso.blog.br/externo/localiza-meoo-comparador/',
+      financiamento:
+        'https://educandoseubolso.blog.br/externo/simulador-de-financiamento-compadador-assinatura/',
     },
   })
   urls: {

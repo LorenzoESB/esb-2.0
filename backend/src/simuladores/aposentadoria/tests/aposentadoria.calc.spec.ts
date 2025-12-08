@@ -115,11 +115,7 @@ describe('AposentadoriaCalc', () => {
     it('deve calcular contribuição necessária para acumular R$ 2.121.726,04 em 264 meses', () => {
       // Cenário reverso: preciso de R$ 2.121.726,04 daqui 22 anos
       const vpNecessario = 2121726.04 - 143439.97; // descontando reserva futura
-      const resultado = calcularPagamentoMensal(
-        vpNecessario,
-        TAXA_MENSAL,
-        264,
-      );
+      const resultado = calcularPagamentoMensal(vpNecessario, TAXA_MENSAL, 264);
 
       // Valor esperado: R$ 2.836,26/mês
       expectDecimalClose(resultado, 2836.26, 0.5);

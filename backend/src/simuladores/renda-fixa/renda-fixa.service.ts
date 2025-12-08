@@ -78,7 +78,9 @@ export class RendaFixaService {
           dto.investimentoInicial,
           dto.prazoMeses,
         );
-        this.logger.debug(`External API response received: ${JSON.stringify(apiResponse)}`);
+        this.logger.debug(
+          `External API response received: ${JSON.stringify(apiResponse)}`,
+        );
       } catch (error) {
         this.logger.warn(
           'Failed to fetch from external API, will use local calculations as fallback',
@@ -119,17 +121,17 @@ export class RendaFixaService {
             const ofertas = apiResponse.resultados.listamelhortitulo;
 
             if (apiMelhorTitulo === 'SELIC') {
-              resultado.ofertasDetalhadas = this.transformarOfertasTesouro(ofertas);
+              resultado.ofertasDetalhadas =
+                this.transformarOfertasTesouro(ofertas);
             } else {
-              resultado.ofertasDetalhadas = this.transformarOfertasInvestimento(ofertas);
+              resultado.ofertasDetalhadas =
+                this.transformarOfertasInvestimento(ofertas);
             }
-            resultado.tipoOfertasDetalhadas = apiMelhorTituloSistema || apiMelhorTitulo;
+            resultado.tipoOfertasDetalhadas =
+              apiMelhorTituloSistema || apiMelhorTitulo;
           }
         } catch (error) {
-          this.logger.warn(
-            'Failed to process detailed offers',
-            error.message,
-          );
+          this.logger.warn('Failed to process detailed offers', error.message);
         }
       }
 
@@ -183,11 +185,12 @@ export class RendaFixaService {
       const url =
         'https://api.bcb.gov.br/dados/serie/bcdata.sgs.432/dados/ultimos/1?formato=json';
 
-      const response: AxiosResponse<BancoCentralApiResponse[]> = await firstValueFrom(
-        this.httpService.get<BancoCentralApiResponse[]>(url, {
-          timeout: 5000, // 5 seconds timeout
-        }),
-      );
+      const response: AxiosResponse<BancoCentralApiResponse[]> =
+        await firstValueFrom(
+          this.httpService.get<BancoCentralApiResponse[]>(url, {
+            timeout: 5000, // 5 seconds timeout
+          }),
+        );
       const valorStr = response.data[0]?.valor?.replace(',', '.');
 
       if (!valorStr) {
@@ -198,7 +201,10 @@ export class RendaFixaService {
       this.logger.debug(`Selic obtained from BCB: ${valor}%`);
       return valor;
     } catch (error) {
-      this.logger.warn('Failed to fetch Selic from BCB, using fallback', error.message);
+      this.logger.warn(
+        'Failed to fetch Selic from BCB, using fallback',
+        error.message,
+      );
       return 13.75; // Fallback
     }
   }
@@ -212,11 +218,12 @@ export class RendaFixaService {
       const url =
         'https://api.bcb.gov.br/dados/serie/bcdata.sgs.12/dados/ultimos/1?formato=json';
 
-      const response: AxiosResponse<BancoCentralApiResponse[]> = await firstValueFrom(
-        this.httpService.get<BancoCentralApiResponse[]>(url, {
-          timeout: 5000, // 5 seconds timeout
-        }),
-      );
+      const response: AxiosResponse<BancoCentralApiResponse[]> =
+        await firstValueFrom(
+          this.httpService.get<BancoCentralApiResponse[]>(url, {
+            timeout: 5000, // 5 seconds timeout
+          }),
+        );
       const valorStr = response.data[0]?.valor?.replace(',', '.');
 
       if (!valorStr) {
@@ -228,10 +235,15 @@ export class RendaFixaService {
       const cdiDiario = parseFloat(valorStr);
       const cdiAnual = (Math.pow(1 + cdiDiario / 100, 252) - 1) * 100;
 
-      this.logger.debug(`CDI obtained from BCB: ${cdiAnual.toFixed(2)}% (from daily ${cdiDiario}%)`);
+      this.logger.debug(
+        `CDI obtained from BCB: ${cdiAnual.toFixed(2)}% (from daily ${cdiDiario}%)`,
+      );
       return parseFloat(cdiAnual.toFixed(2));
     } catch (error) {
-      this.logger.warn('Failed to fetch CDI from BCB, using fallback', error.message);
+      this.logger.warn(
+        'Failed to fetch CDI from BCB, using fallback',
+        error.message,
+      );
       return 13.65; // Fallback
     }
   }
@@ -245,11 +257,12 @@ export class RendaFixaService {
       const url =
         'https://api.bcb.gov.br/dados/serie/bcdata.sgs.226/dados/ultimos/1?formato=json';
 
-      const response: AxiosResponse<BancoCentralApiResponse[]> = await firstValueFrom(
-        this.httpService.get<BancoCentralApiResponse[]>(url, {
-          timeout: 5000, // 5 seconds timeout
-        }),
-      );
+      const response: AxiosResponse<BancoCentralApiResponse[]> =
+        await firstValueFrom(
+          this.httpService.get<BancoCentralApiResponse[]>(url, {
+            timeout: 5000, // 5 seconds timeout
+          }),
+        );
       const valorStr = response.data[0]?.valor?.replace(',', '.');
 
       if (!valorStr) {
@@ -260,10 +273,15 @@ export class RendaFixaService {
       const trPercentual = parseFloat(valorStr);
       const trDecimal = trPercentual / 100;
 
-      this.logger.debug(`TR obtained from BCB: ${trPercentual}% (${trDecimal})`);
+      this.logger.debug(
+        `TR obtained from BCB: ${trPercentual}% (${trDecimal})`,
+      );
       return trDecimal;
     } catch (error) {
-      this.logger.warn('Failed to fetch TR from BCB, using fallback', error.message);
+      this.logger.warn(
+        'Failed to fetch TR from BCB, using fallback',
+        error.message,
+      );
       return 0.0; // Fallback (TR tem sido historicamente próxima de zero)
     }
   }

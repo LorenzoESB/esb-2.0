@@ -35,9 +35,7 @@ export class InsuranceScoreCalculator {
       const rawScore = rawScores[criterion.key];
 
       if (rawScore === undefined) {
-        throw new Error(
-          `Missing raw score for criterion: ${criterion.key}`,
-        );
+        throw new Error(`Missing raw score for criterion: ${criterion.key}`);
       }
 
       // Validate raw score is in 0-10 range
@@ -124,7 +122,9 @@ export class InsuranceScoreCalculator {
    */
   static rankInsurances(insurances: InsuranceData[]): InsuranceData[] {
     // Sort by static_score descending (highest first)
-    const sorted = [...insurances].sort((a, b) => b.static_score - a.static_score);
+    const sorted = [...insurances].sort(
+      (a, b) => b.static_score - a.static_score,
+    );
 
     // Assign ranks
     sorted.forEach((insurance, index) => {
@@ -185,7 +185,8 @@ export class InsuranceScoreCalculator {
 
     for (const criterion of INSURANCE_CRITERIA) {
       const rawScore = rawScores[criterion.key];
-      const contribution = (rawScore * criterion.weight) / TOTAL_CRITERIA_WEIGHT;
+      const contribution =
+        (rawScore * criterion.weight) / TOTAL_CRITERIA_WEIGHT;
       const percentage = (contribution / totalScore) * 100;
 
       contributions[criterion.key] = {

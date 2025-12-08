@@ -3,20 +3,23 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { AxiosResponse } from 'axios';
+import { AxiosError, AxiosResponse } from 'axios';
 import { lastValueFrom } from 'rxjs';
 
-type PostsResponse = {
-  posts: any[];
-  totalPages: number;
-  totalPosts: number;
-};
+import {
+  BlogCategoryDto,
+  BlogMediaDto,
+  BlogPostListResponseDto,
+} from './dto/blog-response.dto';
+import { GetPostsQueryDto } from './dto/get-posts-query.dto';
 
 @Injectable()
 export class BlogService {
+  private readonly logger = new Logger(BlogService.name);
   private readonly apiUrl: string;
 
   constructor(
@@ -33,30 +36,50 @@ export class BlogService {
     path: string,
     params?: Record<string, any>,
   ): Promise<AxiosResponse<T>> {
-    const response = await lastValueFrom(
-      this.http.get<T>(`${this.apiUrl}${path}`, {
-        params,
-        validateStatus: () => true,
-      }),
-    );
-
-    if (response.status >= 400) {
-      throw new HttpException(
-        `WordPress request failed: ${response.status} ${response.statusText}`,
-        HttpStatus.BAD_GATEWAY,
+    const url = `${this.apiUrl}${path}`;
+    try {
+      const response = await lastValueFrom(
+        this.http.get<T>(url, {
+          params,
+          validateStatus: () => true,
+        }),
       );
-    }
 
-    return response;
+      if (response.status >= 400) {
+        this.logger.warn(
+          `WordPress responded ${response.status} ${response.statusText} for ${url}`,
+        );
+        throw new HttpException(
+          `WordPress request failed: ${response.status} ${response.statusText}`,
+          HttpStatus.BAD_GATEWAY,
+        );
+      }
+
+      return response;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      const status = axiosError.response?.status;
+      const statusText = axiosError.response?.statusText;
+      const message =
+        status && statusText
+          ? `WordPress request failed: ${status} ${statusText}`
+          : 'WordPress request failed';
+
+      this.logger.error(
+        `Error calling WordPress: ${message} - ${(error as Error).message}`,
+      );
+
+      if (error instanceof HttpException) {
+        throw error;
+      }
+
+      throw new HttpException(message, HttpStatus.BAD_GATEWAY);
+    }
   }
 
-  async getPosts(options: {
-    perPage?: number;
-    page?: number;
-    search?: string;
-    categoryId?: number;
-  }): Promise<PostsResponse> {
-    const perPage = options.perPage && options.perPage > 0 ? options.perPage : 10;
+  async getPosts(options: GetPostsQueryDto): Promise<BlogPostListResponseDto> {
+    const perPage =
+      options.perPage && options.perPage > 0 ? options.perPage : 10;
     const page = options.page && options.page > 0 ? options.page : 1;
 
     const params: Record<string, any> = {
@@ -78,7 +101,10 @@ export class BlogService {
       (res.headers['x-wp-totalpages'] as string) || '1',
       10,
     );
-    const totalPosts = parseInt((res.headers['x-wp-total'] as string) || '0', 10);
+    const totalPosts = parseInt(
+      (res.headers['x-wp-total'] as string) || '0',
+      10,
+    );
 
     return {
       posts: res.data,
@@ -115,13 +141,13 @@ export class BlogService {
     return page;
   }
 
-  async getCategories() {
-    const res = await this.request<any[]>('/categories');
+  async getCategories(): Promise<BlogCategoryDto[]> {
+    const res = await this.request<BlogCategoryDto[]>('/categories');
     return res.data;
   }
 
-  async getMedia() {
-    const res = await this.request<any[]>('/media');
+  async getMedia(): Promise<BlogMediaDto[]> {
+    const res = await this.request<BlogMediaDto[]>('/media');
     return res.data;
   }
 }

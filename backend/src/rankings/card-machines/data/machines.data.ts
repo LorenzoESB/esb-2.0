@@ -30,14 +30,14 @@ export const CARD_MACHINES_DATA: MachineData[] = [
     imagem: 'https://example.com/maquininhas/infinitepay.png',
     static_score: 8.92,
     raw_scores: {
-      competitive_rates: 9.5,        // Excelentes taxas (1,69% débito, 2,49% crédito)
-      transparency: 10,               // Muito transparente
-      features: 8.0,                  // Boas funcionalidades
-      receivables_anticipation: 10,   // Possui antecipação
-      reputation: 9.0,                // Ótima reputação
-      support_quality: 8.5,           // Bom suporte
-      installment_options: 10,        // 12 parcelas
-      meal_vouchers: 0,               // Não aceita vale refeição
+      competitive_rates: 9.5, // Excelentes taxas (1,69% débito, 2,49% crédito)
+      transparency: 10, // Muito transparente
+      features: 8.0, // Boas funcionalidades
+      receivables_anticipation: 10, // Possui antecipação
+      reputation: 9.0, // Ótima reputação
+      support_quality: 8.5, // Bom suporte
+      installment_options: 10, // 12 parcelas
+      meal_vouchers: 0, // Não aceita vale refeição
     },
     features: {
       chip: true,
@@ -94,9 +94,9 @@ export const CARD_MACHINES_DATA: MachineData[] = [
     raw_scores: {
       competitive_rates: 8.0,
       transparency: 9.0,
-      features: 9.5,              // Muitas funcionalidades (impressora, NFC)
+      features: 9.5, // Muitas funcionalidades (impressora, NFC)
       receivables_anticipation: 10,
-      reputation: 9.5,            // Marca consolidada
+      reputation: 9.5, // Marca consolidada
       support_quality: 8.0,
       installment_options: 10,
       meal_vouchers: 0,
@@ -120,8 +120,8 @@ export const CARD_MACHINES_DATA: MachineData[] = [
       formas_recebimento: ['Conta PagSeguro', 'Conta Bancária'],
     },
     pricing: {
-      preco: 258.80,
-      preco_promocional: 12.90,
+      preco: 258.8,
+      preco_promocional: 12.9,
       mensalidade: 0,
     },
     planos: [
@@ -152,7 +152,7 @@ export const CARD_MACHINES_DATA: MachineData[] = [
     empresa: 'Ton (Stone)',
     logo: 'https://example.com/logos/ton.png',
     imagem: 'https://example.com/maquininhas/ton-t1.png',
-    static_score: 8.20,
+    static_score: 8.2,
     raw_scores: {
       competitive_rates: 8.5,
       transparency: 8.5,
@@ -182,8 +182,8 @@ export const CARD_MACHINES_DATA: MachineData[] = [
       formas_recebimento: ['Conta Ton', 'Conta Bancária'],
     },
     pricing: {
-      preco: 138.80,
-      preco_promocional: 34.80,
+      preco: 138.8,
+      preco_promocional: 34.8,
       mensalidade: 0,
     },
     planos: [
@@ -244,8 +244,8 @@ export const CARD_MACHINES_DATA: MachineData[] = [
       formas_recebimento: ['Conta SumUp', 'Conta Bancária'],
     },
     pricing: {
-      preco: 298.00,
-      preco_promocional: 138.00,
+      preco: 298.0,
+      preco_promocional: 138.0,
       mensalidade: 0,
     },
     planos: [
@@ -276,7 +276,7 @@ export const CARD_MACHINES_DATA: MachineData[] = [
     empresa: 'Mercado Pago',
     logo: 'https://example.com/logos/mercadopago.png',
     imagem: 'https://example.com/maquininhas/point-pro.png',
-    static_score: 7.70,
+    static_score: 7.7,
     raw_scores: {
       competitive_rates: 7.0,
       transparency: 7.5,
@@ -306,8 +306,8 @@ export const CARD_MACHINES_DATA: MachineData[] = [
       formas_recebimento: ['Conta Mercado Pago', 'Conta Bancária'],
     },
     pricing: {
-      preco: 359.00,
-      preco_promocional: 89.00,
+      preco: 359.0,
+      preco_promocional: 89.0,
       mensalidade: 0,
     },
     planos: [
@@ -338,7 +338,7 @@ export const CARD_MACHINES_DATA: MachineData[] = [
     empresa: 'Banco Safra',
     logo: 'https://example.com/logos/safrapay.png',
     imagem: 'https://example.com/maquininhas/safrapay-smart.png',
-    static_score: 7.40,
+    static_score: 7.4,
     raw_scores: {
       competitive_rates: 7.0,
       transparency: 7.0,
@@ -347,7 +347,7 @@ export const CARD_MACHINES_DATA: MachineData[] = [
       reputation: 8.0,
       support_quality: 7.5,
       installment_options: 10,
-      meal_vouchers: 10,          // Aceita vale refeição
+      meal_vouchers: 10, // Aceita vale refeição
     },
     features: {
       chip: true,
@@ -368,7 +368,7 @@ export const CARD_MACHINES_DATA: MachineData[] = [
       formas_recebimento: ['Conta Safra', 'Conta Bancária'],
     },
     pricing: {
-      preco: 199.00,
+      preco: 199.0,
       preco_promocional: null,
       mensalidade: 0,
     },
@@ -400,13 +400,13 @@ export const CARD_MACHINES_DATA: MachineData[] = [
     empresa: 'Rede',
     logo: 'https://example.com/logos/rede.png',
     imagem: 'https://example.com/maquininhas/rede-pop.png',
-    static_score: 7.10,
+    static_score: 7.1,
     raw_scores: {
       competitive_rates: 6.5,
       transparency: 6.5,
       features: 7.5,
       receivables_anticipation: 10,
-      reputation: 8.5,            // Marca tradicional
+      reputation: 8.5, // Marca tradicional
       support_quality: 6.5,
       installment_options: 10,
       meal_vouchers: 0,
@@ -492,7 +492,7 @@ export const CARD_MACHINES_DATA: MachineData[] = [
       formas_recebimento: ['Conta Santander', 'Conta Bancária'],
     },
     pricing: {
-      preco: 248.00,
+      preco: 248.0,
       preco_promocional: null,
       mensalidade: 0,
     },
@@ -524,13 +524,13 @@ export const CARD_MACHINES_DATA: MachineData[] = [
     empresa: 'Cielo',
     logo: 'https://example.com/logos/cielo.png',
     imagem: 'https://example.com/maquininhas/cielo-lio.png',
-    static_score: 6.50,
+    static_score: 6.5,
     raw_scores: {
       competitive_rates: 5.5,
       transparency: 5.5,
-      features: 8.5,              // Muitas features (apps, PDV)
+      features: 8.5, // Muitas features (apps, PDV)
       receivables_anticipation: 10,
-      reputation: 9.0,            // Marca líder de mercado
+      reputation: 9.0, // Marca líder de mercado
       support_quality: 5.5,
       installment_options: 10,
       meal_vouchers: 10,
@@ -550,13 +550,20 @@ export const CARD_MACHINES_DATA: MachineData[] = [
       max_parcelas: 12,
       garantia: 12,
       tipos_conexao: ['Wi-Fi', '4G'],
-      bandeiras: ['Visa', 'Mastercard', 'Elo', 'American Express', 'Alelo', 'Sodexo'],
+      bandeiras: [
+        'Visa',
+        'Mastercard',
+        'Elo',
+        'American Express',
+        'Alelo',
+        'Sodexo',
+      ],
       formas_recebimento: ['Conta Cielo', 'Conta Bancária'],
     },
     pricing: {
-      preco: 598.00,
+      preco: 598.0,
       preco_promocional: null,
-      mensalidade: 45.00,
+      mensalidade: 45.0,
     },
     planos: [
       {
@@ -586,7 +593,7 @@ export const CARD_MACHINES_DATA: MachineData[] = [
     empresa: 'PagBank',
     logo: 'https://example.com/logos/pagbank.png',
     imagem: 'https://example.com/maquininhas/moderninha-plus.png',
-    static_score: 6.20,
+    static_score: 6.2,
     raw_scores: {
       competitive_rates: 5.0,
       transparency: 6.0,
@@ -594,13 +601,13 @@ export const CARD_MACHINES_DATA: MachineData[] = [
       receivables_anticipation: 10,
       reputation: 7.0,
       support_quality: 5.5,
-      installment_options: 8,     // Só 10 parcelas
+      installment_options: 8, // Só 10 parcelas
       meal_vouchers: 0,
     },
     features: {
       chip: true,
       tarja: true,
-      nfc: false,                 // Não tem NFC
+      nfc: false, // Não tem NFC
       com_fio: false,
       imprime_recibo: false,
       precisa_smartphone: true,
@@ -616,7 +623,7 @@ export const CARD_MACHINES_DATA: MachineData[] = [
       formas_recebimento: ['Conta PagBank'],
     },
     pricing: {
-      preco: 89.90,
+      preco: 89.9,
       preco_promocional: null,
       mensalidade: 0,
     },

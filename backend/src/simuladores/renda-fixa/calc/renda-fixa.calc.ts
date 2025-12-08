@@ -15,11 +15,7 @@ Decimal.set({ precision: 15 });
  */
 export function transformarTaxaAnualMensal(taxaAnual: number): Decimal {
   const taxa = new Decimal(taxaAnual).div(100);
-  const resultado = taxa
-    .plus(1)
-    .pow(new Decimal(1).div(12))
-    .minus(1)
-    .mul(100);
+  const resultado = taxa.plus(1).pow(new Decimal(1).div(12)).minus(1).mul(100);
   return resultado;
 }
 
@@ -194,7 +190,9 @@ export function calcularInvestimentosRendaFixa(
       resultCdb = new Decimal(apiCdb.vl);
       // Calculate tax from API values
       const rendimentoBruto = resultCdb.minus(investimento);
-      impostoCdb = rendimentoBruto.mul(new Decimal(1).minus(calcularDescontoImposto(periodoMeses * 30)));
+      impostoCdb = rendimentoBruto.mul(
+        new Decimal(1).minus(calcularDescontoImposto(periodoMeses * 30)),
+      );
       // Calculate effective monthly rate from API values
       taxaCdb = new Decimal(apiCdb.rlm || 0).div(100);
     } else {
@@ -232,8 +230,7 @@ export function calcularInvestimentosRendaFixa(
   const investimentos = [resultPoup, resultLci, resultCdb, resultTesouroDireto];
   const nomes = ['Poupança', 'LCI', 'CDB', 'Tesouro Direto'];
   const melhorIndex = investimentos.reduce(
-    (maxIdx, valor, idx, arr) =>
-      valor.gt(arr[maxIdx]) ? idx : maxIdx,
+    (maxIdx, valor, idx, arr) => (valor.gt(arr[maxIdx]) ? idx : maxIdx),
     0,
   );
 

@@ -8,7 +8,7 @@ import { SimulatorType } from '@prisma/client';
 export class CombustivelService {
   private readonly logger = new Logger(CombustivelService.name);
 
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   private arredondar(valor: number, casas = 3) {
     return Number(valor.toFixed(casas));
@@ -22,7 +22,8 @@ export class CombustivelService {
     const maior = Math.max(custoA, custoB);
     const menor = Math.min(custoA, custoB);
     const valor = this.arredondar(maior - menor);
-    const percentual = maior === 0 ? 0 : this.arredondar(((maior - menor) / maior) * 100, 2);
+    const percentual =
+      maior === 0 ? 0 : this.arredondar(((maior - menor) / maior) * 100, 2);
     return { valor, percentual };
   }
 
@@ -35,23 +36,32 @@ export class CombustivelService {
     }).format(valor);
   }
 
-  private gerarMensagem(input: CombustivelInputDto, recomendacao: 'Gasolina' | 'Etanol') {
+  private gerarMensagem(
+    input: CombustivelInputDto,
+    recomendacao: 'Gasolina' | 'Etanol',
+  ) {
     return `Levando em conta a gasolina a ${this.formatarMoeda(input.precoGasolina)}, o etanol a ${this.formatarMoeda(input.precoEtanol)} e o consumo do seu veículo. O combustível que mais vale a pena para abastecer o seu carro é: ${recomendacao}`;
   }
 
   private calcularCombustivelVantajoso(input: CombustivelInputDto) {
     const custos = {
-      gasolina: this.calcularCustoPorKm(input.precoGasolina, input.consumoGasolina),
+      gasolina: this.calcularCustoPorKm(
+        input.precoGasolina,
+        input.consumoGasolina,
+      ),
       etanol: this.calcularCustoPorKm(input.precoEtanol, input.consumoEtanol),
     };
 
-    const recomendacao: 'Gasolina' | 'Etanol' = custos.etanol < custos.gasolina ? 'Etanol' : 'Gasolina';
+    const recomendacao: 'Gasolina' | 'Etanol' =
+      custos.etanol < custos.gasolina ? 'Etanol' : 'Gasolina';
     const economia = this.calcularEconomia(custos.gasolina, custos.etanol);
 
     return { recomendacao, custos, economia };
   }
 
-  async comparaCombustivelEtanol(input: CombustivelInputDto): Promise<CombustivelOutputDto> {
+  async comparaCombustivelEtanol(
+    input: CombustivelInputDto,
+  ): Promise<CombustivelOutputDto> {
     const resultado = this.calcularCombustivelVantajoso(input);
 
     const output: CombustivelOutputDto = {
@@ -72,14 +82,17 @@ export class CombustivelService {
         percentual: resultado.economia.percentual,
       },
       mensagem: this.gerarMensagem(input, resultado.recomendacao),
-    }
+    };
 
-    await this.salvaSimulacao(input, output)
+    await this.salvaSimulacao(input, output);
 
     return output;
   }
 
-  async salvaSimulacao(input: CombustivelInputDto, output: CombustivelOutputDto) {
+  async salvaSimulacao(
+    input: CombustivelInputDto,
+    output: CombustivelOutputDto,
+  ) {
     try {
       await this.prisma.simulation.create({
         data: {
@@ -92,11 +105,9 @@ export class CombustivelService {
       });
 
       this.logger.log(`Simulação salva para o email: ${input.email}`);
-
     } catch (error) {
       this.logger.error('Erro ao salvar a simulação de combustível', error);
       throw error;
     }
   }
-
 }

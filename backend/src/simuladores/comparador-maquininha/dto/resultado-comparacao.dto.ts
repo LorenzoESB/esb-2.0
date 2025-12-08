@@ -28,12 +28,12 @@ export class CaracteristicasMaquininhaDto {
   })
   imagem: string;
 
-  @ApiProperty({ description: 'Preço da maquininha', example: 258.80 })
+  @ApiProperty({ description: 'Preço da maquininha', example: 258.8 })
   preco: number;
 
   @ApiProperty({
     description: 'Preço promocional (se houver)',
-    example: 12.90,
+    example: 12.9,
     nullable: true,
   })
   preco_promocional: number | null;

@@ -86,7 +86,9 @@ export class TaxasFinanciamentoData {
           );
 
         if (!response.data || !response.data.value) {
-          this.logger.warn(`Invalid response from BCB API for month ${mesReferencia}`);
+          this.logger.warn(
+            `Invalid response from BCB API for month ${mesReferencia}`,
+          );
           continue;
         }
 
@@ -95,10 +97,14 @@ export class TaxasFinanciamentoData {
         taxas = response.data.value;
 
         if (taxas.length > 0) {
-          this.logger.log(`Found ${taxas.length} rates from BCB API for month ${mesReferencia}`);
+          this.logger.log(
+            `Found ${taxas.length} rates from BCB API for month ${mesReferencia}`,
+          );
           break;
         } else {
-          this.logger.warn(`No rates found for month ${mesReferencia}, trying previous month...`);
+          this.logger.warn(
+            `No rates found for month ${mesReferencia}, trying previous month...`,
+          );
         }
       }
 
@@ -125,7 +131,9 @@ export class TaxasFinanciamentoData {
 
       // Se não houver taxas válidas, usar fallback
       if (taxasValidas.length === 0) {
-        this.logger.warn('No valid rates returned from BCB API, using fallback rates');
+        this.logger.warn(
+          'No valid rates returned from BCB API, using fallback rates',
+        );
         return this.obterTaxasFallback();
       }
 
@@ -159,7 +167,7 @@ export class TaxasFinanciamentoData {
     dataAtual.setMonth(dataAtual.getMonth() - monthsBack);
     const ano = dataAtual.getFullYear();
     const mes = String(dataAtual.getMonth() + 1).padStart(2, '0');
-    return `${ano}-${mes}`;  // FIXED: Added hyphen separator
+    return `${ano}-${mes}`; // FIXED: Added hyphen separator
   }
 
   /**

@@ -2,11 +2,11 @@ import Decimal from 'decimal.js';
 
 /**
  * Biblioteca de cálculos financeiros para simulação de aposentadoria privada.
- * 
+ *
  * Baseado nas fórmulas do Excel e código Python legado do Educando Seu Bolso.
  * Todas as funções são puras (sem efeitos colaterais) e usam Decimal.js para
  * precisão financeira.
- * 
+ *
  * Fórmulas principais:
  * - FV (Future Value): Valor futuro de uma série de pagamentos
  * - PV (Present Value): Valor presente de uma série de pagamentos
@@ -15,16 +15,16 @@ import Decimal from 'decimal.js';
 
 /**
  * Calcula o valor futuro de um capital inicial aplicado a juros compostos.
- * 
+ *
  * Fórmula: FV = PV × (1 + taxa)^prazo
- * 
+ *
  * Excel equivalente: =FV(taxa, nper, 0, -PV)
- * 
+ *
  * @param capitalInicial - Valor presente (R$)
  * @param taxaMensal - Taxa de juros mensal (decimal, ex: 0.005 para 0.5%)
  * @param meses - Prazo em meses
  * @returns Valor futuro corrigido
- * 
+ *
  * @example
  * calcularValorFuturoCapitalInicial(50000, 0.005, 264)
  * // Retorna: Decimal(143439.97...)
@@ -45,16 +45,16 @@ export function calcularValorFuturoCapitalInicial(
 
 /**
  * Calcula o valor futuro de uma série de pagamentos mensais (contribuições).
- * 
+ *
  * Fórmula: FV = PMT × [(1 + taxa)^prazo - 1] / taxa
- * 
+ *
  * Excel equivalente: =FV(taxa, nper, -PMT, 0)
- * 
+ *
  * @param pagamentoMensal - Contribuição mensal (R$)
  * @param taxaMensal - Taxa de juros mensal (decimal)
  * @param meses - Prazo em meses
  * @returns Valor futuro acumulado das contribuições
- * 
+ *
  * @example
  * calcularValorFuturoPagamentos(2000, 0.005, 264)
  * // Retorna: Decimal(1397926.54...)
@@ -79,16 +79,16 @@ export function calcularValorFuturoPagamentos(
 
 /**
  * Calcula o valor presente necessário para gerar uma renda mensal por um período.
- * 
+ *
  * Fórmula: PV = PMT × [(1 + taxa)^prazo - 1] / [taxa × (1 + taxa)^prazo]
- * 
+ *
  * Excel equivalente: =PV(taxa, nper, -PMT, 0)
- * 
+ *
  * @param rendaMensal - Renda mensal desejada (R$)
  * @param taxaMensal - Taxa de juros mensal (decimal)
  * @param meses - Prazo em meses
  * @returns Valor presente necessário
- * 
+ *
  * @example
  * calcularValorPresente(12000, 0.005, 432)
  * // Retorna: Decimal(2121726.04...)
@@ -114,16 +114,16 @@ export function calcularValorPresente(
 
 /**
  * Calcula o pagamento mensal necessário para acumular um valor futuro.
- * 
+ *
  * Fórmula: PMT = VP × [taxa / ((1 + taxa)^prazo - 1)]
- * 
+ *
  * Excel equivalente: =PMT(taxa, nper, 0, -FV)
- * 
+ *
  * @param valorPresente - Valor presente/futuro desejado (R$)
  * @param taxaMensal - Taxa de juros mensal (decimal)
  * @param meses - Prazo em meses
  * @returns Pagamento mensal necessário
- * 
+ *
  * @example
  * calcularPagamentoMensal(2121726.04, 0.005, 264)
  * // Retorna: Decimal(2836.26...)
@@ -148,16 +148,16 @@ export function calcularPagamentoMensal(
 
 /**
  * Calcula a renda mensal que um capital pode gerar por um período.
- * 
+ *
  * Fórmula: PMT = VP / [(1 + taxa)^prazo - 1] × [taxa × (1 + taxa)^prazo]
- * 
+ *
  * Excel equivalente: =PMT(taxa, nper, -PV, 0)
- * 
+ *
  * @param valorPresente - Capital disponível (R$)
  * @param taxaMensal - Taxa de juros mensal (decimal)
  * @param meses - Prazo em meses
  * @returns Renda mensal possível
- * 
+ *
  * @example
  * calcularRendaMensal(2121726.04, 0.005, 432)
  * // Retorna: Decimal(12000.00...)
@@ -183,12 +183,12 @@ export function calcularRendaMensal(
 
 /**
  * Converte taxa mensal para taxa anual equivalente.
- * 
+ *
  * Fórmula: Taxa Anual = (1 + taxa mensal)^12 - 1
- * 
+ *
  * @param taxaMensal - Taxa mensal (decimal)
  * @returns Taxa anual equivalente (decimal)
- * 
+ *
  * @example
  * calcularTaxaAnual(0.005)
  * // Retorna: Decimal(0.0617...) = 6.17% ao ano
@@ -202,14 +202,14 @@ export function calcularTaxaAnual(
 
 /**
  * Calcula quanto tempo um patrimônio dura com saques mensais fixos.
- * 
+ *
  * Usa busca binária para encontrar o número de meses até saldo zerar.
- * 
+ *
  * @param patrimonio - Patrimônio inicial (R$)
  * @param saqueMensal - Valor do saque mensal (R$)
  * @param taxaMensal - Taxa de juros mensal (decimal)
  * @returns Número de meses até esgotar o patrimônio (ou Infinity se sustentável)
- * 
+ *
  * @example
  * calcularDuracaoPatrimonio(1000000, 5000, 0.005)
  * // Retorna: 276 (meses)
@@ -251,9 +251,9 @@ export function calcularDuracaoPatrimonio(
 
 /**
  * Calcula o saldo após N meses de saques com rendimento.
- * 
+ *
  * Usa fórmula de PV de anuidade para calcular o saldo.
- * 
+ *
  * @param patrimonioInicial - Capital inicial (R$)
  * @param saqueMensal - Valor do saque mensal (R$)
  * @param taxaMensal - Taxa de juros mensal (decimal)

@@ -123,10 +123,7 @@ export function calcularTotalPagoSAC(
   const juros = new Decimal(taxaMensal).div(100);
 
   // Juros totais = (Principal × i × (n + 1)) / 2
-  const jurosTotais = valor
-    .times(juros)
-    .times(prazo.plus(1))
-    .div(2);
+  const jurosTotais = valor.times(juros).times(prazo.plus(1)).div(2);
 
   // Total pago = Principal + Juros totais
   const totalPago = valor.plus(jurosTotais);

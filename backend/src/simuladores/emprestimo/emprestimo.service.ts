@@ -238,7 +238,8 @@ export class EmprestimoService {
               totalPago: resultado.melhorOferta.totalPago,
               totalJuros: resultado.melhorOferta.totalJuros,
               taxaEfetivaAnual: resultado.melhorOferta.taxaEfetivaAnual,
-              comprometimentoRenda: resultado.melhorOferta.comprometimentoRenda || null,
+              comprometimentoRenda:
+                resultado.melhorOferta.comprometimentoRenda || null,
             },
             ofertas: resultado.ofertas.slice(0, 10).map((o) => ({
               nomeBanco: o.nomeBanco,
