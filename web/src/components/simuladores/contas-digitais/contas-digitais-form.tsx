@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useForm } from 'react-hook-form';
+import type { UseFormReturn } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
 import {
@@ -102,14 +103,16 @@ export function ContasDigitaisForm({
     TipoPessoa.FISICA,
   );
 
-  const form = tipoPessoa === TipoPessoa.FISICA ? formFisica : formJuridica;
+  const form = (tipoPessoa === TipoPessoa.FISICA
+    ? formFisica
+    : formJuridica) as UseFormReturn<any>;
   const isPF = tipoPessoa === TipoPessoa.FISICA;
 
   const handleTipoPessoaChange = (value: string) => {
     setTipoPessoa(value as TipoPessoa);
   };
 
-  const temConta = form.watch('temConta');
+  const temConta = form.watch('temConta' as const) as boolean;
 
   return (
     <Card>

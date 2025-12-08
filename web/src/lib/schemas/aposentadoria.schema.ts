@@ -6,15 +6,13 @@ export enum ModoCalculoAposentadoria {
 }
 
 export const SimularAposentadoriaInputSchema = z.object({
-    modoCalculo: z.nativeEnum(ModoCalculoAposentadoria, {
-        errorMap: () => ({ message: 'Modo de cálculo deve ser RECEBER ou CONTRIBUIR' }),
-    }),
+    modoCalculo: z.nativeEnum(ModoCalculoAposentadoria),
     idadeAtual: z.number().int().min(0, 'Idade atual deve ser no mínimo 0').max(100, 'Idade atual deve ser no máximo 100'),
     idadeAposentadoria: z.number().int().min(1, 'Idade de aposentadoria deve ser no mínimo 1').max(100, 'Idade de aposentadoria deve ser no máximo 100'),
-    valorJaAcumulado: z.number().min(0, 'Valor já acumulado não pode ser negativo').optional().default(0),
+    valorJaAcumulado: z.number().min(0, 'Valor já acumulado não pode ser negativo'),
     rendaMensalDesejada: z.number().min(0.01, 'Renda mensal desejada deve ser maior que zero').optional(),
     contribuicaoMensal: z.number().min(0.01, 'Contribuição mensal deve ser maior que zero').optional(),
-    incluirCenariosSaque: z.boolean().optional().default(true),
+    incluirCenariosSaque: z.boolean(),
     nome: z.string().min(1, 'Nome é obrigatório'),
     email: z.string().email('Email inválido'),
 }).refine(

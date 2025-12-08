@@ -20,8 +20,7 @@ const ContasDigitaisBaseSchema = z.object({
   tarifa: z
     .number()
     .min(0, 'Tarifa deve ser maior ou igual a zero')
-    .optional()
-    .transform((val) => (val === undefined ? 0 : Number(val))),
+    .transform((val) => Number(val)),
 
   saques: z
     .number()

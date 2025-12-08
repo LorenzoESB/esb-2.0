@@ -30,23 +30,23 @@ export const TaxaMaquininhaInputSchema = z.object({
 
   // Filtros opcionais
   segmento: z.number().optional(),
-  sem_mensalidade: z.boolean().optional().default(false),
-  aceita_cartao_tarja: z.boolean().optional().default(false),
-  sem_fio: z.boolean().optional().default(false),
-  pf: z.boolean().optional().default(false),
-  pj: z.boolean().optional().default(false),
-  imprime_recibo: z.boolean().optional().default(false),
-  wifi: z.boolean().optional().default(false),
-  quer_antecipar: z.boolean().optional().default(false),
-  n_exige_smartphone: z.boolean().optional().default(false),
-  aceita_vale_refeicao: z.boolean().optional().default(false),
-  ecommerce: z.boolean().optional().default(false),
+  sem_mensalidade: z.boolean(),
+  aceita_cartao_tarja: z.boolean(),
+  sem_fio: z.boolean(),
+  pf: z.boolean(),
+  pj: z.boolean(),
+  imprime_recibo: z.boolean(),
+  wifi: z.boolean(),
+  quer_antecipar: z.boolean(),
+  n_exige_smartphone: z.boolean(),
+  aceita_vale_refeicao: z.boolean(),
+  ecommerce: z.boolean(),
 
   // Metadados
   nome: z.string().min(1, 'Nome é obrigatório'),
   email: z.string().email('Email inválido'),
-  compartilharDados: z.boolean().optional().default(true),
-  origem: z.string().optional().default('web'),
+  compartilharDados: z.boolean(),
+  origem: z.string(),
 });
 
 /**
@@ -100,6 +100,7 @@ export const MaquininhaCalculadaSchema = z.object({
   chip: z.boolean(),
   tarja: z.boolean(),
   NFC: z.boolean(),
+  wifi: z.boolean(),
   PF: z.boolean(),
   PJ: z.boolean(),
   precisa_de_telefone: z.boolean(),
