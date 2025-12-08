@@ -10,7 +10,7 @@ import {
   AliquotasIR,
 } from './interfaces/juros-compostos.interface';
 import { PrismaService } from '../../prisma/prisma.service';
-import { SimulatorType } from 'generated/prisma';
+import { SimulatorType } from '@prisma/client';
 
 @Injectable()
 export class JurosCompostosService {

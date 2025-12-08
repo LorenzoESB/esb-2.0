@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { SimulatorType } from 'generated/prisma';
+import { SimulatorType } from '@prisma/client';
 import { SimularFinanciamentoImovelDto } from './dto/simular-financiamento-imovel.dto';
 import { ResultadoFinanciamentoImovelDto } from './dto/resultado-financiamento-imovel.dto';
 import { calcularFinanciamentoSAC } from './calc/financiamento-imovel.calc';

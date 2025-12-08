@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { SimulatorType } from 'generated/prisma';
+import { SimulatorType } from '@prisma/client';
 import {
   SimularEmprestimoDto,
   TipoPessoa,

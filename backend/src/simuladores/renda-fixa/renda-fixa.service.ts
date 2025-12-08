@@ -17,7 +17,7 @@ import {
   InvestimentosRendaFixa,
 } from './calc/renda-fixa.calc';
 import { PrismaService } from '../../prisma/prisma.service';
-import { SimulatorType } from 'generated/prisma';
+import { SimulatorType } from '@prisma/client';
 import {
   RendaFixaApiClient,
   OfertaInvestimento,

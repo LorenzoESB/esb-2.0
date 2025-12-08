@@ -25,7 +25,7 @@ import {
   calcularSaldoAposSaques,
 } from './calc/aposentadoria.calc';
 import { PrismaService } from '../../prisma/prisma.service';
-import { SimulatorType } from 'generated/prisma';
+import { SimulatorType } from '@prisma/client';
 
 @Injectable()
 export class AposentadoriaService {

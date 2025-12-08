@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { CombustivelInputDto } from './dto/combustivel-input.dto';
 import { CombustivelOutputDto } from './dto/combustivel-output.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { SimulatorType } from 'generated/prisma';
+import { SimulatorType } from '@prisma/client';
 
 @Injectable()
 export class CombustivelService {
