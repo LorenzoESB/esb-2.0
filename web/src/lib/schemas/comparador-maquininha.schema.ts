@@ -14,9 +14,9 @@ export const ComparadorMaquininhaInputSchema = z.object({
 
   email: z.string().email('Email inválido'),
 
-  compartilharDados: z.boolean().optional().default(true),
+  compartilharDados: z.boolean(),
 
-  origem: z.string().optional().default('web'),
+  origem: z.string(),
 });
 
 /**
