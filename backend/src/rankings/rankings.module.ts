@@ -1,6 +1,9 @@
 import { Module } from '@nestjs/common';
 import { CardMachinesRankingModule } from './card-machines/card-machines-ranking.module';
 import { InsuranceRankingModule } from './insurance/insurance-ranking.module';
+import { DigitalAccountsRankingModule } from './digital-accounts/digital-accounts-ranking.module';
+import { TollPassesRankingModule } from './toll-passes/toll-passes-ranking.module';
+import { CarSubscriptionRankingModule } from './car-subscription/car-subscription-ranking.module';
 
 /**
  * Rankings Module
@@ -21,7 +24,19 @@ import { InsuranceRankingModule } from './insurance/insurance-ranking.module';
  * - Rankings: Show pre-calculated rankings with optional filters
  */
 @Module({
-  imports: [CardMachinesRankingModule, InsuranceRankingModule],
-  exports: [CardMachinesRankingModule, InsuranceRankingModule],
+  imports: [
+    CardMachinesRankingModule,
+    InsuranceRankingModule,
+    DigitalAccountsRankingModule,
+    TollPassesRankingModule,
+    CarSubscriptionRankingModule,
+  ],
+  exports: [
+    CardMachinesRankingModule,
+    InsuranceRankingModule,
+    DigitalAccountsRankingModule,
+    TollPassesRankingModule,
+    CarSubscriptionRankingModule,
+  ],
 })
 export class RankingsModule {}

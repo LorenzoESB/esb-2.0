@@ -1,0 +1,175 @@
+import { TollPassData } from '../interfaces/toll-pass-ranking.interface';
+import { TOLL_PASS_CRITERIA } from './criteria.data';
+
+/**
+ * Dataset de tags de pedágio expresso.
+ *
+ * Fonte: ranking legado (top_pedagio) e revisão manual de ofertas vigentes.
+ * Notas variam de 0 a 5 e são ponderadas pelos critérios em `criteria.data.ts`.
+ */
+export const TOLL_PASSES_DATA: TollPassData[] = [
+  {
+    id: 1,
+    nome: 'C6 Tag',
+    empresa: 'C6 Bank',
+    logo: 'https://logospng.org/download/c6-bank/logo-c6-bank-2048.png',
+    url_contratacao: 'https://www.c6bank.com.br/c6tag',
+    cobertura_rodovias: 400,
+    tags_adicionais: ['Tag sem mensalidade vinculada à conta C6'],
+    beneficios: {
+      estacionamento: true,
+      cashback: false,
+      parceiros: ['Postos parceiros', 'Shopping centers'],
+    },
+    pricing: {
+      mensalidade: 0,
+      adesao: 0,
+    },
+    raw_scores: {
+      custo_mensal: 5.0,
+      cobertura: 4.8,
+      beneficios: 4.2,
+      facilidade: 4.6,
+      transparencia: 4.4,
+    },
+    static_score: 4.7,
+    data_atualizacao: new Date('2024-12-03'),
+    criteria: TOLL_PASS_CRITERIA,
+    score: 0,
+    rank: 0,
+    isBestOption: false,
+    ativo: true,
+  },
+  {
+    id: 2,
+    nome: 'Veloe',
+    empresa: 'Veloe Serviços de Mobilidade',
+    logo: 'https://logodownload.org/wp-content/uploads/2019/03/veloe-logo.png',
+    url_contratacao: 'https://www.veloe.com.br/',
+    cobertura_rodovias: 420,
+    tags_adicionais: ['Promoções de isenção nos primeiros meses'],
+    beneficios: {
+      estacionamento: true,
+      cashback: false,
+      parceiros: ['Shell Box', 'Bancos parceiros'],
+    },
+    pricing: {
+      mensalidade: 0,
+      adesao: 20,
+    },
+    raw_scores: {
+      custo_mensal: 4.5,
+      cobertura: 4.5,
+      beneficios: 4.4,
+      facilidade: 4.3,
+      transparencia: 4.2,
+    },
+    static_score: 4.4,
+    data_atualizacao: new Date('2024-12-03'),
+    criteria: TOLL_PASS_CRITERIA,
+    score: 0,
+    rank: 0,
+    isBestOption: false,
+    ativo: true,
+  },
+  {
+    id: 3,
+    nome: 'Sem Parar',
+    empresa: 'Sem Parar Instituição de Pagamento',
+    logo: 'https://logodownload.org/wp-content/uploads/2019/05/sem-parar-logo.png',
+    url_contratacao: 'https://www.semparar.com.br/',
+    cobertura_rodovias: 430,
+    tags_adicionais: ['Planos com estacionamento e lava-rápido'],
+    beneficios: {
+      estacionamento: true,
+      cashback: false,
+      parceiros: ['Lava-rápido', 'Drive-thru parceiros'],
+    },
+    pricing: {
+      mensalidade: 19.9,
+      adesao: 0,
+    },
+    raw_scores: {
+      custo_mensal: 3.5,
+      cobertura: 4.9,
+      beneficios: 4.5,
+      facilidade: 4.0,
+      transparencia: 4.0,
+    },
+    static_score: 4.1,
+    data_atualizacao: new Date('2024-12-03'),
+    criteria: TOLL_PASS_CRITERIA,
+    score: 0,
+    rank: 0,
+    isBestOption: false,
+    ativo: true,
+  },
+  {
+    id: 4,
+    nome: 'ConectCar',
+    empresa: 'ConectCar',
+    logo: 'https://logodownload.org/wp-content/uploads/2016/05/conectcar-logo.png',
+    url_contratacao: 'https://www.conectcar.com/',
+    cobertura_rodovias: 410,
+    tags_adicionais: ['Possibilidade de acúmulo em programas parceiros'],
+    beneficios: {
+      estacionamento: true,
+      cashback: false,
+      parceiros: ['Rede de postos', 'Aplicativos parceiros'],
+    },
+    pricing: {
+      mensalidade: 14.9,
+      adesao: 20,
+    },
+    raw_scores: {
+      custo_mensal: 4.0,
+      cobertura: 4.2,
+      beneficios: 3.8,
+      facilidade: 3.9,
+      transparencia: 3.8,
+    },
+    static_score: 4.0,
+    data_atualizacao: new Date('2024-12-03'),
+    criteria: TOLL_PASS_CRITERIA,
+    score: 0,
+    rank: 0,
+    isBestOption: false,
+    ativo: true,
+  },
+  {
+    id: 5,
+    nome: 'Taggy',
+    empresa: 'Taggy',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/0/08/Taggy_logo.png',
+    url_contratacao: 'https://www.taggy.com.br/',
+    cobertura_rodovias: 350,
+    tags_adicionais: ['Planos básicos sem adicionais'],
+    beneficios: {
+      estacionamento: true,
+      cashback: false,
+      parceiros: ['Redes regionais'],
+    },
+    pricing: {
+      mensalidade: 11.9,
+      adesao: 20,
+    },
+    raw_scores: {
+      custo_mensal: 3.8,
+      cobertura: 3.7,
+      beneficios: 3.2,
+      facilidade: 3.8,
+      transparencia: 3.6,
+    },
+    static_score: 3.6,
+    data_atualizacao: new Date('2024-12-03'),
+    criteria: TOLL_PASS_CRITERIA,
+    score: 0,
+    rank: 0,
+    isBestOption: false,
+    ativo: true,
+  },
+];
+
+export function getActiveTollPasses(): TollPassData[] {
+  return TOLL_PASSES_DATA.filter((item) => item.ativo);
+}
