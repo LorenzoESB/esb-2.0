@@ -22,6 +22,18 @@ export class AdminController {
     return this.adminService.getSimulators();
   }
 
+  @Get('rankings')
+  @ApiOperation({ summary: 'List all rankings' })
+  async getRankings() {
+    return this.adminService.getRankings();
+  }
+
+  @Get('simulators/:id')
+  @ApiOperation({ summary: 'Get simulator details' })
+  async getSimulator(@Param('id') id: string) {
+    return this.adminService.getSimulator(id);
+  }
+
   @Put('simulators/:id')
   @ApiOperation({ summary: 'Update simulator metadata' })
   async updateSimulator(@Param('id') id: string, @Body() updateDto: UpdateSimulatorDto) {
@@ -32,6 +44,12 @@ export class AdminController {
   @ApiOperation({ summary: 'Get analytics overview' })
   async getAnalyticsOverview() {
     return this.adminService.getAnalyticsOverview();
+  }
+
+  @Get('data-health')
+  @ApiOperation({ summary: 'Get data integrity and health status' })
+  async getDataHealth() {
+    return this.adminService.getDataHealth();
   }
   
   // Helper endpoint to init data (dev only)

@@ -3,6 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Trophy, ExternalLink, Tag, Calendar } from 'lucide-react';
 import { CardMachineRankingItem } from '@/lib/schemas/rankings/card-machines-ranking.schema';
+import { Logo } from './Logo';
 
 interface BestOptionHighlightProps {
   machine: CardMachineRankingItem;
@@ -29,13 +30,7 @@ export function BestOptionHighlight({ machine }: BestOptionHighlightProps) {
           Melhor Opção
         </Badge>
         <CardTitle className="text-2xl flex items-center gap-3 mt-2">
-          {machine.logo && (
-            <img
-              src={machine.logo}
-              alt={machine.empresa}
-              className="h-10 w-auto object-contain"
-            />
-          )}
+          <Logo src={machine.logo} alt={machine.empresa} className="h-10 w-auto object-contain" />
           <div>
             <div className="text-xl font-bold">{machine.name}</div>
             <div className="text-sm font-normal text-muted-foreground">
@@ -47,15 +42,9 @@ export function BestOptionHighlight({ machine }: BestOptionHighlightProps) {
 
       <CardContent className="space-y-4">
         {/* Image */}
-        {machine.imagem && (
-          <div className="flex justify-center">
-            <img
-              src={machine.imagem}
-              alt={machine.name}
-              className="h-40 w-auto object-contain"
-            />
-          </div>
-        )}
+        <div className="flex justify-center">
+          <Logo src={machine.imagem} alt={machine.name} className="h-40 w-auto object-contain" />
+        </div>
 
         {/* Key Features */}
         <div className="grid grid-cols-2 gap-3">

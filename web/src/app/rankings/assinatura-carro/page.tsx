@@ -18,14 +18,18 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Car, AlertCircle, Info, ExternalLink } from 'lucide-react';
+import { Logo } from '@/components/rankings/shared/Logo';
 import { useCarSubscriptionRanking } from '@/lib/hooks/rankings/use-car-subscription-ranking';
 import { useAutoIframeHeight } from '@/lib/hooks/use-auto-iframe-height';
 import { AdCard } from '@/components/ads/AdCard';
-import { getRandomAds } from '@/lib/ads';
+import { getStableAds } from '@/lib/ads';
+import { usePathname } from 'next/navigation';
+import { formatPostDateShort } from '@/utils/wordpress-formatter';
 
 export default function CarSubscriptionRankingPage() {
   const { data, isLoading, error } = useCarSubscriptionRanking();
-  const ad = getRandomAds(1)[0];
+  const pathname = usePathname();
+  const ad = getStableAds(pathname || '/rankings/assinatura-carro', 1)[0];
 
   useAutoIframeHeight([data]);
 
@@ -101,17 +105,7 @@ export default function CarSubscriptionRankingPage() {
                   </div>
                 </div>
                 <div className="flex flex-col items-end gap-3">
-                  {best.logo && best.logo.trim() !== '' && (
-                    <img
-                      src={best.logo}
-                      alt={best.name}
-                      className="h-12 w-auto object-contain"
-                      onError={(e) => {
-                        const t = e.currentTarget;
-                        t.src = 'https://via.placeholder.com/80x24?text=Logo';
-                      }}
-                    />
-                  )}
+                  <Logo src={best.logo} alt={best.name} className="h-12 w-auto object-contain" />
                   <Button
                     size="sm"
                     className="bg-green-600 hover:bg-green-700"
@@ -171,8 +165,7 @@ export default function CarSubscriptionRankingPage() {
                 Ranking completo ({data.total} empresas)
               </h2>
               <Badge variant="secondary">
-                Atualizado em{' '}
-                {new Date(data.lastUpdated).toLocaleDateString('pt-BR')}
+                Atualizado em {formatPostDateShort(typeof data.lastUpdated === 'string' ? data.lastUpdated : new Date(data.lastUpdated).toISOString())}
               </Badge>
             </div>
             <div className="rounded-lg border overflow-hidden">
@@ -208,17 +201,7 @@ export default function CarSubscriptionRankingPage() {
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-3">
-                          {item.logo && item.logo.trim() !== '' && (
-                            <img
-                              src={item.logo}
-                              alt={item.name}
-                              className="h-6 w-auto object-contain"
-                              onError={(e) => {
-                                const t = e.currentTarget;
-                                t.src = 'https://via.placeholder.com/60x20?text=Logo';
-                              }}
-                            />
-                          )}
+                          <Logo src={item.logo} alt={item.name} className="h-6 w-auto object-contain" />
                           <div>
                             <div className="font-medium">{item.name}</div>
                             <p className="text-xs text-muted-foreground">

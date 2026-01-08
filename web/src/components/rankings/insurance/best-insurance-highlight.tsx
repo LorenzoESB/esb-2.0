@@ -13,6 +13,7 @@ import {
   Star,
 } from 'lucide-react';
 import { InsuranceRankingItem } from '@/lib/schemas/rankings/insurance-ranking.schema';
+import { Logo } from '../shared/Logo';
 
 interface BestInsuranceHighlightProps {
   insurance: InsuranceRankingItem;
@@ -36,13 +37,7 @@ export function BestInsuranceHighlight({
         </div>
         <Badge className="w-fit bg-green-600 hover:bg-green-700">Melhor Opção</Badge>
         <CardTitle className="text-2xl flex items-center gap-3 mt-3">
-          {insurance.logo && (
-            <img
-              src={insurance.logo}
-              alt={insurance.name}
-              className="h-10 w-auto object-contain"
-            />
-          )}
+          <Logo src={insurance.logo} alt={insurance.name} className="h-10 w-auto object-contain" />
           <div>
             <div className="text-xl font-bold">{insurance.name}</div>
             <div className="text-sm text-muted-foreground">{insurance.company}</div>

@@ -9,11 +9,14 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useAutoIframeHeight } from '@/lib/hooks/use-auto-iframe-height';
 import { ShieldCheck, AlertCircle, Info, Sparkles } from 'lucide-react';
 import { AdCard } from '@/components/ads/AdCard';
-import { getRandomAds } from '@/lib/ads';
+import { getStableAds } from '@/lib/ads';
+import { usePathname } from 'next/navigation';
+import { formatPostDateShort } from '@/utils/wordpress-formatter';
 
 export default function InsuranceRankingPage() {
   const { data, isLoading, error } = useInsuranceRanking();
-  const ad = getRandomAds(1)[0];
+  const pathname = usePathname();
+  const ad = getStableAds(pathname || '/rankings/seguros', 1)[0];
 
   useAutoIframeHeight([data]);
 
@@ -139,12 +142,7 @@ export default function InsuranceRankingPage() {
           </div>
 
           <div className="text-center text-sm text-muted-foreground">
-            Última atualização:{' '}
-            {new Date(data.lastUpdated).toLocaleDateString('pt-BR', {
-              day: '2-digit',
-              month: 'long',
-              year: 'numeric',
-            })}
+            Última atualização: {formatPostDateShort(typeof data.lastUpdated === 'string' ? data.lastUpdated : new Date(data.lastUpdated).toISOString())}
           </div>
         </div>
       )}

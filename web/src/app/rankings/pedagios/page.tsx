@@ -18,14 +18,18 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Ticket, AlertCircle, ShieldCheck, ExternalLink } from 'lucide-react';
+import { Logo } from '@/components/rankings/shared/Logo';
 import { useTollPassRanking } from '@/lib/hooks/rankings/use-toll-passes-ranking';
 import { useAutoIframeHeight } from '@/lib/hooks/use-auto-iframe-height';
 import { AdCard } from '@/components/ads/AdCard';
-import { getRandomAds } from '@/lib/ads';
+import { getStableAds } from '@/lib/ads';
+import { usePathname } from 'next/navigation';
+import { formatPostDateShort } from '@/utils/wordpress-formatter';
 
 export default function TollPassRankingPage() {
   const { data, isLoading, error } = useTollPassRanking();
-  const ad = getRandomAds(1)[0];
+  const pathname = usePathname();
+  const ad = getStableAds(pathname || '/rankings/pedagios', 1)[0];
 
   useAutoIframeHeight([data]);
 
@@ -168,8 +172,7 @@ export default function TollPassRankingPage() {
                 Ranking completo ({data.total} opções)
               </h2>
               <Badge variant="secondary">
-                Atualizado em{' '}
-                {new Date(data.lastUpdated).toLocaleDateString('pt-BR')}
+                Atualizado em {formatPostDateShort(typeof data.lastUpdated === 'string' ? data.lastUpdated : new Date(data.lastUpdated).toISOString())}
               </Badge>
             </div>
 
@@ -206,17 +209,7 @@ export default function TollPassRankingPage() {
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-3">
-                          {item.logo && item.logo.trim() !== '' && (
-                            <img
-                              src={item.logo}
-                              alt={item.name}
-                              className="h-6 w-auto object-contain"
-                              onError={(e) => {
-                                const t = e.currentTarget;
-                                t.src = 'https://via.placeholder.com/60x20?text=Logo';
-                              }}
-                            />
-                          )}
+                          <Logo src={item.logo} alt={item.name} className="h-6 w-auto object-contain" />
                           <div>
                             <div className="font-medium">{item.name}</div>
                             <p className="text-xs text-muted-foreground">

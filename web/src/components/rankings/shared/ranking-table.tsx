@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ExternalLink, Trophy } from 'lucide-react';
 import { CardMachineRankingItem } from '@/lib/schemas/rankings/card-machines-ranking.schema';
+import { Logo } from './Logo';
 
 interface RankingTableProps {
   items: CardMachineRankingItem[];
@@ -81,17 +82,11 @@ export function RankingTable({ items }: RankingTableProps) {
                 {/* Machine Name */}
                 <TableCell>
                   <div className="flex items-center gap-3">
-                    {item.logo && (
-                      <img
-                        src={item.logo}
-                        alt={item.empresa}
-                        className="h-6 w-auto object-contain hidden sm:block"
-                        onError={(e) => {
-                          const t = e.currentTarget;
-                          t.src = 'https://via.placeholder.com/60x20?text=Logo';
-                        }}
-                      />
-                    )}
+                    <Logo
+                      src={item.logo}
+                      alt={item.empresa}
+                      className="h-6 w-auto object-contain hidden sm:block"
+                    />
                     <div>
                       <div className="font-medium">{item.name}</div>
                       {item.isBestOption && (

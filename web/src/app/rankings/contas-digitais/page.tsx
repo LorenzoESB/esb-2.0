@@ -19,14 +19,18 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Building2, AlertCircle, Wallet, TrendingUp, CheckCircle2, ExternalLink } from 'lucide-react';
+import { Logo } from '@/components/rankings/shared/Logo';
 import { useDigitalAccountsRanking } from '@/lib/hooks/rankings/use-digital-accounts-ranking';
 import { useAutoIframeHeight } from '@/lib/hooks/use-auto-iframe-height';
 import { AdCard } from '@/components/ads/AdCard';
-import { getRandomAds } from '@/lib/ads';
+import { getStableAds } from '@/lib/ads';
+import { usePathname } from 'next/navigation';
+import { formatPostDateShort } from '@/utils/wordpress-formatter';
 
 export default function DigitalAccountsRankingPage() {
   const { data, isLoading, error } = useDigitalAccountsRanking();
-  const ad = getRandomAds(1)[0];
+  const pathname = usePathname();
+  const ad = getStableAds(pathname || '/rankings/contas-digitais', 1)[0];
 
   useAutoIframeHeight([data]);
 
@@ -111,11 +115,7 @@ export default function DigitalAccountsRankingPage() {
                   </div>
                 </div>
                 <div className="flex flex-col items-end gap-3">
-                  <img
-                    src={best.logo}
-                    alt={best.name}
-                    className="h-12 w-auto object-contain"
-                  />
+                  <Logo src={best.logo} alt={best.name} className="h-12 w-auto object-contain" />
                   <Button
                     size="sm"
                     className="bg-green-600 hover:bg-green-700"
@@ -181,8 +181,7 @@ export default function DigitalAccountsRankingPage() {
                 Ranking completo ({data.total} contas)
               </h2>
               <Badge variant="secondary">
-                Última atualização:{' '}
-                {new Date(data.lastUpdated).toLocaleDateString('pt-BR')}
+                Última atualização: {formatPostDateShort(typeof data.lastUpdated === 'string' ? data.lastUpdated : new Date(data.lastUpdated).toISOString())}
               </Badge>
             </div>
             <div className="rounded-lg border overflow-hidden">
@@ -225,11 +224,7 @@ export default function DigitalAccountsRankingPage() {
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-3">
-                          <img
-                            src={item.logo}
-                            alt={item.name}
-                            className="h-6 w-auto object-contain"
-                          />
+                          <Logo src={item.logo} alt={item.name} className="h-6 w-auto object-contain" />
                           <div>
                             <div className="font-medium">{item.name}</div>
                             <div className="text-xs text-muted-foreground">

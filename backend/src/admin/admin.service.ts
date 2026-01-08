@@ -48,7 +48,19 @@ export class AdminService {
 
   async getSimulators() {
     return this.prisma.simulatorMetadata.findMany({
-      orderBy: { createdAt: 'desc' },
+      orderBy: { updatedAt: 'desc' },
+    });
+  }
+
+  async getRankings() {
+    return this.prisma.rankingMetadata.findMany({
+      orderBy: { updatedAt: 'desc' },
+    });
+  }
+
+  async getSimulator(id: string) {
+    return this.prisma.simulatorMetadata.findUnique({
+      where: { id },
     });
   }
 
@@ -79,6 +91,59 @@ export class AdminService {
       dropOffPoints: [
         { page: '/checkout', rate: '45%' },
       ],
+    };
+  }
+
+  async getDataHealth() {
+    const issues: { severity: 'error' | 'warning' | 'info'; message: string; details?: string }[] = [];
+    
+    // Check 1: Simulators without description
+    const simulatorsWithoutDesc = await this.prisma.simulatorMetadata.findMany({
+      where: { 
+        OR: [
+          { description: null },
+          { description: '' }
+        ]
+      }
+    });
+
+    if (simulatorsWithoutDesc.length > 0) {
+      issues.push({
+        severity: 'warning',
+        message: `${simulatorsWithoutDesc.length} simulators are missing a description`,
+        details: simulatorsWithoutDesc.map(s => s.title || s.simulatorId).join(', ')
+      });
+    }
+
+    // Check 2: Active simulators with no category
+    const activeNoCategory = await this.prisma.simulatorMetadata.findMany({
+      where: {
+        isActive: true,
+        OR: [
+          { category: null },
+          { category: '' }
+        ]
+      }
+    });
+
+    if (activeNoCategory.length > 0) {
+      issues.push({
+        severity: 'error',
+        message: `${activeNoCategory.length} active simulators have no category assigned`,
+        details: activeNoCategory.map(s => s.title || s.simulatorId).join(', ')
+      });
+    }
+
+    // Mock Check 3: Legacy data dependencies
+    issues.push({
+      severity: 'info',
+      message: '3 rankings are still pulling data from legacy MySQL database',
+      details: 'Renda Fixa, Conta Digital, Empréstimo Pessoal'
+    });
+
+    return {
+      status: issues.some(i => i.severity === 'error') ? 'unhealthy' : (issues.length > 0 ? 'warning' : 'healthy'),
+      issues
     };
   }
 
