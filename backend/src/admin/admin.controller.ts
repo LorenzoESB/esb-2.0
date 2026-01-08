@@ -51,6 +51,12 @@ export class AdminController {
   async getDataHealth() {
     return this.adminService.getDataHealth();
   }
+
+  @Get('users')
+  @ApiOperation({ summary: 'Get all users from legacy system' })
+  async getUsers() {
+    return this.adminService.getUsers();
+  }
   
   // Helper endpoint to init data (dev only)
   @Post('init')

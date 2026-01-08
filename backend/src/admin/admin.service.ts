@@ -1,11 +1,15 @@
 import { Injectable, UnauthorizedException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { LegacyPrismaService } from '../prisma/legacy-prisma.service';
 import { LoginDto, LoginResponseDto } from './dto/auth.dto';
 import { UpdateSimulatorDto } from './dto/simulator.dto';
 
 @Injectable()
 export class AdminService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private legacyPrisma: LegacyPrismaService
+  ) {}
 
   async login(loginDto: LoginDto): Promise<LoginResponseDto> {
     const { email, password } = loginDto;
@@ -145,6 +149,26 @@ export class AdminService {
       status: issues.some(i => i.severity === 'error') ? 'unhealthy' : (issues.length > 0 ? 'warning' : 'healthy'),
       issues
     };
+  }
+
+  async getUsers() {
+    try {
+      // Try to fetch from legacy users table
+      // We assume the table is named 'users' or similar. 
+      // Using safeQueryRaw to avoid SQL injection if we were using inputs, but here it's static.
+      const legacyUsers = await this.legacyPrisma.safeQueryRaw`
+        SELECT id, name, email, created_at as "createdAt" 
+        FROM users 
+        ORDER BY created_at DESC 
+        LIMIT 100
+      `;
+      
+      return legacyUsers;
+    } catch (error) {
+      console.error('Failed to fetch legacy users', error);
+      // Fallback or return empty if table doesn't exist
+      return [];
+    }
   }
 
   async createInitialAdminIfNeeded() {

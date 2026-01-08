@@ -7,39 +7,191 @@ interface FiltersBlogProps {
 }
 
 export default function FiltersBlog({ categories, selectedCategory, onSelect }: FiltersBlogProps) {
+    const topCategories = categories.slice(0, 8);
+    const hasPodcast = categories.some((c) => c.slug?.toLowerCase() === "podcast");
+    const activeCategoryName =
+        selectedCategory ? categories.find((c) => c.slug === selectedCategory)?.name : "Todas";
+
     return (
         <div className="space-y-3">
-            <div className="flex items-center gap-2">
-                <span className="font-semibold text-foreground">Categorias</span>
-                <span className="text-xs text-muted-foreground">Filtre os conteúdos por tema</span>
-            </div>
-            <div className="flex flex-wrap gap-2">
-                <button
-                    onClick={() => onSelect(null)}
-                    className={`px-4 py-2 rounded-full text-sm transition-colors duration-200 ${
-                        !selectedCategory
-                            ? "bg-primary text-primary-foreground shadow"
-                            : "bg-muted text-foreground hover:bg-primary/10"
-                    }`}
-                >
-                    Todas
-                </button>
-                {categories.map((category) => {
-                    const isActive = selectedCategory === category.slug;
-                    return (
+            <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                    <span className="font-semibold text-foreground">Filtros</span>
+                    <span className="text-xs text-muted-foreground">Escolha por tema ou formato</span>
+                </div>
+                <div className="flex items-center gap-2">
+                    <span className="text-xs px-2 py-1 rounded-full bg-muted text-foreground">
+                        {activeCategoryName}
+                    </span>
+                    {selectedCategory && (
                         <button
-                            key={category.id}
-                            onClick={() => onSelect(category.slug)}
-                            className={`px-4 py-2 rounded-full text-sm transition-colors duration-200 ${
-                                isActive
-                                    ? "bg-primary text-primary-foreground shadow"
-                                    : "bg-muted text-foreground hover:bg-primary/10"
-                            }`}
+                            onClick={() => onSelect(null)}
+                            className="text-xs px-2 py-1 rounded-md border hover:bg-muted focus-visible:ring-2 focus-visible:ring-primary"
                         >
-                            {category.name}
+                            Limpar
                         </button>
-                    );
-                })}
+                    )}
+                </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+                <button
+                    onClick={() => {
+                        const modal = document.getElementById("filters-modal");
+                        if (modal) modal.classList.remove("hidden");
+                    }}
+                    className="px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 focus-visible:ring-2 focus-visible:ring-primary"
+                >
+                    Filtrar
+                </button>
+            </div>
+
+            <div
+                id="filters-modal"
+                className="hidden fixed inset-0 z-50"
+                aria-modal="true"
+                role="dialog"
+            >
+                <div
+                    className="absolute inset-0 bg-black/40"
+                    onClick={() => {
+                        const modal = document.getElementById("filters-modal");
+                        if (modal) modal.classList.add("hidden");
+                    }}
+                />
+                <div className="absolute bottom-0 left-0 right-0 bg-background rounded-t-2xl border p-4 space-y-4">
+                    <div className="flex items-center justify-between">
+                        <span className="font-semibold">Filtrar por</span>
+                        <button
+                            onClick={() => {
+                                const modal = document.getElementById("filters-modal");
+                                if (modal) modal.classList.add("hidden");
+                            }}
+                            className="text-sm px-3 py-1 rounded-md border hover:bg-muted"
+                        >
+                            Fechar
+                        </button>
+                    </div>
+
+                    <div className="space-y-2">
+                        <span className="text-sm font-medium">Categorias</span>
+                        <div className="flex flex-wrap gap-2">
+                            <button
+                                onClick={() => {
+                                    onSelect(null);
+                                    const modal = document.getElementById("filters-modal");
+                                    if (modal) modal.classList.add("hidden");
+                                }}
+                                className={`px-3 py-2 rounded-full text-sm ${
+                                    !selectedCategory
+                                        ? "bg-primary text-primary-foreground"
+                                        : "bg-muted text-foreground hover:bg-primary/10"
+                                }`}
+                            >
+                                Todas
+                            </button>
+                            {topCategories.map((category) => {
+                                const isActive = selectedCategory === category.slug;
+                                return (
+                                    <button
+                                        key={category.id}
+                                        onClick={() => {
+                                            onSelect(category.slug);
+                                            const modal = document.getElementById("filters-modal");
+                                            if (modal) modal.classList.add("hidden");
+                                        }}
+                                        className={`px-3 py-2 rounded-full text-sm ${
+                                            isActive
+                                                ? "bg-primary text-primary-foreground"
+                                                : "bg-muted text-foreground hover:bg-primary/10"
+                                        }`}
+                                    >
+                                        {category.name}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                        {categories.length > topCategories.length && (
+                            <details className="mt-2">
+                                <summary className="cursor-pointer text-sm text-primary">Ver mais</summary>
+                                <div className="mt-2 flex flex-wrap gap-2">
+                                    {categories.slice(topCategories.length).map((category) => {
+                                        const isActive = selectedCategory === category.slug;
+                                        return (
+                                            <button
+                                                key={category.id}
+                                                onClick={() => {
+                                                    onSelect(category.slug);
+                                                    const modal = document.getElementById("filters-modal");
+                                                    if (modal) modal.classList.add("hidden");
+                                                }}
+                                                className={`px-3 py-2 rounded-full text-sm ${
+                                                    isActive
+                                                        ? "bg-primary text-primary-foreground"
+                                                        : "bg-muted text-foreground hover:bg-primary/10"
+                                                }`}
+                                            >
+                                                {category.name}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </details>
+                        )}
+                    </div>
+
+                    <div className="space-y-2">
+                        <span className="text-sm font-medium">Formatos</span>
+                        <div className="flex flex-wrap gap-2">
+                            <button
+                                onClick={() => {
+                                    onSelect(null);
+                                    const modal = document.getElementById("filters-modal");
+                                    if (modal) modal.classList.add("hidden");
+                                }}
+                                className="px-3 py-2 rounded-md border hover:bg-muted"
+                            >
+                                Artigos
+                            </button>
+                            <button
+                                onClick={() => {
+                                    if (hasPodcast) {
+                                        onSelect("podcast");
+                                    }
+                                    const modal = document.getElementById("filters-modal");
+                                    if (modal) modal.classList.add("hidden");
+                                }}
+                                className={`px-3 py-2 rounded-md border ${
+                                    hasPodcast ? "hover:bg-muted" : "opacity-50 cursor-not-allowed"
+                                }`}
+                                disabled={!hasPodcast}
+                            >
+                                Podcasts
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="space-y-2">
+                        <span className="text-sm font-medium">Rankings</span>
+                        <div className="grid grid-cols-2 gap-2">
+                            <a href="/rankings/maquinas-cartao" className="px-3 py-2 rounded-md border hover:bg-muted">
+                                Maquininhas de cartão
+                            </a>
+                            <a href="/rankings/contas-digitais" className="px-3 py-2 rounded-md border hover:bg-muted">
+                                Contas digitais
+                            </a>
+                            <a href="/rankings/assinatura-carro" className="px-3 py-2 rounded-md border hover:bg-muted">
+                                Assinatura de carro
+                            </a>
+                            <a href="/rankings/seguros" className="px-3 py-2 rounded-md border hover:bg-muted">
+                                Seguros de automóvel
+                            </a>
+                            <a href="/rankings/pedagios" className="px-3 py-2 rounded-md border hover:bg-muted">
+                                Tags de pedágio
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     );
