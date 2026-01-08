@@ -4,7 +4,7 @@ const API_URL = process.env.WORDPRESS_API_URL || "https://educandoseubolso.blog.
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
-    const perPage = Number(searchParams.get("perPage")) || 8;
+    const perPage = Number(searchParams.get("perPage")) || 10;
     const page = Number(searchParams.get("page")) || 1;
     const search = searchParams.get("search");
     const category = searchParams.get("category");

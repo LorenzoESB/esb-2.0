@@ -21,16 +21,13 @@ export default async function BlogPage({
     const matchedCategory = categories.find((cat: any) => cat.slug === categorySlug);
     const categoryId = matchedCategory?.id;
 
-    const data = await getAllPosts(8, searchQuery, currentPage, categoryId);
+    const data = await getAllPosts(9, searchQuery, currentPage, categoryId);
     const posts = (data.posts as WordpressPost[]) ?? [];
 
     return (
         <main className="container mx-auto px-4 sm:px-6 lg:px-12 py-10 space-y-10">
             <div className="space-y-2">
-                <h1 className="text-3xl font-bold">Blog</h1>
-                <p className="text-muted-foreground">
-                    Conteúdo especializado para você ficar por dentro das tendências do mercado financeiro.
-                </p>
+                <h1 className="text-3xl font-bold">Todos os Artigos</h1>
             </div>
 
             <BlogContent

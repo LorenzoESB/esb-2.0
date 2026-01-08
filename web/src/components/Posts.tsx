@@ -19,7 +19,7 @@ export default function PostCard({ post, index = 0 }: PostCardProps) {
     return (
         <Link href={`/blog/${post.slug}`} key={post.id}>
             <Card
-                className="group md:hover:shadow-custom-lg transition-all duration-300 md:hover:scale-105 bg-card border-border/50 overflow-hidden animate-scale-in cursor-pointer py-0 h-125"
+                className="group md:hover:shadow-custom-lg transition-all duration-300 md:hover:scale-105 bg-card border-border/50 overflow-hidden animate-scale-in cursor-pointer py-0 h-130"
                 style={{ animationDelay: `${index * 100}ms` }}
             >
                 <div className="relative overflow-hidden">

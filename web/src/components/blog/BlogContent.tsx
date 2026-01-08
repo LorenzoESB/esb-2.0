@@ -79,7 +79,7 @@ export function BlogContent({
             setIsLoading(true);
             setError(null);
             try {
-                const perPage = 9;
+                const perPage = 10;
                 const q = term ?? searchQuery ?? "";
                 const searchParam = q ? `&search=${encodeURIComponent(q)}` : "";
                 let categoryIdParam = "";
@@ -155,7 +155,7 @@ export function BlogContent({
         const searchPosts = async () => {
             setIsLoading(true);
             try {
-                const perPage = 12;
+                const perPage = 9;
                 const q = encodeURIComponent(debouncedTerm);
                 if (!API_URL) throw new Error("API indisponível");
                 const response = await fetch(`${API_URL}/blog/posts?perPage=${perPage}&page=1&search=${q}`);
@@ -166,8 +166,8 @@ export function BlogContent({
                 setPages(data.totalPages || 1);
                 setCurrentPage(1);
             } catch (err) {
-                try {
-                    const perPage = 12;
+                    try {
+                    const perPage = 9;
                     const res = await fetch(
                         `${WP_URL}/posts?_embed&per_page=${perPage}&page=1&search=${encodeURIComponent(
                             debouncedTerm,
@@ -223,20 +223,6 @@ export function BlogContent({
             <div className="flex flex-col lg:flex-row gap-6">
                 <div className="flex-1 space-y-6">
                     <div className="flex flex-col gap-3">
-                        {/* <div className="relative w-full md:w-2/3">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                            <Input
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                onKeyDown={(e) => {
-                                    if (e.key === "Enter") {
-                                        goToSearchPage(searchTerm);
-                                    }
-                                }}
-                                placeholder="Pesquisar artigos..."
-                                className="pl-10 pr-4 py-3 rounded-xl shadow-sm focus-visible:ring-2 focus-visible:ring-primary"
-                            />
-                        </div> */}
                         {showFiltersAndPagination && (
                             <FiltersBlog
                                 categories={categories}
@@ -254,8 +240,8 @@ export function BlogContent({
 
                     {isLoading ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {[...Array(10)].map((_, idx) => (
-                                <Skeleton key={idx} className="h-[340px] w-full" />
+                            {[...Array(9)].map((_, idx) => (
+                                <Skeleton key={idx} className="h-[300px] w-full" />
                             ))}
                         </div>
                     ) : (
@@ -280,7 +266,7 @@ export function BlogContent({
                             <div className="text-sm text-muted-foreground">
                                 {count} artigos • Página {currentPage} de {pages}
                             </div>
-                            <div className="flex flex-wrap items-center gap-2 w-full justify-center md:w-auto md:justify-end">
+                            <div className="flex flex-wrap items-center gap-2 w-full justify-center md:w-full md:justify-center">
                                 <button
                                     onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)}
                                     className={cn(
