@@ -50,7 +50,6 @@ export default function Header() {
                             </div>
                             <div className="hidden sm:block">
                                 <h1 className="gradient-text text-lg md:text-xl font-bold">Educando Seu Bolso</h1>
-                                <p className="text-muted-foreground text-xs hidden md:block">Educação financeira moderna</p>
                             </div>
                         </Link>
                     </div>
