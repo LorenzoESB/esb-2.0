@@ -30,15 +30,43 @@ export class CarSubscriptionRankingService {
       }
 
       if (items.length === 0) {
-        throw new Error('No car subscription options available for ranking');
+        const criteria = this.getCriteriaDto();
+        const lastUpdated = new Date();
+        return {
+          items: [],
+          total: 0,
+          bestOption: {
+            id: 0,
+            name: '',
+            empresa: '',
+            rank: 0,
+            isBestOption: false,
+            logo: '',
+            score: 0,
+            pricing: { preco_mensal_min: 0, preco_mensal_max: 0, franquia_km: 0 },
+            beneficios: {
+              manutencao_inclusa: false,
+              seguro_incluso: false,
+              ipva_incluso: false,
+              revisao_inclusa: false,
+              observacoes: [],
+            },
+            desconto: '',
+            url_contratacao: '',
+            scoreBreakdown: [],
+            data_atualizacao: '',
+          },
+          criteria,
+          lastUpdated,
+        };
       }
 
       const ranked = CarSubscriptionScoreCalculator.rank(items);
       const responseItems = ranked.map((item) => this.toRankingItemDto(item));
-      const bestOption = responseItems.find((item) => item.rank === 1);
+      let bestOption = responseItems.find((item) => item.rank === 1);
 
       if (!bestOption) {
-        throw new Error('No best option found for car subscription ranking');
+        bestOption = responseItems[0];
       }
 
       const criteria = this.getCriteriaDto();

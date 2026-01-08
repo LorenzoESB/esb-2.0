@@ -26,7 +26,7 @@ export const CARD_MACHINES_DATA: MachineData[] = [
     id: 1,
     nome: 'InfinitePay',
     empresa: 'InfinitePay',
-    logo: 'https://example.com/logos/infinitepay.png',
+    logo: 'https://infinitepay.io/favicon-32x32.png',
     imagem: 'https://example.com/maquininhas/infinitepay.png',
     static_score: 8.92,
     raw_scores: {
@@ -88,7 +88,7 @@ export const CARD_MACHINES_DATA: MachineData[] = [
     id: 2,
     nome: 'Moderninha Pro',
     empresa: 'PagSeguro',
-    logo: 'https://example.com/logos/pagseguro.png',
+    logo: 'https://logodownload.org/wp-content/uploads/2016/10/pagseguro-logo-0.png',
     imagem: 'https://example.com/maquininhas/moderninha-pro.png',
     static_score: 8.45,
     raw_scores: {
@@ -150,7 +150,7 @@ export const CARD_MACHINES_DATA: MachineData[] = [
     id: 3,
     nome: 'Ton T1',
     empresa: 'Ton (Stone)',
-    logo: 'https://example.com/logos/ton.png',
+    logo: 'https://logodownload.org/wp-content/uploads/2021/03/ton-logo.png',
     imagem: 'https://example.com/maquininhas/ton-t1.png',
     static_score: 8.2,
     raw_scores: {
@@ -212,7 +212,7 @@ export const CARD_MACHINES_DATA: MachineData[] = [
     id: 4,
     nome: 'SumUp Total',
     empresa: 'SumUp',
-    logo: 'https://example.com/logos/sumup.png',
+    logo: 'https://logodownload.org/wp-content/uploads/2017/11/sumup-logo.png',
     imagem: 'https://example.com/maquininhas/sumup-total.png',
     static_score: 7.95,
     raw_scores: {
@@ -274,7 +274,7 @@ export const CARD_MACHINES_DATA: MachineData[] = [
     id: 5,
     nome: 'Point Pro',
     empresa: 'Mercado Pago',
-    logo: 'https://example.com/logos/mercadopago.png',
+    logo: 'https://logodownload.org/wp-content/uploads/2019/10/mercado-pago-logo.png',
     imagem: 'https://example.com/maquininhas/point-pro.png',
     static_score: 7.7,
     raw_scores: {
@@ -336,7 +336,7 @@ export const CARD_MACHINES_DATA: MachineData[] = [
     id: 6,
     nome: 'SafraPay Smart',
     empresa: 'Banco Safra',
-    logo: 'https://example.com/logos/safrapay.png',
+    logo: 'https://logodownload.org/wp-content/uploads/2018/09/safra-logo.png',
     imagem: 'https://example.com/maquininhas/safrapay-smart.png',
     static_score: 7.4,
     raw_scores: {
@@ -398,7 +398,7 @@ export const CARD_MACHINES_DATA: MachineData[] = [
     id: 7,
     nome: 'Rede Pop',
     empresa: 'Rede',
-    logo: 'https://example.com/logos/rede.png',
+    logo: 'https://logodownload.org/wp-content/uploads/2017/09/rede-logo.png',
     imagem: 'https://example.com/maquininhas/rede-pop.png',
     static_score: 7.1,
     raw_scores: {
@@ -460,7 +460,7 @@ export const CARD_MACHINES_DATA: MachineData[] = [
     id: 8,
     nome: 'GetNet Maquininha',
     empresa: 'GetNet (Santander)',
-    logo: 'https://example.com/logos/getnet.png',
+    logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Getnet_logo.svg/256px-Getnet_logo.svg.png',
     imagem: 'https://example.com/maquininhas/getnet.png',
     static_score: 6.85,
     raw_scores: {
@@ -522,7 +522,7 @@ export const CARD_MACHINES_DATA: MachineData[] = [
     id: 9,
     nome: 'Cielo LIO',
     empresa: 'Cielo',
-    logo: 'https://example.com/logos/cielo.png',
+    logo: 'https://logodownload.org/wp-content/uploads/2016/06/cielo-logo.png',
     imagem: 'https://example.com/maquininhas/cielo-lio.png',
     static_score: 6.5,
     raw_scores: {
@@ -591,7 +591,7 @@ export const CARD_MACHINES_DATA: MachineData[] = [
     id: 10,
     nome: 'Moderninha Plus',
     empresa: 'PagBank',
-    logo: 'https://example.com/logos/pagbank.png',
+    logo: 'https://logodownload.org/wp-content/uploads/2019/04/pagbank-logo.png',
     imagem: 'https://example.com/maquininhas/moderninha-plus.png',
     static_score: 6.2,
     raw_scores: {

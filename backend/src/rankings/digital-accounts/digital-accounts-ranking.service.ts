@@ -31,7 +31,38 @@ export class DigitalAccountsRankingService {
       }
 
       if (accounts.length === 0) {
-        throw new Error('No digital accounts available for ranking');
+        const criteria = this.getCriteriaDto();
+        const lastUpdated = new Date();
+        return {
+          items: [],
+          total: 0,
+          bestOption: {
+            id: 0,
+            name: '',
+            bank: '',
+            rank: 0,
+            isBestOption: false,
+            logo: '',
+            monthly_fee: 0,
+            account_type: 'ambos',
+            score: 0,
+            url_ranking: '',
+            call_to_action: '',
+            highlights: [],
+            features: {
+              credit_card: false,
+              debit_card: false,
+              investments: false,
+              boletos: false,
+              saques_ilimitados: false,
+              atendimento_humanizado: false,
+            },
+            scoreBreakdown: [],
+            data_atualizacao: '',
+          },
+          criteria,
+          lastUpdated,
+        };
       }
 
       const rankedAccounts = DigitalAccountsScoreCalculator.rankAccounts(accounts);
@@ -39,10 +70,10 @@ export class DigitalAccountsRankingService {
       const items = rankedAccounts.map((account) =>
         this.toRankingItemDto(account),
       );
-      const bestOption = items.find((item) => item.rank === 1);
+      let bestOption = items.find((item) => item.rank === 1);
 
       if (!bestOption) {
-        throw new Error('No best option found in digital account ranking');
+        bestOption = items[0];
       }
 
       const criteria = this.getCriteriaDto();

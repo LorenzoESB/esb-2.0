@@ -86,6 +86,10 @@ export function RankingTable({ items }: RankingTableProps) {
                         src={item.logo}
                         alt={item.empresa}
                         className="h-6 w-auto object-contain hidden sm:block"
+                        onError={(e) => {
+                          const t = e.currentTarget;
+                          t.src = 'https://via.placeholder.com/60x20?text=Logo';
+                        }}
                       />
                     )}
                     <div>

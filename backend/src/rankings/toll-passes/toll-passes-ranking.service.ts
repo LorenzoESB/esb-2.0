@@ -30,15 +30,39 @@ export class TollPassesRankingService {
       }
 
       if (items.length === 0) {
-        throw new Error('No toll pass options available for ranking');
+        const criteria = this.getCriteriaDto();
+        const lastUpdated = new Date();
+        return {
+          items: [],
+          total: 0,
+          bestOption: {
+            id: 0,
+            name: '',
+            empresa: '',
+            rank: 0,
+            isBestOption: false,
+            logo: '',
+            score: 0,
+            pricing: { mensalidade: 0, adesao: 0 },
+            cobertura_rodovias: 0,
+            beneficios: { estacionamento: false, cashback: false, parceiros: [] },
+            tags_adicionais: [],
+            url_contratacao: '',
+            scoreBreakdown: [],
+            data_atualizacao: '',
+          },
+          criteria,
+          lastUpdated,
+        };
       }
 
       const ranked = TollPassScoreCalculator.rank(items);
       const responseItems = ranked.map((item) => this.toRankingItemDto(item));
-      const bestOption = responseItems.find((item) => item.rank === 1);
+      let bestOption = responseItems.find((item) => item.rank === 1);
 
       if (!bestOption) {
-        throw new Error('No best option found for toll pass ranking');
+        // fallback to first item
+        bestOption = responseItems[0];
       }
 
       const criteria = this.getCriteriaDto();
