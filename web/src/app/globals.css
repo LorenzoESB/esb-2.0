@@ -227,13 +227,13 @@
   }
 
   .ad-container {
-    max-width: 680px;
-    margin: 0 auto;
-    padding: 0.75rem;
-    background-color: var(--card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    overflow: hidden;
+    max-width: 720px;
+    margin: 1rem auto;
+    padding: 0;
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+    overflow: visible;
   }
 
   .ad-container img {

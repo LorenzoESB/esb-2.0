@@ -24,10 +24,10 @@ interface RankingTableProps {
  */
 export function RankingTable({ items }: RankingTableProps) {
   const getRankBadgeColor = (rank: number) => {
-    if (rank === 1) return 'bg-yellow-500 hover:bg-yellow-600 text-white';
-    if (rank === 2) return 'bg-gray-400 hover:bg-gray-500 text-white';
-    if (rank === 3) return 'bg-orange-600 hover:bg-orange-700 text-white';
-    return 'bg-gray-200 hover:bg-gray-300 text-gray-800';
+    if (rank === 1) return 'bg-accent hover:bg-accent/90 text-accent-foreground';
+    if (rank === 2) return 'bg-muted hover:bg-muted/80 text-foreground';
+    if (rank === 3) return 'bg-accent/80 hover:bg-accent/90 text-accent-foreground';
+    return 'bg-muted hover:bg-muted/80 text-foreground';
   };
 
   return (
@@ -88,7 +88,7 @@ export function RankingTable({ items }: RankingTableProps) {
                       className="h-6 w-auto object-contain hidden sm:block"
                     />
                     <div>
-                      <div className="font-medium">{item.name}</div>
+                      <div className="font-semibold text-foreground">{item.name}</div>
                       {item.isBestOption && (
                         <Badge
                           variant="outline"
@@ -110,22 +110,22 @@ export function RankingTable({ items }: RankingTableProps) {
                 <TableCell className="hidden lg:table-cell">
                   <div className="flex flex-wrap gap-1">
                     {item.features.nfc && (
-                      <Badge variant="secondary" className="text-xs">
+                      <Badge variant="secondary" className="text-xs bg-accent/10 text-foreground border border-accent/30">
                         NFC
                       </Badge>
                     )}
                     {item.features.imprime_recibo && (
-                      <Badge variant="secondary" className="text-xs">
+                      <Badge variant="secondary" className="text-xs bg-accent/10 text-foreground border border-accent/30">
                         Recibo
                       </Badge>
                     )}
                     {item.features.permite_antecipacao && (
-                      <Badge variant="secondary" className="text-xs">
+                      <Badge variant="secondary" className="text-xs bg-accent/10 text-foreground border border-accent/30">
                         Antecipação
                       </Badge>
                     )}
                     {item.features.vale_refeicao && (
-                      <Badge variant="secondary" className="text-xs">
+                      <Badge variant="secondary" className="text-xs bg-accent/10 text-foreground border border-accent/30">
                         VR
                       </Badge>
                     )}

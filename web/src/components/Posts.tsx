@@ -36,20 +36,20 @@ export default function PostCard({ post, index = 0 }: PostCardProps) {
                         </div>
                     )}
                     <div className="absolute top-3 left-3">
-                        <Badge variant="secondary" className="bg-primary text-primary-foreground">
+                        <Badge variant="secondary" className="bg-accent text-accent-foreground">
                             {categories[0]?.name || "Sem categoria"}
                         </Badge>
                     </div>
                 </div>
 
                 <CardHeader className="pb-1">
-                    <CardTitle className="text-lg font-semibold text-foreground md:group-hover:text-primary transition-colors duration-300 line-clamp-2">
+                    <CardTitle className="text-lg md:text-xl font-semibold text-foreground md:group-hover:text-accent transition-colors duration-300 leading-snug line-clamp-2">
                         <span dangerouslySetInnerHTML={{ __html: post.title.rendered }} />
                     </CardTitle>
                 </CardHeader>
 
                 <CardContent className="space-y-2">
-                    <CardDescription className="text-muted-foreground leading-relaxed line-clamp-3 text-justify">
+                    <CardDescription className="text-sm md:text-base text-muted-foreground leading-relaxed line-clamp-3 text-justify">
                         <span dangerouslySetInnerHTML={{ __html: post.excerpt.rendered }} />
                     </CardDescription>
 
@@ -70,7 +70,7 @@ export default function PostCard({ post, index = 0 }: PostCardProps) {
                         <Button
                             variant="ghost"
                             size="sm"
-                            className="text-accent md:hover:bg-accent md:hover:text-accent-foreground transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-primary"
+                            className="text-accent md:hover:bg-accent md:hover:text-accent-foreground transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-accent"
                         >
                             Ler mais
                             <ArrowRight className="w-4 h-4 ml-1 md:group-hover:translate-x-1 transition-transform duration-300" />

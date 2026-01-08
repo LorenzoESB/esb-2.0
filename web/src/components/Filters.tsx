@@ -8,7 +8,9 @@ interface FiltersBlogProps {
 
 export default function FiltersBlog({ categories, selectedCategory, onSelect }: FiltersBlogProps) {
     const topCategories = categories.slice(0, 8);
-    const hasPodcast = categories.some((c) => c.slug?.toLowerCase() === "podcast");
+    const podcastCategory = categories.find((c) => c.slug?.toLowerCase() === "podcast");
+    const hasPodcast = Boolean(podcastCategory);
+    const podcastSlug = podcastCategory?.slug;
     const activeCategoryName =
         selectedCategory ? categories.find((c) => c.slug === selectedCategory)?.name : "Todas";
 
@@ -84,8 +86,8 @@ export default function FiltersBlog({ categories, selectedCategory, onSelect }: 
                                 }}
                                 className={`px-3 py-2 rounded-full text-sm ${
                                     !selectedCategory
-                                        ? "bg-primary text-primary-foreground"
-                                        : "bg-muted text-foreground hover:bg-primary/10"
+                                        ? "bg-accent text-accent-foreground"
+                                        : "bg-muted text-foreground hover:bg-accent/10"
                                 }`}
                             >
                                 Todas
@@ -102,8 +104,8 @@ export default function FiltersBlog({ categories, selectedCategory, onSelect }: 
                                         }}
                                         className={`px-3 py-2 rounded-full text-sm ${
                                             isActive
-                                                ? "bg-primary text-primary-foreground"
-                                                : "bg-muted text-foreground hover:bg-primary/10"
+                                                ? "bg-accent text-accent-foreground"
+                                                : "bg-muted text-foreground hover:bg-accent/10"
                                         }`}
                                     >
                                         {category.name}
@@ -155,14 +157,14 @@ export default function FiltersBlog({ categories, selectedCategory, onSelect }: 
                             </button>
                             <button
                                 onClick={() => {
-                                    if (hasPodcast) {
-                                        onSelect("podcast");
+                                    if (podcastSlug) {
+                                        onSelect(podcastSlug);
                                     }
                                     const modal = document.getElementById("filters-modal");
                                     if (modal) modal.classList.add("hidden");
                                 }}
                                 className={`px-3 py-2 rounded-md border ${
-                                    hasPodcast ? "hover:bg-muted" : "opacity-50 cursor-not-allowed"
+                                    hasPodcast ? (selectedCategory === podcastSlug ? "bg-accent text-accent-foreground border-accent hover:bg-accent/90" : "hover:bg-muted") : "opacity-50 cursor-not-allowed"
                                 }`}
                                 disabled={!hasPodcast}
                             >

@@ -286,7 +286,7 @@ export function BlogContent({
                                                 onClick={() => handlePageChange(page)}
                                                 className={cn(
                                                     "px-3 py-3 min-h-11 rounded-md border text-sm hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-primary",
-                                                    page === currentPage && "bg-primary text-primary-foreground border-primary hover:bg-primary hover:text-primary-foreground",
+                                                    page === currentPage && "bg-accent text-accent-foreground border-accent hover:bg-accent hover:text-accent-foreground",
                                                 )}
                                                 aria-current={page === currentPage ? "page" : undefined}
                                             >
