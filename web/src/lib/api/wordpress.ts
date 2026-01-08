@@ -16,7 +16,7 @@ export async function getAllPosts(
   const baseUrl = requireApiUrl();
 
   if (!maxPosts || maxPosts <= 0) {
-    maxPosts = 10;
+    maxPosts = 9;
   }
 
   const searchParam = search ? `&search=${encodeURIComponent(search)}` : "";

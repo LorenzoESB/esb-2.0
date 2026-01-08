@@ -1,17 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "./ui/button";
-import { Menu, Search, X } from "lucide-react";
+import { Menu, Search, X, BarChart2, Newspaper, Calculator } from "lucide-react";
 
 export default function Header() {
     const [query, setQuery] = useState("");
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
     const router = useRouter();
+    const pathname = usePathname();
 
     function handleSearch() {
         if (!query.trim()) return;
@@ -72,14 +73,26 @@ export default function Header() {
                     </nav>
 
                     {/* Desktop Links */}
-                    <div className="hidden lg:flex items-center space-x-6 font-bold">
-                        <Link href={"/blog"} className="text-primary hover:text-accent transition-colors">
-                            Todos os Artigos
-                        </Link>
-                        <Link href={"/rankings"} className="text-primary hover:text-accent transition-colors">
+                    <div className="hidden lg:flex items-center space-x-4 font-bold">
+                        <Link
+                            href={"/rankings"}
+                            className={`flex items-center gap-2 px-2 py-1 rounded-md transition-colors ${pathname?.startsWith("/rankings") ? "text-primary border-b-2 border-primary" : "text-primary hover:text-accent"}`}
+                        >
+                            <BarChart2 className="w-4 h-4" />
                             Rankings
                         </Link>
-                        <Link href={"/simuladores"} className="text-primary hover:text-accent transition-colors">
+                        <Link
+                            href={"/blog"}
+                            className={`flex items-center gap-2 px-2 py-1 rounded-md transition-colors ${pathname === "/blog" ? "text-primary border-b-2 border-primary" : "text-primary hover:text-accent"}`}
+                        >
+                            <Newspaper className="w-4 h-4" />
+                            Blog
+                        </Link>
+                        <Link
+                            href={"/simuladores"}
+                            className={`flex items-center gap-2 px-2 py-1 rounded-md transition-colors ${pathname?.startsWith("/simuladores") ? "text-primary border-b-2 border-primary" : "text-primary hover:text-accent"}`}
+                        >
+                            <Calculator className="w-4 h-4" />
                             Simuladores
                         </Link>
                     </div>
@@ -131,23 +144,26 @@ export default function Header() {
                         <nav className="flex flex-col space-y-4">
                             <Link
                                 href={"/rankings"}
-                                className="font-bold text-lg text-primary hover:text-accent transition-colors"
+                                className="font-bold text-lg text-primary hover:text-accent transition-colors flex items-center gap-2"
                                 onClick={() => setIsMobileMenuOpen(false)}
                             >
+                                <BarChart2 className="w-5 h-5" />
                                 Rankings
                             </Link>
                             <Link
                                 href={"/blog"}
-                                className="font-bold text-lg text-primary hover:text-accent transition-colors"
+                                className="font-bold text-lg text-primary hover:text-accent transition-colors flex items-center gap-2"
                                 onClick={() => setIsMobileMenuOpen(false)}
                             >
+                                <Newspaper className="w-5 h-5" />
                                 Blog
                             </Link>
                             <Link
                                 href={"/simuladores"}
-                                className="font-bold text-lg text-primary hover:text-accent transition-colors"
+                                className="font-bold text-lg text-primary hover:text-accent transition-colors flex items-center gap-2"
                                 onClick={() => setIsMobileMenuOpen(false)}
                             >
+                                <Calculator className="w-5 h-5" />
                                 Simuladores
                             </Link>
                             <div className="pt-2 border-t border-border/20">
