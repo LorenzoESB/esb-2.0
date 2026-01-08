@@ -9,12 +9,31 @@ import {
 } from "@/utils/wordpress-formatter";
 
 import { AdCard } from "@/components/ads/AdCard";
-import { getRandomAds } from "@/lib/ads";
+import { SidebarPromoCard } from "@/components/sidebar/SidebarPromoCard";
+import { NewsletterCard } from "@/components/sidebar/NewsletterCard";
+import { Calculator, CreditCard } from "lucide-react";
+import { getRandomAds, AdItem } from "@/lib/ads";
 
 export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = await params;
     const [post] = await Promise.all([getPostBySlug(slug)]);
-    const [adPrimary, adSecondary] = getRandomAds(2);
+    const ads = getRandomAds(4);
+    const parseSize = (url: string) => {
+        const m = url.match(/([0-9]{2,4})[^0-9]+([0-9]{2,4})/);
+        if (!m) return null;
+        return { w: parseInt(m[1], 10), h: parseInt(m[2], 10) };
+    };
+    const isBanner = (ad: AdItem) => {
+        const size = parseSize(ad.image_url);
+        if (!size) return true;
+        const ratio = size.w / Math.max(size.h, 1);
+        return size.w >= 600 && size.h <= 140 && ratio >= 4;
+    };
+    const bannerAds = ads.filter(isBanner).slice(0, 3);
+    const sideAds = ads.filter((a) => {
+        const size = parseSize(a.image_url);
+        return size ? size.h > 120 : false;
+    }).slice(0, 2);
 
     if (!post) {
         notFound();
@@ -130,15 +149,65 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                     {/* Coluna do conteúdo */}
                     <div className="lg:col-span-8">
-                        <div className="prose prose-lg prose-gray max-w-none">
-                            <div className="formatted-content" dangerouslySetInnerHTML={{ __html: formattedContent }} />
+                        <div className="prose prose-lg prose-gray max-w-none space-y-8">
+                            {(() => {
+                                const segments = formattedContent.split(/<\/p>/).filter(seg => seg.trim().length > 0);
+                                const middleIndex = Math.floor(segments.length / 2);
+                                const lastIndex = segments.length - 1;
+                                const nodes: React.ReactNode[] = [];
+                                segments.forEach((seg, idx) => {
+                                    nodes.push(
+                                        <div key={`seg-${idx}`} dangerouslySetInnerHTML={{ __html: `${seg}</p>` }} />
+                                    );
+                                    if (idx === 0 && bannerAds[0]) {
+                                        nodes.push(
+                                            <div key="ad-top" className="not-prose my-6">
+                                                <AdCard ad={bannerAds[0]} />
+                                            </div>
+                                        );
+                                    }
+                                    if (idx === middleIndex && bannerAds[1]) {
+                                        nodes.push(
+                                            <div key="ad-middle" className="not-prose my-6">
+                                                <AdCard ad={bannerAds[1]} />
+                                            </div>
+                                        );
+                                    }
+                                    if (idx === lastIndex && bannerAds[2]) {
+                                        nodes.push(
+                                            <div key="ad-bottom" className="not-prose my-6">
+                                                <AdCard ad={bannerAds[2]} />
+                                            </div>
+                                        );
+                                    }
+                                });
+                                return nodes;
+                            })()}
                         </div>
                     </div>
 
                     {/* Sidebar à direita */}
                     <aside className="lg:col-span-4 grid grid-cols-1 gap-4 grid-flow-dense lg:sticky lg:top-24 h-fit">
-                        {adPrimary && <AdCard ad={adPrimary} />}
-                        {adSecondary && <AdCard ad={adSecondary} />}
+                        <SidebarPromoCard
+                            title="Juros Compostos"
+                            description="Calcule rendimentos e compare cenários de investimento."
+                            href="/simuladores/juros-compostos"
+                            icon={<Calculator className="w-5 h-5" />}
+                            badge="Popular"
+                        />
+                        <SidebarPromoCard
+                            title="Máquinas de cartão"
+                            description="Veja o ranking e descubra a melhor opção para você."
+                            href="/rankings/maquinas-cartao"
+                            icon={<CreditCard className="w-5 h-5" />}
+                            badge="Popular"
+                        />
+                        {sideAds.map((ad) => (
+                            <div key={ad.id} className="not-prose">
+                                <AdCard ad={ad} />
+                            </div>
+                        ))}
+                        <NewsletterCard />
                     </aside>
                 </div>
             </article>

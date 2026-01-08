@@ -19,7 +19,7 @@ export default function PostCard({ post, index = 0 }: PostCardProps) {
     return (
         <Link href={`/blog/${post.slug}`} key={post.id}>
             <Card
-                className="group hover:shadow-custom-lg transition-all duration-300 hover:scale-105 bg-card border-border/50 overflow-hidden animate-scale-in cursor-pointer py-0 h-125"
+                className="group md:hover:shadow-custom-lg transition-all duration-300 md:hover:scale-105 bg-card border-border/50 overflow-hidden animate-scale-in cursor-pointer py-0 h-125"
                 style={{ animationDelay: `${index * 100}ms` }}
             >
                 <div className="relative overflow-hidden">
@@ -27,7 +27,7 @@ export default function PostCard({ post, index = 0 }: PostCardProps) {
                         <img
                             src={featuredImage.url}
                             alt={featuredImage.alt || post.title.rendered}
-                            className="w-full h-58 object-cover group-hover:scale-110 transition-transform duration-500 "
+                            className="w-full h-58 object-cover md:group-hover:scale-105 transition-transform duration-500 "
                         />
                     ) : (
                         <div className="w-full h-58 bg-muted flex items-center justify-center">
@@ -42,13 +42,13 @@ export default function PostCard({ post, index = 0 }: PostCardProps) {
                 </div>
 
                 <CardHeader className="pb-1">
-                    <CardTitle className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors duration-300 line-clamp-2">
+                    <CardTitle className="text-lg font-semibold text-foreground md:group-hover:text-primary transition-colors duration-300 line-clamp-2">
                         <span dangerouslySetInnerHTML={{ __html: post.title.rendered }} />
                     </CardTitle>
                 </CardHeader>
 
                 <CardContent className="space-y-2">
-                    <CardDescription className="text-muted-foreground leading-relaxed line-clamp-3">
+                    <CardDescription className="text-muted-foreground leading-relaxed line-clamp-3 text-justify">
                         <span dangerouslySetInnerHTML={{ __html: post.excerpt.rendered }} />
                     </CardDescription>
 
@@ -69,10 +69,10 @@ export default function PostCard({ post, index = 0 }: PostCardProps) {
                         <Button
                             variant="ghost"
                             size="sm"
-                            className="group-hover:text-primary transition-colors duration-300"
+                            className="text-accent md:hover:bg-accent md:hover:text-accent-foreground transition-colors duration-300 focus-visible:ring-2 focus-visible:ring-primary"
                         >
                             Ler mais
-                            <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform duration-300" />
+                            <ArrowRight className="w-4 h-4 ml-1 md:group-hover:translate-x-1 transition-transform duration-300" />
                         </Button>
                     </div>
                 </CardContent>

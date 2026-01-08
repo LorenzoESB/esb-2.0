@@ -11,6 +11,7 @@ export const TOLL_PASSES_DATA: TollPassData[] = [
   {
     id: 1,
     nome: 'C6 Tag',
+    name: 'C6 Tag',
     empresa: 'C6 Bank',
     logo: 'https://logospng.org/download/c6-bank/logo-c6-bank-2048.png',
     url_contratacao: 'https://www.c6bank.com.br/c6tag',
@@ -43,6 +44,7 @@ export const TOLL_PASSES_DATA: TollPassData[] = [
   {
     id: 2,
     nome: 'Veloe',
+    name: 'Veloe',
     empresa: 'Veloe Serviços de Mobilidade',
     logo: 'https://logodownload.org/wp-content/uploads/2019/03/veloe-logo.png',
     url_contratacao: 'https://www.veloe.com.br/',
@@ -75,6 +77,7 @@ export const TOLL_PASSES_DATA: TollPassData[] = [
   {
     id: 3,
     nome: 'Sem Parar',
+    name: 'Sem Parar',
     empresa: 'Sem Parar Instituição de Pagamento',
     logo: 'https://logodownload.org/wp-content/uploads/2019/05/sem-parar-logo.png',
     url_contratacao: 'https://www.semparar.com.br/',
@@ -107,6 +110,7 @@ export const TOLL_PASSES_DATA: TollPassData[] = [
   {
     id: 4,
     nome: 'ConectCar',
+    name: 'ConectCar',
     empresa: 'ConectCar',
     logo: 'https://logodownload.org/wp-content/uploads/2016/05/conectcar-logo.png',
     url_contratacao: 'https://www.conectcar.com/',
@@ -139,6 +143,7 @@ export const TOLL_PASSES_DATA: TollPassData[] = [
   {
     id: 5,
     nome: 'Taggy',
+    name: 'Taggy',
     empresa: 'Taggy',
     logo: 'https://upload.wikimedia.org/wikipedia/commons/0/08/Taggy_logo.png',
     url_contratacao: 'https://www.taggy.com.br/',

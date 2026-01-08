@@ -2,9 +2,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 function requireApiUrl() {
   if (!API_URL) {
-    throw new Error(
-      "NEXT_PUBLIC_API_URL is not set. Define it in the environment so the blog can fetch posts."
-    );
+    return null;
   }
   return API_URL;
 }
@@ -29,36 +27,70 @@ export async function getAllPosts(
       : "";
 
   try {
-    const res = await fetch(
-      `${baseUrl}/blog/posts?perPage=${maxPosts}${searchParam}${pageParam}${categoryParam}`,
-      {
-        next: { revalidate: 60 },
+    if (baseUrl) {
+      const res = await fetch(
+        `${baseUrl}/blog/posts?perPage=${maxPosts}${searchParam}${pageParam}${categoryParam}`,
+        { next: { revalidate: 60 } }
+      );
+      if (res.ok) {
+        return res.json();
       }
-    );
-
-    if (!res.ok) {
       throw new Error(
         `Failed to fetch posts: ${res.status} ${res.statusText || ""}`.trim()
       );
     }
-
-    return res.json();
+    throw new Error("NEXT_PUBLIC_API_URL not configured");
   } catch (error) {
-    // Graceful fallback so static build doesn't fail if backend isn't reachable.
-    console.error(`getAllPosts: ${(error as Error).message}`);
-    return { posts: [], totalPages: 1, totalPosts: 0 };
+    try {
+      const WP = process.env.WORDPRESS_API_URL || "https://educandoseubolso.blog.br/wp-json/wp/v2";
+      const wpSearch = search ? `&search=${encodeURIComponent(search)}` : "";
+      const wpCategory = categoryId && categoryId > 0 ? `&categories=${encodeURIComponent(categoryId)}` : "";
+      const res = await fetch(
+        `${WP}/posts?_embed&per_page=${maxPosts}&page=${currentPage}${wpSearch}${wpCategory}`,
+        { next: { revalidate: 60 } }
+      );
+      if (!res.ok) {
+        throw new Error(
+          `Failed to fetch posts via WP: ${res.status} ${res.statusText || ""}`.trim()
+        );
+      }
+      const totalPages = parseInt(res.headers.get("X-WP-TotalPages") || "1", 10);
+      const totalPosts = parseInt(res.headers.get("X-WP-Total") || "0", 10);
+      const posts = await res.json();
+      return { posts, totalPages, totalPosts };
+    } catch (routeError) {
+      console.error(`getAllPosts: ${(routeError as Error).message}`);
+      return { posts: [], totalPages: 1, totalPosts: 0 };
+    }
   }
 }
 
 export async function getPostBySlug(slug: string) {
   const baseUrl = requireApiUrl();
-  const res = await fetch(`${baseUrl}/blog/posts/${slug}`, {
-    next: { revalidate: 60 },
-  });
-  if (!res.ok) {
-    throw new Error("Failed to fetch post");
+  try {
+    if (baseUrl) {
+      const res = await fetch(`${baseUrl}/blog/posts/${slug}`, {
+        next: { revalidate: 60 },
+      });
+      if (res.ok) {
+        return res.json();
+      }
+    }
+    throw new Error("Backend unavailable");
+  } catch {
+    try {
+      const WP = process.env.WORDPRESS_API_URL || "https://educandoseubolso.blog.br/wp-json/wp/v2";
+      const res = await fetch(`${WP}/posts?slug=${encodeURIComponent(slug)}&_embed=true`, {
+        next: { revalidate: 60 },
+      });
+      if (!res.ok) return null;
+      const arr = await res.json();
+      const post = Array.isArray(arr) ? arr[0] : null;
+      return post || null;
+    } catch {
+      return null;
+    }
   }
-  return res.json();
 }
 
 export async function getPageBySlug(slug: string) {
@@ -75,18 +107,34 @@ export async function getPageBySlug(slug: string) {
 export async function getCategories() {
   const baseUrl = requireApiUrl();
   try {
-    const res = await fetch(`${baseUrl}/blog/categories`, {
-      next: { revalidate: 60 },
-    });
-    if (!res.ok) {
-      throw new Error(
-        `Failed to fetch categories: ${res.status} ${res.statusText || ""}`.trim()
-      );
+    if (baseUrl) {
+      const res = await fetch(`${baseUrl}/blog/categories`, {
+        next: { revalidate: 60 },
+      });
+      if (!res.ok) {
+        throw new Error(
+          `Failed to fetch categories: ${res.status} ${res.statusText || ""}`.trim()
+        );
+      }
+      return res.json();
     }
-    return res.json();
+    throw new Error("NEXT_PUBLIC_API_URL not configured");
   } catch (error) {
-    console.error(`getCategories: ${(error as Error).message}`);
-    return [];
+    try {
+      const WP = process.env.WORDPRESS_API_URL || "https://educandoseubolso.blog.br/wp-json/wp/v2";
+      const res = await fetch(`${WP}/categories?per_page=100`, {
+        next: { revalidate: 300 },
+      });
+      if (!res.ok) {
+        throw new Error(
+          `Failed to fetch categories via WP: ${res.status} ${res.statusText || ""}`.trim()
+        );
+      }
+      return res.json();
+    } catch (routeError) {
+      console.error(`getCategories: ${(routeError as Error).message}`);
+      return [];
+    }
   }
 }
 

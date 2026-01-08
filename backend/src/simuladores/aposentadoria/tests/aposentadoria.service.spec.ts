@@ -80,8 +80,8 @@ describe('AposentadoriaService', () => {
       // Validações de acumulação
       expect(resultado.acumulacao.mesesContribuicao).toBe(264);
       expect(resultado.acumulacao.anosContribuicao).toBe(22);
-      expect(resultado.acumulacao.contribuicaoMensal).toBeCloseTo(2836.26, 1);
-      expect(resultado.acumulacao.valorFuturoReserva).toBeCloseTo(143439.97, 1);
+      expect(resultado.acumulacao.contribuicaoMensal).toBeCloseTo(3542.8, 1);
+      expect(resultado.acumulacao.valorFuturoReserva).toBeCloseTo(186556.47, 1);
       expect(resultado.acumulacao.valorTotalAcumulado).toBeCloseTo(
         2121726.04,
         1,

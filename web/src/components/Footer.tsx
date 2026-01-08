@@ -56,33 +56,33 @@ export default async function Footer() {
                                 independentes, simuladores e análises que ajudam você a economizar, investir e planejar
                                 o futuro.
                             </p>
-                            <div className="flex space-x-3">
-                                <Button variant="secondary" size="icon" className="hover:text-white">
-                                    <Link href="https://x.com/bolsito_">
-                                        <Twitter className="w-5 h-5" />
-                                    </Link>
-                                </Button>
-                                <Button variant="secondary" size="icon" className="hover:text-white">
-                                    <Link href="https://www.facebook.com/profile.php?id=100063976607899&locale=pt_BR">
-                                        <Facebook className="w-5 h-5" />
-                                    </Link>
-                                </Button>
-                                <Button variant="secondary" size="icon" className="hover:text-white">
-                                    <Link href="https://www.instagram.com/educandoseubolso/">
-                                        <Instagram className="w-5 h-5" />
-                                    </Link>
-                                </Button>
-                                <Button variant="secondary" size="icon" className="hover:text-white">
-                                    <Link href="https://www.linkedin.com/company/educandoseubolso">
-                                        <Linkedin className="w-5 h-5" />
-                                    </Link>
-                                </Button>
-                                <Button variant="secondary" size="icon" className="hover:text-white">
-                                    <Link href="https://www.youtube.com/@EducandoSeuBolso">
-                                        <Youtube className="w-5 h-5" />
-                                    </Link>
-                                </Button>
-                            </div>
+                        <div className="flex space-x-3">
+                            <Button variant="secondary" size="icon" className="hover:bg-primary hover:text-primary-foreground focus-visible:ring-2 focus-visible:ring-primary">
+                                <Link href="https://x.com/bolsito_">
+                                    <Twitter className="w-5 h-5" />
+                                </Link>
+                            </Button>
+                            <Button variant="secondary" size="icon" className="hover:bg-primary hover:text-primary-foreground focus-visible:ring-2 focus-visible:ring-primary">
+                                <Link href="https://www.facebook.com/profile.php?id=100063976607899&locale=pt_BR">
+                                    <Facebook className="w-5 h-5" />
+                                </Link>
+                            </Button>
+                            <Button variant="secondary" size="icon" className="hover:bg-primary hover:text-primary-foreground focus-visible:ring-2 focus-visible:ring-primary">
+                                <Link href="https://www.instagram.com/educandoseubolso/">
+                                    <Instagram className="w-5 h-5" />
+                                </Link>
+                            </Button>
+                            <Button variant="secondary" size="icon" className="hover:bg-primary hover:text-primary-foreground focus-visible:ring-2 focus-visible:ring-primary">
+                                <Link href="https://www.linkedin.com/company/educandoseubolso">
+                                    <Linkedin className="w-5 h-5" />
+                                </Link>
+                            </Button>
+                            <Button variant="secondary" size="icon" className="hover:bg-primary hover:text-primary-foreground focus-visible:ring-2 focus-visible:ring-primary">
+                                <Link href="https://www.youtube.com/@EducandoSeuBolso">
+                                    <Youtube className="w-5 h-5" />
+                                </Link>
+                            </Button>
+                        </div>
                         </div>
 
                         {/* Rankings */}
@@ -215,19 +215,19 @@ export default async function Footer() {
                         <div className="flex flex-wrap justify-center gap-6 text-sm">
                             <a
                                 href="#"
-                                className="text-muted-foreground hover:text-primary transition-colors duration-200"
+                                className="text-muted-foreground hover:text-accent transition-colors duration-200"
                             >
                                 Política de Privacidade
                             </a>
                             <a
                                 href="#"
-                                className="text-muted-foreground hover:text-primary transition-colors duration-200"
+                                className="text-muted-foreground hover:text-accent transition-colors duration-200"
                             >
                                 Termos de Uso
                             </a>
                             <a
                                 href="#"
-                                className="text-muted-foreground hover:text-primary transition-colors duration-200"
+                                className="text-muted-foreground hover:text-accent transition-colors duration-200"
                             >
                                 Sobre nós
                             </a>

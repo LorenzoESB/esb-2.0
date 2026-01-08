@@ -15,6 +15,7 @@ export const DIGITAL_ACCOUNTS_DATA: DigitalAccountData[] = [
   {
     id: 1,
     nome: 'Banco Inter',
+    name: 'Banco Inter',
     banco: 'Banco Inter S.A.',
     logo: 'https://logodownload.org/wp-content/uploads/2019/08/banco-inter-logo.png',
     url_ranking: 'https://www.bancointer.com.br/conta-digital/',
@@ -53,6 +54,7 @@ export const DIGITAL_ACCOUNTS_DATA: DigitalAccountData[] = [
   {
     id: 2,
     nome: 'Nubank',
+    name: 'Nubank',
     banco: 'Nu Pagamentos S.A.',
     logo: 'https://logodownload.org/wp-content/uploads/2019/08/nubank-logo-1.png',
     url_ranking: 'https://nubank.com.br/conta/',
@@ -91,6 +93,7 @@ export const DIGITAL_ACCOUNTS_DATA: DigitalAccountData[] = [
   {
     id: 3,
     nome: 'Banco Original',
+    name: 'Banco Original',
     banco: 'Banco Original S.A.',
     logo: 'https://logodownload.org/wp-content/uploads/2016/03/banco-original-logo-8.png',
     url_ranking: 'https://www.original.com.br/conta-digital',
@@ -129,6 +132,7 @@ export const DIGITAL_ACCOUNTS_DATA: DigitalAccountData[] = [
   {
     id: 4,
     nome: 'Agibank',
+    name: 'Agibank',
     banco: 'Agibank S.A.',
     logo: 'https://logodownload.org/wp-content/uploads/2020/10/agibank-logo-1.png',
     url_ranking: 'https://www.agibank.com.br/conta-digital/',
@@ -167,6 +171,7 @@ export const DIGITAL_ACCOUNTS_DATA: DigitalAccountData[] = [
   {
     id: 5,
     nome: 'Next',
+    name: 'Next',
     banco: 'Banco Bradesco S.A.',
     logo: 'https://logodownload.org/wp-content/uploads/2017/11/next-logo.png',
     url_ranking: 'https://www.next.b.br/conta',

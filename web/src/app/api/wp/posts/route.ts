@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-const API_URL = process.env.WORDPRESS_API_URL;
+const API_URL = process.env.WORDPRESS_API_URL || "https://educandoseubolso.blog.br/wp-json/wp/v2";
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
@@ -10,7 +10,22 @@ export async function GET(request: Request) {
     const category = searchParams.get("category");
 
     const searchParam = search ? `&search=${encodeURIComponent(search)}` : "";
-    const categoryParam = category ? `&categories=${encodeURIComponent(category)}` : "";
+    let categoryParam = "";
+    if (category) {
+        const isNumeric = /^\d+$/.test(category);
+        if (isNumeric) {
+            categoryParam = `&categories=${category}`;
+        } else {
+            const catRes = await fetch(`${API_URL}/categories?slug=${encodeURIComponent(category)}`);
+            if (catRes.ok) {
+                const catData = await catRes.json();
+                const catId = Array.isArray(catData) && catData[0]?.id;
+                if (catId) {
+                    categoryParam = `&categories=${catId}`;
+                }
+            }
+        }
+    }
 
     const url = `${API_URL}/posts?_embed&per_page=${perPage}&page=${page}${searchParam}${categoryParam}`;
 

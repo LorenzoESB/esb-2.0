@@ -55,7 +55,7 @@
 :root {
   --radius: 0.625rem;
 
-  --background: hsl(0 0% 100%);
+  --background: #F5F3EF;
   --foreground: hsl(220 20% 15%);
 
   --card: hsl(0 0% 100%);
@@ -65,41 +65,36 @@
   --popover-foreground: hsl(220 20% 15%);
 
   /* Marca */
-  --primary: hsl(220 100% 50%);
-  --primary-foreground: hsl(0 0% 100%);
-  --primary-glow: hsl(220 100% 65%);
+  --primary: #0E87C6;
+  --primary-foreground: #FFFFFF;
+  --primary-glow: #3BB0E8;
 
   --secondary: hsl(150 60% 50%);
   --secondary-foreground: hsl(0 0% 100%);
 
-  --muted: hsl(220 15% 96%);
-  --muted-foreground: hsl(220 15% 45%);
+  --muted: #F0EFEA;
+  --muted-foreground: #959CA1;
 
-  --accent: hsl(192, 69%, 43%);
-  --accent-foreground: hsl(0 0% 100%);
+  --accent: #F0A41F;
+  --accent-foreground: #111111;
 
   --destructive: hsl(0 84.2% 60.2%);
 
-  --border: hsl(220 15% 90%);
+  --border: #E2E0DA;
   --input: hsl(220 15% 95%);
-  --ring: hsl(220 100% 50%);
+  --ring: #0E87C6;
 
   /* Extras da sua DS */
-  --success: hsl(150 60% 50%);
-  --warning: hsl(45 100% 55%);
-  --info: hsl(200 100% 60%);
+  --success: #0E87C6;
+  --warning: #F0A41F;
+  --info: #0E87C6;
 
   /* Charts alinhados à marca */
-  --chart-1: hsl(220 100% 50%);
-  /* blue */
-  --chart-2: hsl(150 60% 50%);
-  /* green */
-  --chart-3: hsl(192, 69%, 43%);
-  /* purple */
-  --chart-4: hsl(45 100% 55%);
-  /* yellow */
-  --chart-5: hsl(200 100% 60%);
-  /* cyan */
+  --chart-1: #0E87C6;
+  --chart-2: #959CA1;
+  --chart-3: #F0A41F;
+  --chart-4: #F5F3EF;
+  --chart-5: #0E87C6;
 
   /* Sidebar (shadcn/ui) */
   --sidebar: hsl(0 0% 98%);
@@ -112,10 +107,10 @@
   --sidebar-ring: hsl(217.2 91.2% 59.8%);
 
   /* Gradients & sombras utilitárias */
-  --gradient-primary: linear-gradient(135deg, var(--primary), var(--primary-glow));
-  --gradient-secondary: linear-gradient(135deg, var(--secondary), hsl(150 60% 65%));
-  --gradient-hero: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
-  --gradient-card: linear-gradient(145deg, hsl(0 0% 100% / 0.9), hsl(220 15% 98%));
+  --gradient-primary: linear-gradient(135deg, #0E87C6 0%, #0E87C6 100%);
+  --gradient-secondary: linear-gradient(135deg, #F0A41F 0%, #F0A41F 100%);
+  --gradient-hero: linear-gradient(135deg, #0E87C6 0%, #F0A41F 100%);
+  --gradient-card: linear-gradient(145deg, #F5F3EF, #F5F3EF);
 
   --shadow-sm: 0 2px 4px -1px hsl(220 100% 50% / 0.1);
   --shadow-md: 0 4px 6px -1px hsl(220 100% 50% / 0.1), 0 2px 4px -1px hsl(220 100% 50% / 0.06);
@@ -137,9 +132,9 @@
   --popover: hsl(220 25% 10%);
   --popover-foreground: hsl(220 15% 95%);
 
-  --primary: hsl(220 100% 60%);
+  --primary: #0E87C6;
   --primary-foreground: hsl(220 25% 8%);
-  --primary-glow: hsl(220 100% 75%);
+  --primary-glow: #3BB0E8;
 
   --secondary: hsl(150 50% 45%);
   --secondary-foreground: hsl(220 25% 8%);
@@ -147,14 +142,14 @@
   --muted: hsl(220 25% 15%);
   --muted-foreground: hsl(220 15% 65%);
 
-  --accent: hsl(192, 69%, 43%);
+  --accent: #F0A41F;
   --accent-foreground: hsl(220 25% 8%);
 
   --destructive: hsl(0 70% 50%);
 
   --border: hsl(220 25% 20%);
   --input: hsl(220 25% 15%);
-  --ring: hsl(220 100% 60%);
+  --ring: #0E87C6;
 
   /* Charts em dark */
   --chart-1: hsl(220 90% 65%);
@@ -220,13 +215,40 @@
     background: var(--gradient-primary);
   }
 
+  .section {
+    padding: 1rem;
+    margin-inline: auto;
+  }
+
+  @media (min-width: 768px) {
+    .section {
+      padding: 1.25rem;
+    }
+  }
+
+  .ad-container {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0.75rem;
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .ad-container img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
   .formatted-content h1,
   .formatted-content h2,
   .formatted-content h3,
   .formatted-content h4,
   .formatted-content h5,
   .formatted-content h6 {
-    color: #0B51B3;
+    color: var(--primary);
     font-weight: 700;
     margin-top: 2rem;
     margin-bottom: 1rem;
@@ -244,8 +266,9 @@
 
   .formatted-content p {
     margin-bottom: 1.2rem;
-    color: #4b5563;
+    color: var(--muted-foreground);
     line-height: 1.75;
+    text-align: justify;
   }
 
   .formatted-content ul,
@@ -256,24 +279,24 @@
 
   .formatted-content li {
     margin-bottom: 0.2rem;
-    color: #4b5563;
+    color: var(--muted-foreground);
   }
 
   .formatted-content a {
-    color: #2563eb;
+    color: var(--primary);
     text-decoration: underline;
   }
 
   .formatted-content a:hover {
-    color: #1d4ed8;
+    color: var(--accent);
   }
 
   .formatted-content blockquote {
-    border-left: 4px solid #2563eb;
+    border-left: 4px solid var(--primary);
     padding-left: 1rem;
     margin: 1.2rem 0;
     font-style: italic;
-    color: #6b7280;
+    color: var(--muted-foreground);
   }
 
   .formatted-content img {

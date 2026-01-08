@@ -37,44 +37,65 @@ export class BlogService {
     params?: Record<string, any>,
   ): Promise<AxiosResponse<T>> {
     const url = `${this.apiUrl}${path}`;
-    try {
-      const response = await lastValueFrom(
-        this.http.get<T>(url, {
-          params,
-          validateStatus: () => true,
-        }),
-      );
-
-      if (response.status >= 400) {
-        this.logger.warn(
-          `WordPress responded ${response.status} ${response.statusText} for ${url}`,
+    let attempts = 0;
+    let lastError: any;
+    while (attempts < 2) {
+      attempts++;
+      try {
+        const response = await lastValueFrom(
+          this.http.get<T>(url, {
+            params,
+            timeout: 5000,
+            validateStatus: () => true,
+          }),
         );
-        throw new HttpException(
-          `WordPress request failed: ${response.status} ${response.statusText}`,
-          HttpStatus.BAD_GATEWAY,
+
+        if (response.status >= 400) {
+          this.logger.warn(
+            `WordPress responded ${response.status} ${response.statusText} for ${url}`,
+          );
+          if (response.status === 404) {
+            throw new NotFoundException(
+              `WordPress request failed: ${response.status} ${response.statusText}`,
+            );
+          }
+          if (response.status >= 500) {
+            throw new HttpException(
+              `WordPress request failed: ${response.status} ${response.statusText}`,
+              HttpStatus.BAD_GATEWAY,
+            );
+          }
+          throw new HttpException(
+            `WordPress request failed: ${response.status} ${response.statusText}`,
+            HttpStatus.BAD_REQUEST,
+          );
+        }
+
+        return response;
+      } catch (error) {
+        lastError = error;
+        const axiosError = error as AxiosError;
+        const status = axiosError.response?.status;
+        const statusText = axiosError.response?.statusText;
+        const message =
+          status && statusText
+            ? `WordPress request failed: ${status} ${statusText}`
+            : 'WordPress request failed';
+        this.logger.error(
+          `Error calling WordPress: ${message} - ${(error as Error).message}`,
         );
+        if (axiosError.code || (status && status >= 500)) {
+          if (attempts < 2) {
+            continue;
+          }
+        }
+        if (error instanceof HttpException) {
+          throw error;
+        }
+        throw new HttpException(message, HttpStatus.BAD_GATEWAY);
       }
-
-      return response;
-    } catch (error) {
-      const axiosError = error as AxiosError;
-      const status = axiosError.response?.status;
-      const statusText = axiosError.response?.statusText;
-      const message =
-        status && statusText
-          ? `WordPress request failed: ${status} ${statusText}`
-          : 'WordPress request failed';
-
-      this.logger.error(
-        `Error calling WordPress: ${message} - ${(error as Error).message}`,
-      );
-
-      if (error instanceof HttpException) {
-        throw error;
-      }
-
-      throw new HttpException(message, HttpStatus.BAD_GATEWAY);
     }
+    throw lastError;
   }
 
   async getPosts(options: GetPostsQueryDto): Promise<BlogPostListResponseDto> {
@@ -95,22 +116,33 @@ export class BlogService {
       params.categories = options.categoryId;
     }
 
-    const res = await this.request<any[]>('/posts', params);
+    try {
+      const res = await this.request<any[]>('/posts', params);
 
-    const totalPages = parseInt(
-      (res.headers['x-wp-totalpages'] as string) || '1',
-      10,
-    );
-    const totalPosts = parseInt(
-      (res.headers['x-wp-total'] as string) || '0',
-      10,
-    );
+      const totalPages = parseInt(
+        (res.headers['x-wp-totalpages'] as string) || '1',
+        10,
+      );
+      const totalPosts = parseInt(
+        (res.headers['x-wp-total'] as string) || '0',
+        10,
+      );
 
-    return {
-      posts: res.data,
-      totalPages,
-      totalPosts,
-    };
+      return {
+        posts: res.data,
+        totalPages,
+        totalPosts,
+      };
+    } catch (error) {
+      if (error instanceof HttpException && error.getStatus() === HttpStatus.BAD_REQUEST) {
+        return {
+          posts: [],
+          totalPages: 1,
+          totalPosts: 0,
+        };
+      }
+      throw error;
+    }
   }
 
   async getPostBySlug(slug: string) {
@@ -142,8 +174,28 @@ export class BlogService {
   }
 
   async getCategories(): Promise<BlogCategoryDto[]> {
-    const res = await this.request<BlogCategoryDto[]>('/categories');
-    return res.data;
+    const res = await this.request<BlogCategoryDto[]>('/categories', {
+      per_page: 100,
+    });
+    const banned = new Set([
+      'teste_ad',
+      'sem categoria',
+      'sem-categoria',
+      'uncategorized',
+      'ads',
+      'ad',
+      'advertising',
+      'anuncio',
+    ]);
+    return (res.data || []).filter((c: any) => {
+      const name = String(c?.name || '').toLowerCase().trim();
+      const slug = String(c?.slug || '').toLowerCase().trim();
+      const count = Number(c?.count || 0);
+      if (count <= 0) return false;
+      if (banned.has(name)) return false;
+      if (banned.has(slug)) return false;
+      return true;
+    });
   }
 
   async getMedia(): Promise<BlogMediaDto[]> {

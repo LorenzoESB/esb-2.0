@@ -33,6 +33,8 @@ export function BlogContent({
     initialCategory,
 }: BlogContentProps) {
     const router = useRouter();
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || "";
+    const WP_URL = process.env.NEXT_PUBLIC_WORDPRESS_API_URL || "https://educandoseubolso.blog.br/wp-json/wp/v2";
     const [posts, setPosts] = useState<WordpressPost[]>(initialPosts);
     const [currentPage, setCurrentPage] = useState(initialPage);
     const [pages, setPages] = useState(totalPages);
@@ -77,29 +79,59 @@ export function BlogContent({
             setIsLoading(true);
             setError(null);
             try {
-                const params = new URLSearchParams();
-                params.set("perPage", "9");
-                params.set("page", page.toString());
-                if (searchQuery) params.set("search", searchQuery);
-                if (term) params.set("search", term);
-                if (category) params.set("category", category);
-
-                const response = await fetch(`/api/wp/posts?${params.toString()}`);
-                if (!response.ok) {
-                    throw new Error("Erro ao carregar posts");
+                const perPage = 9;
+                const q = term ?? searchQuery ?? "";
+                const searchParam = q ? `&search=${encodeURIComponent(q)}` : "";
+                let categoryIdParam = "";
+                if (category) {
+                    const match = categories.find((c) => c.slug === category);
+                    if (match?.id) {
+                        categoryIdParam = `&categoryId=${encodeURIComponent(match.id)}`;
+                    }
                 }
+                if (!API_URL) {
+                    throw new Error("API indisponível");
+                }
+                const response = await fetch(
+                    `${API_URL}/blog/posts?perPage=${perPage}&page=${page}${searchParam}${categoryIdParam}`,
+                );
+                if (!response.ok) throw new Error("Erro ao carregar posts");
                 const data = await response.json();
                 setPosts((data.posts as WordpressPost[]) ?? []);
                 setPages(data.totalPages || 1);
                 setCount(data.totalPosts ?? data.posts?.length ?? 0);
                 setCurrentPage(page);
                 setSelectedCategory(category || undefined);
-                if (!term) {
-                    updateUrl(category, page);
-                }
+                if (!term) updateUrl(category, page);
             } catch (err) {
-                const message = err instanceof Error ? err.message : "Erro ao carregar posts";
-                setError(message);
+                try {
+                    const perPage = 9;
+                    const q = term ?? searchQuery ?? "";
+                    const searchParam = q ? `&search=${encodeURIComponent(q)}` : "";
+                    let categoryParam = "";
+                    if (category) {
+                        const match = categories.find((c) => c.slug === category);
+                        if (match?.id) {
+                            categoryParam = `&categories=${encodeURIComponent(match.id)}`;
+                        }
+                    }
+                    const res = await fetch(
+                        `${WP_URL}/posts?_embed&per_page=${perPage}&page=${page}${searchParam}${categoryParam}`,
+                    );
+                    if (!res.ok) throw new Error("Erro ao carregar posts");
+                    const totalPages = parseInt(res.headers.get("X-WP-TotalPages") || "1", 10);
+                    const totalPosts = parseInt(res.headers.get("X-WP-Total") || "0", 10);
+                    const wpPosts = await res.json();
+                    setPosts((wpPosts as WordpressPost[]) ?? []);
+                    setPages(totalPages || 1);
+                    setCount(totalPosts ?? wpPosts?.length ?? 0);
+                    setCurrentPage(page);
+                    setSelectedCategory(category || undefined);
+                    if (!term) updateUrl(category, page);
+                } catch (fallbackErr) {
+                    const message = fallbackErr instanceof Error ? fallbackErr.message : "Erro ao carregar posts";
+                    setError(message);
+                }
             } finally {
                 setIsLoading(false);
             }
@@ -123,16 +155,36 @@ export function BlogContent({
         const searchPosts = async () => {
             setIsLoading(true);
             try {
-                const response = await fetch(`/api/wp/search?q=${encodeURIComponent(debouncedTerm)}&perPage=12`);
+                const perPage = 12;
+                const q = encodeURIComponent(debouncedTerm);
+                if (!API_URL) throw new Error("API indisponível");
+                const response = await fetch(`${API_URL}/blog/posts?perPage=${perPage}&page=1&search=${q}`);
                 if (!response.ok) throw new Error("Erro ao buscar artigos");
                 const data = await response.json();
                 setPosts((data.posts as WordpressPost[]) ?? []);
-                setCount(data.posts?.length ?? 0);
-                setPages(1);
+                setCount(data.totalPosts ?? data.posts?.length ?? 0);
+                setPages(data.totalPages || 1);
                 setCurrentPage(1);
             } catch (err) {
-                const message = err instanceof Error ? err.message : "Erro ao buscar artigos";
-                setError(message);
+                try {
+                    const perPage = 12;
+                    const res = await fetch(
+                        `${WP_URL}/posts?_embed&per_page=${perPage}&page=1&search=${encodeURIComponent(
+                            debouncedTerm,
+                        )}`,
+                    );
+                    if (!res.ok) throw new Error("Erro ao buscar artigos");
+                    const totalPages = parseInt(res.headers.get("X-WP-TotalPages") || "1", 10);
+                    const totalPosts = parseInt(res.headers.get("X-WP-Total") || "0", 10);
+                    const wpPosts = await res.json();
+                    setPosts((wpPosts as WordpressPost[]) ?? []);
+                    setCount(totalPosts ?? wpPosts?.length ?? 0);
+                    setPages(totalPages || 1);
+                    setCurrentPage(1);
+                } catch (fallbackErr) {
+                    const message = fallbackErr instanceof Error ? fallbackErr.message : "Erro ao buscar artigos";
+                    setError(message);
+                }
             } finally {
                 setIsLoading(false);
             }
@@ -228,11 +280,11 @@ export function BlogContent({
                             <div className="text-sm text-muted-foreground">
                                 {count} artigos • Página {currentPage} de {pages}
                             </div>
-                            <div className="flex items-center gap-2">
+                            <div className="flex flex-wrap items-center gap-2 w-full justify-center md:w-auto md:justify-end">
                                 <button
                                     onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)}
                                     className={cn(
-                                        "px-3 py-2 rounded-md border text-sm",
+                                        "px-3 py-3 min-h-11 rounded-md border text-sm hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-primary",
                                         currentPage === 1 && "opacity-50 cursor-not-allowed",
                                     )}
                                 >
@@ -247,9 +299,10 @@ export function BlogContent({
                                             <button
                                                 onClick={() => handlePageChange(page)}
                                                 className={cn(
-                                                    "px-3 py-2 rounded-md border text-sm",
-                                                    page === currentPage && "bg-blue-600 text-white border-blue-600",
+                                                    "px-3 py-3 min-h-11 rounded-md border text-sm hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-primary",
+                                                    page === currentPage && "bg-primary text-primary-foreground border-primary hover:bg-primary hover:text-primary-foreground",
                                                 )}
+                                                aria-current={page === currentPage ? "page" : undefined}
                                             >
                                                 {page}
                                             </button>
@@ -259,7 +312,7 @@ export function BlogContent({
                                 <button
                                     onClick={() => currentPage < pages && handlePageChange(currentPage + 1)}
                                     className={cn(
-                                        "px-3 py-2 rounded-md border text-sm",
+                                        "px-3 py-3 min-h-11 rounded-md border text-sm hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-primary",
                                         currentPage === pages && "opacity-50 cursor-not-allowed",
                                     )}
                                 >

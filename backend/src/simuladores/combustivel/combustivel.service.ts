@@ -106,8 +106,10 @@ export class CombustivelService {
 
       this.logger.log(`Simulação salva para o email: ${input.email}`);
     } catch (error) {
-      this.logger.error('Erro ao salvar a simulação de combustível', error);
-      throw error;
+      this.logger.warn(
+        'Falha ao salvar simulação de combustível, continuando',
+        (error as any)?.stack,
+      );
     }
   }
 }

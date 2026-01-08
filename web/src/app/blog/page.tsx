@@ -7,16 +7,17 @@ export const revalidate = 60;
 export default async function BlogPage({
     searchParams,
 }: {
-    searchParams: { search?: string; page?: string; category?: string; q?: string };
+    searchParams: Promise<{ search?: string; page?: string; category?: string; q?: string }>;
 }) {
-    const rawQuery = searchParams?.q ?? searchParams?.search ?? "";
+    const params = await searchParams;
+    const rawQuery = params?.q ?? params?.search ?? "";
     const searchQuery = (rawQuery ?? "").trim();
-    const currentPage = Number.isNaN(parseInt(searchParams?.page ?? "", 10))
+    const currentPage = Number.isNaN(parseInt(params?.page ?? "", 10))
         ? 1
-        : parseInt(searchParams?.page ?? "1", 10);
+        : parseInt(params?.page ?? "1", 10);
 
     const categories = await getCategories();
-    const categorySlug = searchParams?.category ?? "";
+    const categorySlug = params?.category ?? "";
     const matchedCategory = categories.find((cat: any) => cat.slug === categorySlug);
     const categoryId = matchedCategory?.id;
 

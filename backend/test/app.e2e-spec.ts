@@ -16,10 +16,12 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
-  it('/ (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/')
-      .expect(200)
-      .expect('Hello World!');
+  it('/rankings/card-machines (GET)', async () => {
+    const res = await request(app.getHttpServer())
+      .get('/rankings/card-machines')
+      .expect(200);
+    expect(res.body).toHaveProperty('items');
+    expect(Array.isArray(res.body.items)).toBe(true);
+    expect(res.body.total).toBeGreaterThan(0);
   });
 });

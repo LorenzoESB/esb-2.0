@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "./ui/button";
-import { Menu, Search, X} from "lucide-react";
+import { Menu, Search, X } from "lucide-react";
 
 export default function Header() {
     const [query, setQuery] = useState("");
@@ -65,21 +65,21 @@ export default function Header() {
                                 onKeyPress={handleKeyPress}
                                 className="bg-transparent border-none outline-none text-sm text-foreground placeholder-muted-foreground w-48"
                             />
-                            <Button onClick={handleSearch} variant="default" size="sm">
-                                <Search className="w-4 h-4 text-white" />
+                            <Button onClick={handleSearch} variant="default" size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground focus-visible:ring-2 focus-visible:ring-primary">
+                                <Search className="w-4 h-4" />
                             </Button>
                         </div>
                     </nav>
 
                     {/* Desktop Links */}
-                    <div className="hidden lg:flex items-center space-x-6 gradient-text font-bold">
-                        <Link href={"/rankings"} className="hover:opacity-70 transition-opacity">
+                    <div className="hidden lg:flex items-center space-x-6 font-bold">
+                        <Link href={"/blog"} className="text-primary hover:text-accent transition-colors">
+                            Todos os Artigos
+                        </Link>
+                        <Link href={"/rankings"} className="text-primary hover:text-accent transition-colors">
                             Rankings
                         </Link>
-                        <Link href={"/blog"} className="hover:opacity-70 transition-opacity">
-                            Blog
-                        </Link>
-                        <Link href={"/simuladores"} className="hover:opacity-70 transition-opacity">
+                        <Link href={"/simuladores"} className="text-primary hover:text-accent transition-colors">
                             Simuladores
                         </Link>
                     </div>
@@ -90,7 +90,7 @@ export default function Header() {
                             variant="ghost"
                             size="icon"
                             onClick={toggleMobileSearch}
-                            className="h-9 w-9"
+                            className="h-9 w-9 focus-visible:ring-2 focus-visible:ring-primary"
                         >
                             <Search className="w-5 h-5" />
                         </Button>
@@ -98,7 +98,7 @@ export default function Header() {
                             variant="ghost"
                             size="icon"
                             onClick={toggleMobileMenu}
-                            className="h-9 w-9"
+                            className="h-9 w-9 focus-visible:ring-2 focus-visible:ring-primary"
                         >
                             {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
                         </Button>
@@ -118,8 +118,8 @@ export default function Header() {
                                 className="flex-1 bg-muted rounded-lg px-3 py-2 text-sm text-foreground placeholder-muted-foreground border-none outline-none"
                                 autoFocus
                             />
-                            <Button onClick={handleSearch} variant="default" size="sm">
-                                <Search className="w-4 h-4 text-white" />
+                            <Button onClick={handleSearch} variant="default" size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground focus-visible:ring-2 focus-visible:ring-primary">
+                                <Search className="w-4 h-4" />
                             </Button>
                         </div>
                     </div>
@@ -131,21 +131,21 @@ export default function Header() {
                         <nav className="flex flex-col space-y-4">
                             <Link
                                 href={"/rankings"}
-                                className="gradient-text font-bold text-lg hover:opacity-70 transition-opacity"
+                                className="font-bold text-lg text-primary hover:text-accent transition-colors"
                                 onClick={() => setIsMobileMenuOpen(false)}
                             >
                                 Rankings
                             </Link>
                             <Link
                                 href={"/blog"}
-                                className="gradient-text font-bold text-lg hover:opacity-70 transition-opacity"
+                                className="font-bold text-lg text-primary hover:text-accent transition-colors"
                                 onClick={() => setIsMobileMenuOpen(false)}
                             >
                                 Blog
                             </Link>
                             <Link
                                 href={"/simuladores"}
-                                className="gradient-text font-bold text-lg hover:opacity-70 transition-opacity"
+                                className="font-bold text-lg text-primary hover:text-accent transition-colors"
                                 onClick={() => setIsMobileMenuOpen(false)}
                             >
                                 Simuladores

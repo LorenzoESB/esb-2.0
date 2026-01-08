@@ -10,6 +10,7 @@ export const CAR_SUBSCRIPTIONS_DATA: CarSubscriptionData[] = [
   {
     id: 1,
     nome: 'Movida Mensal Flex',
+    name: 'Movida Mensal Flex',
     empresa: 'Movida',
     logo: 'https://logodownload.org/wp-content/uploads/2017/04/movida-logo-1.png',
     url_contratacao: 'https://www.movida.com.br/movida-mensal-flex',
@@ -45,6 +46,7 @@ export const CAR_SUBSCRIPTIONS_DATA: CarSubscriptionData[] = [
   {
     id: 2,
     nome: 'Unidas Livre',
+    name: 'Unidas Livre',
     empresa: 'Unidas',
     logo: 'https://logodownload.org/wp-content/uploads/2018/10/unidas-logo.png',
     url_contratacao: 'https://www.unidas.com.br/planos/unidas-livre',
@@ -80,6 +82,7 @@ export const CAR_SUBSCRIPTIONS_DATA: CarSubscriptionData[] = [
   {
     id: 3,
     nome: 'Localiza Meoo',
+    name: 'Localiza Meoo',
     empresa: 'Localiza',
     logo: 'https://logodownload.org/wp-content/uploads/2018/05/localiza-logo.png',
     url_contratacao: 'https://www.localiza.com/brasil/pt-br/servicos/meoo',
@@ -115,6 +118,7 @@ export const CAR_SUBSCRIPTIONS_DATA: CarSubscriptionData[] = [
   {
     id: 4,
     nome: 'Porto Seguro Carro Fácil',
+    name: 'Porto Seguro Carro Fácil',
     empresa: 'Porto Seguro',
     logo: 'https://logodownload.org/wp-content/uploads/2014/05/porto-seguro-logo.png',
     url_contratacao: 'https://www.portoseguro.com.br/auto/carro-facil',
@@ -150,6 +154,7 @@ export const CAR_SUBSCRIPTIONS_DATA: CarSubscriptionData[] = [
   {
     id: 5,
     nome: 'Renault On Demand',
+    name: 'Renault On Demand',
     empresa: 'Renault',
     logo: 'https://logodownload.org/wp-content/uploads/2014/05/renault-logo-0.png',
     url_contratacao: 'https://ondemand.renault.com.br/',
