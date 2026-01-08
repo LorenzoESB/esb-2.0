@@ -21,12 +21,12 @@ export function BestOptionHighlight({ machine }: BestOptionHighlightProps) {
     machine.pricing.preco_promocional < machine.pricing.preco;
 
   return (
-    <Card className="border-green-500 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950 dark:to-emerald-950 shadow-lg">
+    <Card className="border-accent bg-gradient-to-br from-accent/10 to-accent/5 dark:from-accent/15 dark:to-accent/10 shadow-lg">
       <CardHeader className="relative">
         <div className="absolute top-4 right-4">
-          <Trophy className="h-8 w-8 text-yellow-500" />
+          <Trophy className="h-8 w-8 text-primary" />
         </div>
-        <Badge className="w-fit bg-green-600 hover:bg-green-700">
+        <Badge className="w-fit bg-primary hover:bg-primary/90">
           Melhor Opção
         </Badge>
         <CardTitle className="text-2xl flex items-center gap-3 mt-2">
@@ -58,7 +58,7 @@ export function BestOptionHighlight({ machine }: BestOptionHighlightProps) {
                 <div className="text-sm line-through text-muted-foreground">
                   R$ {machine.pricing.preco.toFixed(2)}
                 </div>
-                <div className="text-lg font-bold text-green-600">
+                <div className="text-lg font-bold text-primary">
                   R$ {machine.pricing.preco_promocional!.toFixed(2)}
                 </div>
               </div>
@@ -128,7 +128,7 @@ export function BestOptionHighlight({ machine }: BestOptionHighlightProps) {
             <Badge variant="secondary">Vale Refeição</Badge>
           )}
           {machine.pricing.mensalidade === 0 && (
-            <Badge variant="secondary" className="bg-green-100 text-green-800">
+            <Badge variant="secondary" className="bg-accent/10 text-accent-foreground">
               Sem Mensalidade
             </Badge>
           )}

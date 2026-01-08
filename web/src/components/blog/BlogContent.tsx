@@ -14,7 +14,7 @@ import { Search } from "lucide-react";
 import { cn } from "@/utils/utils";
 
 interface BlogContentProps {
-    categories: Array<{ id: number; name: string; slug: string }>;
+    categories: Array<{ id: number | string; name: string; slug: string }>;
     initialPosts: WordpressPost[];
     totalPages: number;
     totalPosts: number;

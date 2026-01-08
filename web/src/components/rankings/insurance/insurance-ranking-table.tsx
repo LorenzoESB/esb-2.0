@@ -47,14 +47,14 @@ export function InsuranceRankingTable({ items }: InsuranceRankingTableProps) {
               key={item.id}
               className={
                 item.isBestOption
-                  ? 'bg-green-50 dark:bg-green-950 hover:bg-green-100 dark:hover:bg-green-900'
+                  ? 'bg-accent/10 dark:bg-accent/20 hover:bg-accent/20'
                   : ''
               }
             >
               <TableCell>
                 <div className="flex items-center gap-2">
                   {item.isBestOption && (
-                    <Trophy className="h-4 w-4 text-yellow-500" />
+                    <Trophy className="h-4 w-4 text-primary" />
                   )}
                   <Badge className={getRankBadgeColor(item.rank)}>
                     {item.rank}º
@@ -144,7 +144,7 @@ export function InsuranceRankingTable({ items }: InsuranceRankingTableProps) {
 
               <TableCell className="hidden lg:table-cell">
                 <div className="flex items-center gap-1 text-sm">
-                  <ShieldCheck className="h-4 w-4 text-green-600" />
+                  <ShieldCheck className="h-4 w-4 text-primary" />
                   {item.sinistros_aprovados_percentual}%
                 </div>
                 <div className="flex items-center gap-1 text-xs text-muted-foreground">

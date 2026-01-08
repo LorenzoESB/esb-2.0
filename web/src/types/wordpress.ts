@@ -3,7 +3,7 @@ export interface WordpressRenderedField {
 }
 
 export interface WordpressPost {
-  id: number;
+  id: number | string;
   slug: string;
   title: WordpressRenderedField;
   excerpt: WordpressRenderedField;
