@@ -1,12 +1,13 @@
 import { TrendingUp } from "lucide-react";
-import LatestArticles from "./LatestArticles";
 import { WordpressPost } from "@/types/wordpress";
+import LatestArticles from "./LatestArticles";
 
 interface HeroProps {
-    posts: WordpressPost[];
+    posts?: WordpressPost[];
+    showLatest?: boolean;
 }
 
-export default function Hero({ posts }: HeroProps) {
+export default function Hero({ posts = [], showLatest = true }: HeroProps) {
     return (
         <section className="relative overflow-hidden bg-gradient-to-br from-background via-primary/5 to-accent/10 py-20 lg:py-28">
             <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
@@ -31,9 +32,11 @@ export default function Hero({ posts }: HeroProps) {
                     </p>
                 </div>
 
-                <div className="mt-12">
-                    <LatestArticles posts={posts} />
-                </div>
+                {showLatest && (
+                    <div className="mt-12">
+                        <LatestArticles posts={posts} />
+                    </div>
+                )}
             </div>
         </section>
     );
