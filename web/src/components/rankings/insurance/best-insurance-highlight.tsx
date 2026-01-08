@@ -30,12 +30,12 @@ export function BestInsuranceHighlight({
       : `R$ ${pricing.preco_mensal_estimado_min.toFixed(0)} - R$ ${pricing.preco_mensal_estimado_max.toFixed(0)}/mês`;
 
   return (
-    <Card className="border-green-500 bg-gradient-to-br from-emerald-50 to-green-100 dark:from-emerald-950 dark:to-green-900 shadow-lg">
+    <Card className="border-accent bg-gradient-to-br from-accent/10 to-accent/5 dark:from-accent/15 dark:to-accent/10 shadow-lg">
       <CardHeader className="relative">
         <div className="absolute top-4 right-4">
-          <Trophy className="h-8 w-8 text-yellow-500" />
+          <Trophy className="h-8 w-8 text-primary" />
         </div>
-        <Badge className="w-fit bg-green-600 hover:bg-green-700">Melhor Opção</Badge>
+        <Badge className="w-fit bg-primary hover:bg-primary/90">Melhor Opção</Badge>
         <CardTitle className="text-2xl flex items-center gap-3 mt-3">
           <Logo src={insurance.logo} alt={insurance.name} className="h-10 w-auto object-contain" />
           <div>
@@ -49,10 +49,10 @@ export function BestInsuranceHighlight({
           <div className="bg-white dark:bg-gray-900 p-4 rounded-lg border">
             <div className="text-xs text-muted-foreground mb-1">Score Final</div>
             <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold text-green-700">
+              <span className="text-3xl font-bold text-primary">
                 {insurance.score.toFixed(2)}
               </span>
-              <Badge variant="outline" className="bg-green-100 text-green-800">
+              <Badge variant="outline" className="bg-accent/10 text-accent-foreground">
                 0-10
               </Badge>
             </div>
@@ -91,7 +91,7 @@ export function BestInsuranceHighlight({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div className="bg-white dark:bg-gray-900 p-4 rounded-lg border space-y-2">
             <div className="flex items-center gap-2 text-sm font-semibold">
-              <Sparkles className="h-4 w-4 text-green-600" />
+              <Sparkles className="h-4 w-4 text-primary" />
               Coberturas Principais
             </div>
             <div className="flex flex-wrap gap-2">
@@ -110,7 +110,7 @@ export function BestInsuranceHighlight({
 
           <div className="bg-white dark:bg-gray-900 p-4 rounded-lg border space-y-2">
             <div className="flex items-center gap-2 text-sm font-semibold">
-              <Car className="h-4 w-4 text-green-600" />
+              <Car className="h-4 w-4 text-primary" />
               Serviços e Assistência
             </div>
             <div className="flex flex-wrap gap-2">
@@ -132,7 +132,7 @@ export function BestInsuranceHighlight({
         </div>
 
         {insurance.observacoes && (
-          <div className="text-sm text-muted-foreground italic border-l-4 border-green-500 pl-3">
+          <div className="text-sm text-muted-foreground italic border-l-4 border-accent pl-3">
             {insurance.observacoes}
           </div>
         )}

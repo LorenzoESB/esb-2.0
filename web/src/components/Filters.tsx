@@ -1,7 +1,7 @@
 "use client";
 
 interface FiltersBlogProps {
-    categories: Array<{ id: number; name: string; slug: string }>;
+    categories: Array<{ id: number | string; name: string; slug: string }>;
     selectedCategory?: string;
     onSelect: (slug: string | null) => void;
 }

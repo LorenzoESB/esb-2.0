@@ -17,7 +17,7 @@ import { AdCard } from '@/components/ads/AdCard';
 
 export default function RankingsHubPage() {
   const rankingAd = getRandomAds(1)[0];
-  const rankings = [
+      const rankings = [
     {
       id: 'maquinas-cartao',
       title: 'Maquininhas de Cartão',
@@ -37,8 +37,8 @@ export default function RankingsHubPage() {
       href: '/rankings/seguros',
       status: 'available',
       count: 10,
-      color: 'text-green-600',
-      bgColor: 'bg-green-50 dark:bg-green-950',
+      color: 'text-primary',
+      bgColor: 'bg-accent/10 dark:bg-accent/20',
     },
     {
       id: 'pedagios',

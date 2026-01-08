@@ -63,7 +63,7 @@ export function RankingTable({ items }: RankingTableProps) {
                 key={item.id}
                 className={
                   item.isBestOption
-                    ? 'bg-green-50 dark:bg-green-950 hover:bg-green-100 dark:hover:bg-green-900'
+                    ? 'bg-accent/10 dark:bg-accent/20 hover:bg-accent/20'
                     : ''
                 }
               >
@@ -71,7 +71,7 @@ export function RankingTable({ items }: RankingTableProps) {
                 <TableCell>
                   <div className="flex items-center gap-2">
                     {item.isBestOption && (
-                      <Trophy className="h-4 w-4 text-yellow-500" />
+                      <Trophy className="h-4 w-4 text-primary" />
                     )}
                     <Badge className={getRankBadgeColor(item.rank)}>
                       {item.rank}º
@@ -92,7 +92,7 @@ export function RankingTable({ items }: RankingTableProps) {
                       {item.isBestOption && (
                         <Badge
                           variant="outline"
-                          className="text-xs mt-1 border-green-600 text-green-700"
+                          className="text-xs mt-1 border-accent text-accent-foreground"
                         >
                           Melhor Opção
                         </Badge>
@@ -139,7 +139,7 @@ export function RankingTable({ items }: RankingTableProps) {
                       <div className="text-xs line-through text-muted-foreground">
                         R$ {item.pricing.preco.toFixed(2)}
                       </div>
-                      <div className="font-semibold text-green-600">
+                      <div className="font-semibold text-primary">
                         R$ {item.pricing.preco_promocional!.toFixed(2)}
                       </div>
                     </div>
@@ -155,7 +155,7 @@ export function RankingTable({ items }: RankingTableProps) {
                 {/* Monthly Fee */}
                 <TableCell className="hidden md:table-cell">
                   {item.pricing.mensalidade === 0 ? (
-                    <Badge variant="secondary" className="bg-green-100 text-green-800">
+                    <Badge variant="secondary" className="bg-accent/10 text-accent-foreground">
                       R$ 0,00
                     </Badge>
                   ) : (
