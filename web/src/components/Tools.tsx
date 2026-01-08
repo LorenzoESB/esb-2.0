@@ -45,9 +45,6 @@ export default function Tools() {
                             decisões financeiras
                         </span>
                     </h2>
-                    <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                        Acesse rankings detalhados e simuladores gratuitos para fazer as melhores escolhas financeiras
-                    </p>
                 </div>
 
                 <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
