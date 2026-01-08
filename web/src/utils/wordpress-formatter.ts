@@ -80,7 +80,8 @@ export function formatPostDate(dateString: string): string {
     return date.toLocaleDateString('pt-BR', {
         day: 'numeric',
         month: 'long',
-        year: 'numeric'
+        year: 'numeric',
+        timeZone: 'UTC'
     });
 }
 
@@ -90,7 +91,8 @@ export function formatPostDateShort(dateString: string): string {
     return date.toLocaleDateString('pt-BR', {
         day: '2-digit',
         month: '2-digit',
-        year: 'numeric'
+        year: 'numeric',
+        timeZone: 'UTC'
     });
 }
 

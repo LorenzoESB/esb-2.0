@@ -104,11 +104,17 @@ export default function TollPassRankingPage() {
                   </div>
                 </div>
                 <div className="flex flex-col items-end gap-3">
-                  <img
-                    src={best.logo}
-                    alt={best.name}
-                    className="h-10 w-auto object-contain"
-                  />
+                  {best.logo && best.logo.trim() !== '' && (
+                    <img
+                      src={best.logo}
+                      alt={best.name}
+                      className="h-10 w-auto object-contain"
+                      onError={(e) => {
+                        const t = e.currentTarget;
+                        t.src = 'https://via.placeholder.com/70x20?text=Logo';
+                      }}
+                    />
+                  )}
                   <Button
                     size="sm"
                     className="bg-green-600 hover:bg-green-700"
@@ -200,11 +206,17 @@ export default function TollPassRankingPage() {
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-3">
-                          <img
-                            src={item.logo}
-                            alt={item.name}
-                            className="h-6 w-auto object-contain"
-                          />
+                          {item.logo && item.logo.trim() !== '' && (
+                            <img
+                              src={item.logo}
+                              alt={item.name}
+                              className="h-6 w-auto object-contain"
+                              onError={(e) => {
+                                const t = e.currentTarget;
+                                t.src = 'https://via.placeholder.com/60x20?text=Logo';
+                              }}
+                            />
+                          )}
                           <div>
                             <div className="font-medium">{item.name}</div>
                             <p className="text-xs text-muted-foreground">

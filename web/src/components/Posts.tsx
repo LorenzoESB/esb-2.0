@@ -1,5 +1,6 @@
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "./ui/card";
 import { getAuthor, getFeaturedImage, getPostCategories } from "@/lib/api/wordpress";
+import { formatPostDateShort } from "@/utils/wordpress-formatter";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Calendar, User, ArrowRight } from "lucide-react";
@@ -15,7 +16,7 @@ export default function PostCard({ post, index = 0 }: PostCardProps) {
     const featuredImage = getFeaturedImage(post);
     const author = getAuthor(post);
     const categories = getPostCategories(post);
-    const postDate = new Date(post.date).toLocaleDateString("pt-BR");
+    const postDate = formatPostDateShort(post.date);
     return (
         <Link href={`/blog/${post.slug}`} key={post.id}>
             <Card

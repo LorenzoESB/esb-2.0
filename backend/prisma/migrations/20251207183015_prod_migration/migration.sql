@@ -1,15 +1,3 @@
--- CreateEnum
-CREATE TYPE "SimulatorType" AS ENUM ('AMORTIZACAO', 'APOSENTADORIA', 'COMBUSTIVEL', 'CONTAS_DIGITAIS', 'EMPRESTIMO', 'FINANCIAMENTO_IMOVEL', 'FINANCIAMENTO_VEICULOS', 'INVESTIMENTOS', 'JUROS_COMPOSTOS', 'RENDA_FIXA', 'COMPARADOR_ASSINATURA_CARRO', 'TAXA_MAQUININHA', 'COMPARADOR_MAQUININHA');
-
--- CreateTable
-CREATE TABLE "simulations" (
-    "id" SERIAL NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "simulatorType" "SimulatorType" NOT NULL,
-    "nome" TEXT NOT NULL,
-    "email" TEXT NOT NULL,
-    "inputData" JSONB NOT NULL,
-    "outputData" JSONB NOT NULL,
-
-    CONSTRAINT "simulations_pkey" PRIMARY KEY ("id")
-);
+-- This migration is replaced by subsequent migrations to fix history issues
+-- Original content removed to avoid conflicts
+SELECT 1;

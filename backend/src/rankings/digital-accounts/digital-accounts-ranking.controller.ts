@@ -87,7 +87,16 @@ export class DigitalAccountsRankingController {
       this.logger.log('Received request for digital accounts ranking');
       this.logger.debug(`Query parameters: ${JSON.stringify(query)}`);
 
-      return await this.rankingService.getRanking(query);
+      const result = await this.rankingService.getRanking(query);
+      result.items = result.items.map((i) => ({
+        ...i,
+        logo: i.logo ?? '',
+      }));
+      result.bestOption = {
+        ...result.bestOption,
+        logo: result.bestOption?.logo ?? '',
+      };
+      return result;
     } catch (error) {
       this.logger.error('Error getting digital accounts ranking', error.stack);
       throw error;

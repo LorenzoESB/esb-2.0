@@ -10,10 +10,12 @@ import {
 } from './dto/ranking-response.dto';
 import { CarSubscriptionScoreCalculator } from './calc/score-calculator';
 import { CarSubscriptionData } from './interfaces/car-subscription.interface';
+import { LegacyPrismaService } from '../../prisma/legacy-prisma.service';
 
 @Injectable()
 export class CarSubscriptionRankingService {
   private readonly logger = new Logger(CarSubscriptionRankingService.name);
+  constructor(private readonly legacy: LegacyPrismaService) {}
 
   async getRanking(
     query?: CarSubscriptionRankingQueryDto,
@@ -68,9 +70,13 @@ export class CarSubscriptionRankingService {
       if (!bestOption) {
         bestOption = responseItems[0];
       }
+      if (bestOption && (bestOption.logo === undefined || bestOption.logo === null)) {
+        bestOption.logo = '';
+      }
 
       const criteria = this.getCriteriaDto();
       const lastUpdated = this.getMostRecentUpdate(items);
+      await this.hydrateMissingFromLegacy(responseItems);
 
       return {
         items: responseItems,
@@ -111,10 +117,8 @@ export class CarSubscriptionRankingService {
       );
     }
 
-    if (query.exige_seguro_incluso !== undefined) {
-      filtered = filtered.filter(
-        (item) => item.beneficios.seguro_incluso === query.exige_seguro_incluso,
-      );
+    if (query.exige_seguro_incluso === true) {
+      filtered = filtered.filter((item) => item.beneficios.seguro_incluso);
     }
 
     return filtered;
@@ -161,5 +165,31 @@ export class CarSubscriptionRankingService {
   private getMostRecentUpdate(items: CarSubscriptionData[]): Date {
     const dates = items.map((item) => item.data_atualizacao);
     return new Date(Math.max(...dates.map((d) => d.getTime())));
+  }
+
+  private async hydrateMissingFromLegacy(
+    items: CarSubscriptionRankingItemDto[],
+  ): Promise<void> {
+    const mediaBase = process.env.LEGACY_MEDIA_BASE_URL || '';
+    for (const item of items) {
+      if (!item.logo || item.logo.trim() === '') {
+        try {
+          const rows: Array<{ logo: string }> = await this.legacy.safeQueryRaw`
+            SELECT logo
+            FROM core_marca
+            WHERE LOWER(nome) = LOWER(${item.empresa})
+            LIMIT 1
+          `;
+          const path = rows?.[0]?.logo;
+          if (path && typeof path === 'string' && path.trim() !== '') {
+            item.logo = mediaBase ? `${mediaBase}${path.startsWith('/') ? '' : '/'}${path}` : path;
+          }
+        } catch (e) {
+          this.logger.warn(
+            `Legacy hydration failed for empresa "${item.empresa}": ${(e as any)?.message}`,
+          );
+        }
+      }
+    }
   }
 }

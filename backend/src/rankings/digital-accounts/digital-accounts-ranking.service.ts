@@ -11,10 +11,13 @@ import {
 } from './dto/ranking-response.dto';
 import { DigitalAccountsScoreCalculator } from './calc/score-calculator';
 import { DigitalAccountData } from './interfaces/digital-account-ranking.interface';
+import { LegacyPrismaService } from '../../prisma/legacy-prisma.service';
 
 @Injectable()
 export class DigitalAccountsRankingService {
   private readonly logger = new Logger(DigitalAccountsRankingService.name);
+
+  constructor(private readonly legacy: LegacyPrismaService) {}
 
   async getRanking(
     query?: DigitalAccountsRankingQueryDto,
@@ -78,6 +81,7 @@ export class DigitalAccountsRankingService {
 
       const criteria = this.getCriteriaDto();
       const lastUpdated = this.getMostRecentUpdate(accounts);
+      await this.hydrateMissingFromLegacy(items);
 
       return {
         items,
@@ -125,16 +129,12 @@ export class DigitalAccountsRankingService {
       );
     }
 
-    if (query.exige_cartao_credito !== undefined) {
-      filtered = filtered.filter(
-        (account) => account.features.credit_card === query.exige_cartao_credito,
-      );
+    if (query.exige_cartao_credito === true) {
+      filtered = filtered.filter((account) => account.features.credit_card);
     }
 
-    if (query.exige_investimentos !== undefined) {
-      filtered = filtered.filter(
-        (account) => account.features.investments === query.exige_investimentos,
-      );
+    if (query.exige_investimentos === true) {
+      filtered = filtered.filter((account) => account.features.investments);
     }
 
     return filtered;
@@ -194,5 +194,31 @@ export class DigitalAccountsRankingService {
   private getMostRecentUpdate(accounts: DigitalAccountData[]): Date {
     const dates = accounts.map((account) => account.data_atualizacao);
     return new Date(Math.max(...dates.map((d) => d.getTime())));
+  }
+
+  private async hydrateMissingFromLegacy(
+    items: DigitalAccountRankingItemDto[],
+  ): Promise<void> {
+    const mediaBase = process.env.LEGACY_MEDIA_BASE_URL || '';
+    for (const item of items) {
+      if (!item.logo || item.logo.trim() === '') {
+        try {
+          const rows: Array<{ logo: string }> = await this.legacy.safeQueryRaw`
+            SELECT logo
+            FROM core_marca
+            WHERE LOWER(nome) = LOWER(${item.bank})
+            LIMIT 1
+          `;
+          const path = rows?.[0]?.logo;
+          if (path && typeof path === 'string' && path.trim() !== '') {
+            item.logo = mediaBase ? `${mediaBase}${path.startsWith('/') ? '' : '/'}${path}` : path;
+          }
+        } catch (e) {
+          this.logger.warn(
+            `Legacy hydration failed for bank "${item.bank}": ${(e as any)?.message}`,
+          );
+        }
+      }
+    }
   }
 }

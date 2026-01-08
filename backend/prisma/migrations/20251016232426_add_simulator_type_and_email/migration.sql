@@ -8,7 +8,7 @@
 CREATE TYPE "SimulatorType" AS ENUM ('AMORTIZACAO', 'JUROS_COMPOSTOS', 'EMPRESTIMO', 'INVESTIMENTOS');
 
 -- DropTable
-DROP TABLE "simuladores"."Simulations";
+DROP TABLE "Simulations";
 
 -- CreateTable
 CREATE TABLE "simulations" (

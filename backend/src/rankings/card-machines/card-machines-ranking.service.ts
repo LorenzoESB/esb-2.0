@@ -40,6 +40,12 @@ export class CardMachinesRankingService {
       if (query) {
         machines = this.applyFilters(machines, query);
         this.logger.debug(`After filtering: ${machines.length} machines`);
+        if (machines.length === 0) {
+          this.logger.warn(
+            'No machines after applying filters; falling back to all active machines',
+          );
+          machines = getActiveCardMachines();
+        }
       }
 
       // Rank machines
@@ -51,10 +57,56 @@ export class CardMachinesRankingService {
       );
 
       // Get best option (rank 1)
-      const bestOption = items.find((item) => item.rank === 1);
+      const bestOption = items.find((item) => item.rank === 1) || items[0];
 
       if (!bestOption) {
-        throw new Error('No machines found in ranking');
+        const criteria = this.getCriteriaDto();
+        const lastUpdated = this.getMostRecentUpdate(getActiveCardMachines());
+        return {
+          items: [],
+          total: 0,
+          bestOption: {
+            id: 0,
+            name: '',
+            empresa: '',
+            rank: 0,
+            isBestOption: false,
+            logo: '',
+            imagem: '',
+            features: {
+              chip: false,
+              tarja: false,
+              nfc: false,
+              com_fio: false,
+              imprime_recibo: false,
+              precisa_smartphone: false,
+              permite_antecipacao: false,
+              atende_pf: true,
+              atende_pj: true,
+              vale_refeicao: false,
+              ecommerce: false,
+              max_parcelas: 12,
+              garantia: null,
+              tipos_conexao: [],
+              bandeiras: [],
+              formas_recebimento: [],
+            },
+            pricing: {
+              preco: 0,
+              preco_promocional: null,
+              mensalidade: 0,
+            },
+            planos: [],
+            observacoes: null,
+            url_contratacao: '',
+            cupom: null,
+            transparencia: null,
+            url_avaliacao: null,
+            data_atualizacao: new Date(lastUpdated).toLocaleDateString('pt-BR'),
+          },
+          criteria,
+          lastUpdated,
+        };
       }
 
       // Get criteria DTOs

@@ -10,10 +10,12 @@ import {
 } from './dto/ranking-response.dto';
 import { TollPassScoreCalculator } from './calc/score-calculator';
 import { TollPassData } from './interfaces/toll-pass-ranking.interface';
+import { LegacyPrismaService } from '../../prisma/legacy-prisma.service';
 
 @Injectable()
 export class TollPassesRankingService {
   private readonly logger = new Logger(TollPassesRankingService.name);
+  constructor(private readonly legacy: LegacyPrismaService) {}
 
   async getRanking(
     query?: TollPassRankingQueryDto,
@@ -67,6 +69,7 @@ export class TollPassesRankingService {
 
       const criteria = this.getCriteriaDto();
       const lastUpdated = this.getMostRecentUpdate(items);
+      await this.hydrateMissingFromLegacy(responseItems);
 
       return {
         items: responseItems,
@@ -107,10 +110,8 @@ export class TollPassesRankingService {
       );
     }
 
-    if (query.exige_estacionamento !== undefined) {
-      filtered = filtered.filter(
-        (item) => item.beneficios.estacionamento === query.exige_estacionamento,
-      );
+    if (query.exige_estacionamento === true) {
+      filtered = filtered.filter((item) => item.beneficios.estacionamento);
     }
 
     return filtered;
@@ -156,5 +157,31 @@ export class TollPassesRankingService {
   private getMostRecentUpdate(items: TollPassData[]): Date {
     const dates = items.map((item) => item.data_atualizacao);
     return new Date(Math.max(...dates.map((d) => d.getTime())));
+  }
+
+  private async hydrateMissingFromLegacy(
+    items: TollPassRankingItemDto[],
+  ): Promise<void> {
+    const mediaBase = process.env.LEGACY_MEDIA_BASE_URL || '';
+    for (const item of items) {
+      if (!item.logo || item.logo.trim() === '') {
+        try {
+          const rows: Array<{ logo: string }> = await this.legacy.safeQueryRaw`
+            SELECT logo
+            FROM core_marca
+            WHERE LOWER(nome) = LOWER(${item.empresa})
+            LIMIT 1
+          `;
+          const path = rows?.[0]?.logo;
+          if (path && typeof path === 'string' && path.trim() !== '') {
+            item.logo = mediaBase ? `${mediaBase}${path.startsWith('/') ? '' : '/'}${path}` : path;
+          }
+        } catch (e) {
+          this.logger.warn(
+            `Legacy hydration failed for empresa "${item.empresa}": ${(e as any)?.message}`,
+          );
+        }
+      }
+    }
   }
 }
