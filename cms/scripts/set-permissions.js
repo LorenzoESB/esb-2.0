@@ -37,11 +37,20 @@ async function main() {
                   created_at: new Date(),
                   updated_at: new Date(),
                   published_at: new Date(),
-              });
-              // Knex SQLite returns [id]
-              permId = res[0]; 
+              }).returning('id');
+              
+              if (res && res[0]) {
+                   // Postgres returns [{id: 1}], SQLite might return [1] or similar
+                   permId = typeof res[0] === 'object' ? res[0].id : res[0];
+              }
           } else {
               permId = perm.id;
+          }
+
+          if (!permId) {
+             // Fallback fetch
+             const p = await strapi.db.connection('up_permissions').where({ action }).first();
+             permId = p.id;
           }
 
           // 2. Link to Role
