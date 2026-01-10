@@ -2,7 +2,10 @@ import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { FinanciamentoImovelController } from './financiamento-imovel.controller';
 import { FinanciamentoImovelService } from './financiamento-imovel.service';
+import { PrismaModule } from '../../prisma/prisma.module';
 import { TaxasFinanciamentoData } from './data/taxas-financiamento.data';
+import { SimulatorMetadataModule } from '../metadata/simulator-metadata.module';
+import { SimulatorRegistryModule } from '../registry/simulator-registry.module';
 
 /**
  * Módulo de simulação de financiamento imobiliário
@@ -18,6 +21,9 @@ import { TaxasFinanciamentoData } from './data/taxas-financiamento.data';
       timeout: 5000, // 5 seconds default timeout
       maxRedirects: 5,
     }),
+    PrismaModule,
+    SimulatorMetadataModule,
+    SimulatorRegistryModule,
   ],
   controllers: [FinanciamentoImovelController],
   providers: [FinanciamentoImovelService, TaxasFinanciamentoData],
