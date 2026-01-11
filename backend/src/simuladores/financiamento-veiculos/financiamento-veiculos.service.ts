@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { SimulatorType } from '@prisma/client';
 import { SimularFinanciamentoVeiculosDto } from './dto/simular-financiamento-veiculos.dto';
@@ -8,15 +8,32 @@ import {
   TaxasVeiculosData,
   TaxaFinanciamentoVeiculos,
 } from './data/taxas-veiculos.data';
+import { SimulatorMetadataService } from '../metadata/simulator-metadata.service';
+import { ISimulatorStrategy } from '../interfaces/simulator-strategy.interface';
+import { SimulatorRegistry } from '../registry/simulator.registry';
 
 @Injectable()
-export class FinanciamentoVeiculosService {
+export class FinanciamentoVeiculosService implements ISimulatorStrategy, OnModuleInit {
   private readonly logger = new Logger(FinanciamentoVeiculosService.name);
 
   constructor(
     private readonly prisma: PrismaService,
     private readonly taxasVeiculosData: TaxasVeiculosData,
+    private readonly metadataService: SimulatorMetadataService,
+    private readonly registry: SimulatorRegistry,
   ) {}
+
+  onModuleInit() {
+    this.registry.register(this);
+  }
+
+  getSimulatorType(): string {
+    return 'vehicle-financing'; // Must match Strapi type/slug
+  }
+
+  async execute(input: any, metadata?: any): Promise<any> {
+    return this.simular(input, metadata);
+  }
 
   /**
    * Simula ofertas de financiamento de veículos usando sistema PRICE
@@ -34,10 +51,12 @@ export class FinanciamentoVeiculosService {
    * 6. Salva simulação no banco de dados
    *
    * @param dto - Dados da simulação de financiamento
+   * @param metadata - Metadados opcionais
    * @returns Lista de ofertas disponíveis ordenadas
    */
   async simular(
     dto: SimularFinanciamentoVeiculosDto,
+    metadata?: any,
   ): Promise<ResultadoFinanciamentoVeiculosDto[]> {
     try {
       this.logger.log('Starting vehicle financing simulation');
@@ -52,10 +71,35 @@ export class FinanciamentoVeiculosService {
         `Financing amount: R$ ${valorFinanciado.toFixed(2)} (Vehicle: R$ ${dto.valorVeiculo.toFixed(2)}, Down payment: R$ ${dto.valorEntrada.toFixed(2)})`,
       );
 
-      // Buscar taxas atualizadas do Banco Central (com fallback automático)
-      const taxas = await this.taxasVeiculosData.obterTaxasVeiculos(
-        dto.tipoVeiculo,
-      );
+      let taxas: TaxaFinanciamentoVeiculos[] = [];
+
+      // Check metadata first
+      const params = metadata;
+      if (params) {
+        if (params.rates && Array.isArray(params.rates) && params.rates.length > 0) {
+           const allRates: TaxaFinanciamentoVeiculos[] = params.rates;
+           taxas = allRates.filter(r => r.tipoVeiculo === dto.tipoVeiculo);
+           this.logger.debug(`Using ${taxas.length} rates from metadata`);
+        }
+      } else {
+        // Fallback fetch
+        const fetchedMetadata = await this.metadataService.getMetadataByType('financing');
+        if (fetchedMetadata && fetchedMetadata.length > 0 && fetchedMetadata[0].attributes.parameters) {
+             const fetchedParams = fetchedMetadata[0].attributes.parameters;
+             if (fetchedParams.rates && Array.isArray(fetchedParams.rates) && fetchedParams.rates.length > 0) {
+                 const allRates: TaxaFinanciamentoVeiculos[] = fetchedParams.rates;
+                 taxas = allRates.filter(r => r.tipoVeiculo === dto.tipoVeiculo);
+             }
+        }
+      }
+
+      // If no rates from metadata, use BCB
+      if (taxas.length === 0) {
+        // Buscar taxas atualizadas do Banco Central (com fallback automático)
+        taxas = await this.taxasVeiculosData.obterTaxasVeiculos(
+          dto.tipoVeiculo,
+        );
+      }
 
       this.logger.debug(`Found ${taxas.length} financing rates`);
 

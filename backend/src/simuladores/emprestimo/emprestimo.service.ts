@@ -1,6 +1,9 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { SimulatorType } from '@prisma/client';
+import { SimulatorMetadataService } from '../metadata/simulator-metadata.service';
+import { ISimulatorStrategy } from '../interfaces/simulator-strategy.interface';
+import { SimulatorRegistry } from '../registry/simulator.registry';
 import {
   SimularEmprestimoDto,
   TipoPessoa,
@@ -23,10 +26,31 @@ import {
 } from './data/taxas-emprestimo.data';
 
 @Injectable()
-export class EmprestimoService {
+export class EmprestimoService implements ISimulatorStrategy, OnModuleInit {
   private readonly logger = new Logger(EmprestimoService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly metadataService: SimulatorMetadataService,
+    private readonly registry: SimulatorRegistry,
+  ) {}
+
+  onModuleInit() {
+    this.registry.register(this);
+  }
+
+  getSimulatorType(): string {
+    return 'loan'; // Must match Strapi type/slug for loan simulator
+  }
+
+  /**
+   * Wrapper implementation for generic execution
+   */
+  async execute(input: any, metadata?: any): Promise<any> {
+    // Validate or cast input if necessary. Assuming input matches SimularEmprestimoDto structure.
+    // Ideally, validation should happen before, or we use class-transformer/validator here.
+    return this.simular(input, metadata);
+  }
 
   /**
    * Simula ofertas de empréstimo pessoal com base nos dados fornecidos
@@ -39,17 +63,53 @@ export class EmprestimoService {
    * 5. Salva a simulação no banco de dados
    *
    * @param dto - Dados da simulação de empréstimo
+   * @param metadata - Metadados opcionais passados diretamente (evita busca redundante)
    * @returns Resultado com todas as ofertas disponíveis
    */
-  async simular(dto: SimularEmprestimoDto): Promise<ResultadoEmprestimoDto> {
+  async simular(dto: SimularEmprestimoDto, metadata?: any): Promise<ResultadoEmprestimoDto> {
     try {
       this.logger.log('Starting personal loan simulation');
       this.logger.debug(`Input: ${JSON.stringify(dto)}`);
+
+      let taxasPf = TAXAS_PF;
+      let taxasPj = TAXAS_PJ;
+      let modalidadesExcluidas = MODALIDADES_EXCLUIDAS_POR_TIPO;
+
+      // Use provided metadata or fetch if missing (though resolving usually provides it)
+      const params = metadata;
+      
+      if (params) {
+        if (params.taxasPf) {
+          taxasPf = params.taxasPf;
+          this.logger.debug('Using taxasPf from metadata');
+        }
+        if (params.taxasPj) {
+          taxasPj = params.taxasPj;
+          this.logger.debug('Using taxasPj from metadata');
+        }
+        if (params.modalidadesExcluidasPorTipo) {
+          modalidadesExcluidas = params.modalidadesExcluidasPorTipo;
+          this.logger.debug('Using modalidadesExcluidasPorTipo from metadata');
+        }
+      } else {
+        // Fallback fetch if not provided via execute()
+        this.logger.debug('Metadata not provided in arguments, fetching...');
+        const fetchedMetadata = await this.metadataService.getMetadataByType('loan');
+         if (fetchedMetadata && fetchedMetadata.length > 0 && fetchedMetadata[0].attributes.parameters) {
+             const fetchedParams = fetchedMetadata[0].attributes.parameters;
+             if (fetchedParams.taxasPf) taxasPf = fetchedParams.taxasPf;
+             if (fetchedParams.taxasPj) taxasPj = fetchedParams.taxasPj;
+             if (fetchedParams.modalidadesExcluidasPorTipo) modalidadesExcluidas = fetchedParams.modalidadesExcluidasPorTipo;
+         }
+      }
 
       // Buscar taxas de juros apropriadas (PF ou PJ)
       const taxasDisponiveis = this.buscarTaxasDisponiveis(
         dto.tipoPessoa,
         dto.tipoEmprego,
+        taxasPf,
+        taxasPj,
+        modalidadesExcluidas,
       );
 
       this.logger.debug(
@@ -102,22 +162,28 @@ export class EmprestimoService {
    *
    * @param tipoPessoa - PF ou PJ
    * @param tipoEmprego - Tipo de emprego (apenas para PF)
+   * @param taxasPf - Lista de taxas PF
+   * @param taxasPj - Lista de taxas PJ
+   * @param modalidadesExcluidasPorTipo - Mapa de modalidades excluídas
    * @returns Lista de taxas disponíveis
    */
   private buscarTaxasDisponiveis(
     tipoPessoa: TipoPessoa,
-    tipoEmprego?: TipoEmprego,
+    tipoEmprego: TipoEmprego | undefined,
+    taxasPf: TaxaEmprestimo[],
+    taxasPj: TaxaEmprestimo[],
+    modalidadesExcluidasPorTipo: Record<string, string[]>,
   ): TaxaEmprestimo[] {
     // Selecionar base de taxas (PF ou PJ)
     const taxasBase =
       tipoPessoa === TipoPessoa.PF
-        ? TAXAS_PF.filter((t) => t.ativo)
-        : TAXAS_PJ.filter((t) => t.ativo);
+        ? taxasPf.filter((t) => t.ativo)
+        : taxasPj.filter((t) => t.ativo);
 
     // Para PF com tipo de emprego, filtrar modalidades excluídas
     if (tipoPessoa === TipoPessoa.PF && tipoEmprego) {
       const modalidadesExcluidas =
-        MODALIDADES_EXCLUIDAS_POR_TIPO[tipoEmprego] || [];
+        modalidadesExcluidasPorTipo[tipoEmprego] || [];
 
       if (modalidadesExcluidas.length > 0) {
         this.logger.debug(

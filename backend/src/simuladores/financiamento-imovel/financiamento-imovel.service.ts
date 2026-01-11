@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { SimulatorType } from '@prisma/client';
 import { SimularFinanciamentoImovelDto } from './dto/simular-financiamento-imovel.dto';
@@ -8,15 +8,32 @@ import {
   TaxasFinanciamentoData,
   TaxaFinanciamentoImovel,
 } from './data/taxas-financiamento.data';
+import { SimulatorMetadataService } from '../metadata/simulator-metadata.service';
+import { ISimulatorStrategy } from '../interfaces/simulator-strategy.interface';
+import { SimulatorRegistry } from '../registry/simulator.registry';
 
 @Injectable()
-export class FinanciamentoImovelService {
+export class FinanciamentoImovelService implements ISimulatorStrategy, OnModuleInit {
   private readonly logger = new Logger(FinanciamentoImovelService.name);
 
   constructor(
     private readonly prisma: PrismaService,
     private readonly taxasFinanciamentoData: TaxasFinanciamentoData,
+    private readonly metadataService: SimulatorMetadataService,
+    private readonly registry: SimulatorRegistry,
   ) {}
+
+  onModuleInit() {
+    this.registry.register(this);
+  }
+
+  getSimulatorType(): string {
+    return 'real-estate-financing'; // Must match Strapi type/slug
+  }
+
+  async execute(input: any, metadata?: any): Promise<any> {
+    return this.simular(input, metadata);
+  }
 
   /**
    * Simula ofertas de financiamento imobiliário usando sistema SAC
@@ -34,10 +51,12 @@ export class FinanciamentoImovelService {
    * 6. Salva simulação no banco de dados
    *
    * @param dto - Dados da simulação de financiamento
+   * @param metadata - Metadados opcionais
    * @returns Lista de ofertas disponíveis ordenadas
    */
   async simular(
     dto: SimularFinanciamentoImovelDto,
+    metadata?: any,
   ): Promise<ResultadoFinanciamentoImovelDto[]> {
     try {
       this.logger.log('Starting real estate financing simulation');
@@ -52,8 +71,34 @@ export class FinanciamentoImovelService {
         `Financing amount: R$ ${valorFinanciado.toFixed(2)} (Property: R$ ${dto.valorImovel.toFixed(2)}, Down payment: R$ ${dto.valorEntrada.toFixed(2)})`,
       );
 
-      // Buscar taxas atualizadas do Banco Central (com fallback automático)
-      const taxas = await this.taxasFinanciamentoData.obterTaxasImovel();
+      let taxas: TaxaFinanciamentoImovel[] = [];
+
+      // Check metadata first
+      const params = metadata;
+      if (params) {
+        if (params.realEstateRates && Array.isArray(params.realEstateRates) && params.realEstateRates.length > 0) {
+           taxas = params.realEstateRates;
+           this.logger.debug(`Using ${taxas.length} rates from metadata`);
+        } else if (params.rates && Array.isArray(params.rates) && params.rates.length > 0) {
+             taxas = params.rates.filter((r: any) => r.type === 'real_estate' || !r.type);
+        }
+      } else {
+        // Fallback fetch
+        const fetchedMetadata = await this.metadataService.getMetadataByType('financing');
+        if (fetchedMetadata && fetchedMetadata.length > 0 && fetchedMetadata[0].attributes.parameters) {
+            const fetchedParams = fetchedMetadata[0].attributes.parameters;
+            if (fetchedParams.realEstateRates && Array.isArray(fetchedParams.realEstateRates) && fetchedParams.realEstateRates.length > 0) {
+               taxas = fetchedParams.realEstateRates;
+            } else if (fetchedParams.rates && Array.isArray(fetchedParams.rates) && fetchedParams.rates.length > 0) {
+                 taxas = fetchedParams.rates.filter((r: any) => r.type === 'real_estate' || !r.type);
+            }
+        }
+      }
+
+      if (taxas.length === 0) {
+        // Buscar taxas atualizadas do Banco Central (com fallback automático)
+        taxas = await this.taxasFinanciamentoData.obterTaxasImovel();
+      }
 
       this.logger.debug(`Found ${taxas.length} financing rates`);
 
