@@ -1,7 +1,7 @@
 
 import { Injectable, Logger } from '@nestjs/common';
-import { StrapiService } from '../../../integrations/strapi/strapi.service';
-import { SimulatorAdapter } from '../../../integrations/strapi/adapters/simulator.adapter';
+import { StrapiService } from '../../integrations/strapi/strapi.service';
+import { SimulatorAdapter } from '../../integrations/strapi/adapters/simulator.adapter';
 
 export interface SimulatorMetadata {
   id: number;

@@ -3,12 +3,16 @@ import { CombustivelInputDto } from './dto/combustivel-input.dto';
 import { CombustivelOutputDto } from './dto/combustivel-output.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { SimulatorType } from '@prisma/client';
+import { EmailService } from '../../email/email.service';
 
 @Injectable()
 export class CombustivelService {
   private readonly logger = new Logger(CombustivelService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly emailService: EmailService,
+  ) {}
 
   private arredondar(valor: number, casas = 3) {
     return Number(valor.toFixed(casas));
@@ -94,15 +98,31 @@ export class CombustivelService {
     output: CombustivelOutputDto,
   ) {
     try {
+      const simulationData = {
+        simulatorType: SimulatorType.COMBUSTIVEL,
+        inputData: JSON.parse(JSON.stringify(input)),
+        outputData: JSON.parse(JSON.stringify(output)),
+        email: input.email,
+        nome: input.nome,
+        email_opt_in_simulation: input.email_opt_in_simulation,
+        email_opt_in_at: input.email_opt_in_simulation ? new Date() : null,
+      };
+
       await this.prisma.simulation.create({
-        data: {
-          simulatorType: SimulatorType.COMBUSTIVEL,
-          inputData: JSON.parse(JSON.stringify(input)),
-          outputData: JSON.parse(JSON.stringify(output)),
-          email: input.email,
-          nome: input.nome,
-        },
+        data: simulationData,
       });
+
+      if (input.email_opt_in_simulation) {
+        await this.emailService.sendSimulationResult({
+          simulationType: SimulatorType.COMBUSTIVEL,
+          userEmail: input.email,
+          userName: input.nome,
+          input: simulationData.inputData,
+          output: simulationData.outputData,
+          summary: output.mensagem || 'Simulação de Combustível',
+          createdAt: new Date(),
+        });
+      }
 
       this.logger.log(`Simulação salva para o email: ${input.email}`);
     } catch (error) {

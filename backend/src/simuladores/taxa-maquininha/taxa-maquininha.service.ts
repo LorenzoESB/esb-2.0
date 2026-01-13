@@ -9,12 +9,16 @@ import {
 import { calcularMaq } from './calc/taxa-maquininha.calc';
 import { getMaquininhasAtivas } from './data/maquininhas.data';
 import { FiltrosMaquininha } from './interfaces/maquininha.interface';
+import { EmailService } from '../../email/email.service';
 
 @Injectable()
 export class TaxaMaquininhaService {
   private readonly logger = new Logger(TaxaMaquininhaService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly emailService: EmailService,
+  ) {}
 
   /**
    * Simula taxas de maquininhas com base nos valores de venda informados
@@ -37,7 +41,8 @@ export class TaxaMaquininhaService {
   ): Promise<ResultadoTaxaMaquininhaDto> {
     try {
       this.logger.log('Starting card machine fee simulation');
-      this.logger.debug(`Input: ${JSON.stringify(dto)}`);
+      const redactedDto = { ...dto, email: '***', nome: '***' };
+      this.logger.debug(`Input: ${JSON.stringify(redactedDto)}`);
 
       // Montar filtros a partir do DTO
       const filtros: FiltrosMaquininha | null = this.montarFiltros(dto);
@@ -194,53 +199,69 @@ export class TaxaMaquininhaService {
     resultado: ResultadoTaxaMaquininhaDto,
   ): Promise<void> {
     try {
-      await this.prisma.simulation.create({
-        data: {
-          simulatorType: SimulatorType.TAXA_MAQUININHA,
-          nome: dto.nome,
-          email: dto.email,
-          inputData: {
-            venda_debito: dto.venda_debito,
-            venda_credito_vista: dto.venda_credito_vista,
-            venda_credito_parcelado: dto.venda_credito_parcelado,
-            numero_parcelas: dto.numero_parcelas,
-            segmento: dto.segmento || null,
-            // Filtros
-            sem_mensalidade: dto.sem_mensalidade || false,
-            aceita_cartao_tarja: dto.aceita_cartao_tarja || false,
-            sem_fio: dto.sem_fio || false,
-            pf: dto.pf || false,
-            pj: dto.pj || false,
-            imprime_recibo: dto.imprime_recibo || false,
-            wifi: dto.wifi || false,
-            quer_antecipar: dto.quer_antecipar || false,
-            n_exige_smartphone: dto.n_exige_smartphone || false,
-            aceita_vale_refeicao: dto.aceita_vale_refeicao || false,
-            ecommerce: dto.ecommerce || false,
-            // Metadados
-            compartilharDados: dto.compartilharDados || true,
-            origem: dto.origem || null,
-          },
-          outputData: {
-            total: resultado.total,
-            melhor_opcao: {
-              nome: resultado.melhor_opcao.nome,
-              empresa: resultado.melhor_opcao.empresa,
-              valor_mensal: resultado.melhor_opcao.valor_mensal,
-              avaliacao: resultado.melhor_opcao.avaliacao,
-            },
-            // Salva top 10 maquininhas
-            top_10: resultado.maquininhas.slice(0, 10).map((m) => ({
-              nome: m.nome,
-              empresa: m.empresa,
-              valor_mensal: m.valor_mensal,
-              avaliacao: m.avaliacao,
-              dias_debito: m.dias_debito,
-              dias_credito: m.dias_credito,
-            })),
-          },
+      const simulationData = {
+        simulatorType: SimulatorType.TAXA_MAQUININHA,
+        nome: dto.nome,
+        email: dto.email,
+        inputData: {
+          venda_debito: dto.venda_debito,
+          venda_credito_vista: dto.venda_credito_vista,
+          venda_credito_parcelado: dto.venda_credito_parcelado,
+          numero_parcelas: dto.numero_parcelas,
+          segmento: dto.segmento || null,
+          // Filtros
+          sem_mensalidade: dto.sem_mensalidade || false,
+          aceita_cartao_tarja: dto.aceita_cartao_tarja || false,
+          sem_fio: dto.sem_fio || false,
+          pf: dto.pf || false,
+          pj: dto.pj || false,
+          imprime_recibo: dto.imprime_recibo || false,
+          wifi: dto.wifi || false,
+          quer_antecipar: dto.quer_antecipar || false,
+          n_exige_smartphone: dto.n_exige_smartphone || false,
+          aceita_vale_refeicao: dto.aceita_vale_refeicao || false,
+          ecommerce: dto.ecommerce || false,
+          // Metadados
+          compartilharDados: dto.compartilharDados || true,
+          origem: dto.origem || null,
         },
+        outputData: {
+          total: resultado.total,
+          melhor_opcao: {
+            nome: resultado.melhor_opcao.nome,
+            empresa: resultado.melhor_opcao.empresa,
+            valor_mensal: resultado.melhor_opcao.valor_mensal,
+            avaliacao: resultado.melhor_opcao.avaliacao,
+          },
+          // Salva top 10 maquininhas
+          top_10: resultado.maquininhas.slice(0, 10).map((m) => ({
+            nome: m.nome,
+            empresa: m.empresa,
+            valor_mensal: m.valor_mensal,
+            avaliacao: m.avaliacao,
+            dias_debito: m.dias_debito,
+            dias_credito: m.dias_credito,
+          })),
+        },
+        email_opt_in_simulation: dto.email_opt_in_simulation,
+        email_opt_in_at: dto.email_opt_in_simulation ? new Date() : null,
+      };
+
+      await this.prisma.simulation.create({
+        data: simulationData,
       });
+
+      if (dto.email_opt_in_simulation) {
+        await this.emailService.sendSimulationResult({
+          simulationType: SimulatorType.TAXA_MAQUININHA,
+          userEmail: dto.email,
+          userName: dto.nome,
+          input: simulationData.inputData,
+          output: simulationData.outputData,
+          summary: `Simulação de Taxa de Maquininha: Melhor opção ${resultado.melhor_opcao.nome} (R$ ${resultado.melhor_opcao.valor_mensal.toFixed(2)}/mês)`,
+          createdAt: new Date(),
+        });
+      }
 
       this.logger.log(
         `Simulation saved successfully for ${dto.email} (${resultado.total} results)`,

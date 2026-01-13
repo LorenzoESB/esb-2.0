@@ -8,6 +8,7 @@ import {
   IsArray,
   IsInt,
   ArrayMinSize,
+  IsNotEmpty,
 } from 'class-validator';
 
 /**
@@ -42,6 +43,14 @@ export class CompararMaquininhaDto {
   })
   @IsEmail()
   email: string;
+
+  @ApiProperty({
+    description: 'Opt-in to receive simulation results via email',
+    example: true,
+  })
+  @IsBoolean()
+  @IsNotEmpty()
+  email_opt_in_simulation: boolean;
 
   @ApiProperty({
     description: 'Indica se o usuário permite compartilhar seus dados',

@@ -6,6 +6,7 @@ import { PrismaModule } from '../../prisma/prisma.module';
 import { TaxasFinanciamentoData } from './data/taxas-financiamento.data';
 import { SimulatorMetadataModule } from '../metadata/simulator-metadata.module';
 import { SimulatorRegistryModule } from '../registry/simulator-registry.module';
+import { EmailModule } from '../../email/email.module';
 
 /**
  * Módulo de simulação de financiamento imobiliário
@@ -24,6 +25,7 @@ import { SimulatorRegistryModule } from '../registry/simulator-registry.module';
     PrismaModule,
     SimulatorMetadataModule,
     SimulatorRegistryModule,
+    EmailModule,
   ],
   controllers: [FinanciamentoImovelController],
   providers: [FinanciamentoImovelService, TaxasFinanciamentoData],

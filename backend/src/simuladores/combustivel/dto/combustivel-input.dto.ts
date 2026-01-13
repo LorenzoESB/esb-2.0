@@ -7,6 +7,7 @@ import {
   Min,
   IsEmail,
   IsNotEmpty,
+  IsBoolean,
 } from 'class-validator';
 
 export class CombustivelInputDto {
@@ -25,6 +26,14 @@ export class CombustivelInputDto {
   @IsEmail({}, { message: 'E-mail inválido' })
   @IsNotEmpty({ message: 'E-mail é obrigatório' })
   email: string;
+
+  @ApiProperty({
+    description: 'Opt-in to receive simulation results via email',
+    example: true,
+  })
+  @IsBoolean()
+  @IsNotEmpty()
+  email_opt_in_simulation: boolean;
 
   @ApiProperty({
     description: 'Price of gasoline per liter',

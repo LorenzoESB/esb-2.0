@@ -6,6 +6,7 @@ import { PrismaModule } from '../../prisma/prisma.module';
 import { TaxasVeiculosData } from './data/taxas-veiculos.data';
 import { SimulatorMetadataModule } from '../metadata/simulator-metadata.module';
 import { SimulatorRegistryModule } from '../registry/simulator-registry.module';
+import { EmailModule } from '../../email/email.module';
 
 /**
  * Módulo de simulação de financiamento de veículos
@@ -25,6 +26,7 @@ import { SimulatorRegistryModule } from '../registry/simulator-registry.module';
     }),
     SimulatorMetadataModule,
     SimulatorRegistryModule,
+    EmailModule,
   ],
   controllers: [FinanciamentoVeiculosController],
   providers: [FinanciamentoVeiculosService, TaxasVeiculosData],

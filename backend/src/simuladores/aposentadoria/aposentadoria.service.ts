@@ -26,6 +26,7 @@ import {
 } from './calc/aposentadoria.calc';
 import { PrismaService } from '../../prisma/prisma.service';
 import { SimulatorType } from '@prisma/client';
+import { EmailService } from '../../email/email.service';
 
 @Injectable()
 export class AposentadoriaService {
@@ -36,6 +37,7 @@ export class AposentadoriaService {
   constructor(
     private configService: ConfigService,
     private readonly prisma: PrismaService,
+    private readonly emailService: EmailService,
   ) {
     // Parâmetros vindos de variáveis de ambiente com fallback para valores padrão
     this.taxaMensal = new Decimal(
@@ -389,15 +391,31 @@ export class AposentadoriaService {
     output: ResultadoAposentadoriaDto,
   ): Promise<void> {
     try {
+      const simulationData = {
+        simulatorType: SimulatorType.APOSENTADORIA,
+        inputData: JSON.parse(JSON.stringify(input)),
+        outputData: JSON.parse(JSON.stringify(output)),
+        nome: input.nome,
+        email: input.email,
+        email_opt_in_simulation: input.email_opt_in_simulation,
+        email_opt_in_at: input.email_opt_in_simulation ? new Date() : null,
+      };
+
       await this.prisma.simulation.create({
-        data: {
-          simulatorType: SimulatorType.APOSENTADORIA,
-          inputData: JSON.parse(JSON.stringify(input)),
-          outputData: JSON.parse(JSON.stringify(output)),
-          nome: input.nome,
-          email: input.email,
-        },
+        data: simulationData,
       });
+
+      if (input.email_opt_in_simulation) {
+        await this.emailService.sendSimulationResult({
+          simulationType: SimulatorType.APOSENTADORIA,
+          userEmail: input.email,
+          userName: input.nome,
+          input: simulationData.inputData,
+          output: simulationData.outputData,
+          summary: 'Simulação de Aposentadoria',
+          createdAt: new Date(),
+        });
+      }
 
       this.logger.log('Retirement simulation saved to database');
     } catch (error) {

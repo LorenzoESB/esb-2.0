@@ -24,6 +24,7 @@ import {
   MODALIDADES_EXCLUIDAS_POR_TIPO,
   TaxaEmprestimo,
 } from './data/taxas-emprestimo.data';
+import { EmailService } from '../../email/email.service';
 
 @Injectable()
 export class EmprestimoService implements ISimulatorStrategy, OnModuleInit {
@@ -33,6 +34,7 @@ export class EmprestimoService implements ISimulatorStrategy, OnModuleInit {
     private readonly prisma: PrismaService,
     private readonly metadataService: SimulatorMetadataService,
     private readonly registry: SimulatorRegistry,
+    private readonly emailService: EmailService,
   ) {}
 
   onModuleInit() {
@@ -69,7 +71,8 @@ export class EmprestimoService implements ISimulatorStrategy, OnModuleInit {
   async simular(dto: SimularEmprestimoDto, metadata?: any): Promise<ResultadoEmprestimoDto> {
     try {
       this.logger.log('Starting personal loan simulation');
-      this.logger.debug(`Input: ${JSON.stringify(dto)}`);
+      const redactedDto = { ...dto, email: '***', nome: '***' };
+      this.logger.debug(`Input: ${JSON.stringify(redactedDto)}`);
 
       let taxasPf = TAXAS_PF;
       let taxasPj = TAXAS_PJ;
@@ -95,8 +98,8 @@ export class EmprestimoService implements ISimulatorStrategy, OnModuleInit {
         // Fallback fetch if not provided via execute()
         this.logger.debug('Metadata not provided in arguments, fetching...');
         const fetchedMetadata = await this.metadataService.getMetadataByType('loan');
-         if (fetchedMetadata && fetchedMetadata.length > 0 && fetchedMetadata[0].attributes.parameters) {
-             const fetchedParams = fetchedMetadata[0].attributes.parameters;
+        if (fetchedMetadata && fetchedMetadata.length > 0 && fetchedMetadata[0].parameters) {
+             const fetchedParams = fetchedMetadata[0].parameters;
              if (fetchedParams.taxasPf) taxasPf = fetchedParams.taxasPf;
              if (fetchedParams.taxasPj) taxasPj = fetchedParams.taxasPj;
              if (fetchedParams.modalidadesExcluidasPorTipo) modalidadesExcluidas = fetchedParams.modalidadesExcluidasPorTipo;
@@ -277,52 +280,68 @@ export class EmprestimoService implements ISimulatorStrategy, OnModuleInit {
     resultado: ResultadoEmprestimoDto,
   ): Promise<void> {
     try {
-      await this.prisma.simulation.create({
-        data: {
-          simulatorType: SimulatorType.EMPRESTIMO,
-          nome: dto.nome,
-          email: dto.email,
-          inputData: {
-            tipoPessoa: dto.tipoPessoa,
-            tipoEmprego: dto.tipoEmprego || null,
-            valorDesejado: dto.valorDesejado,
-            prazoMeses: dto.prazoMeses,
-            renda: dto.renda || null,
-            compartilharDados: dto.compartilharDados || true,
-            origem: dto.origem || null,
-          },
-          outputData: {
-            totalOfertas: resultado.totalOfertas,
-            melhorOferta: {
-              nomeBanco: resultado.melhorOferta.nomeBanco,
-              modalidade: resultado.melhorOferta.modalidade,
-              valorEmprestimo: resultado.melhorOferta.valorEmprestimo,
-              prazoMeses: resultado.melhorOferta.prazoMeses,
-              parcelaMensal: resultado.melhorOferta.parcelaMensal,
-              taxaMensal: resultado.melhorOferta.taxaMensal,
-              taxaAnual: resultado.melhorOferta.taxaAnual,
-              totalPago: resultado.melhorOferta.totalPago,
-              totalJuros: resultado.melhorOferta.totalJuros,
-              taxaEfetivaAnual: resultado.melhorOferta.taxaEfetivaAnual,
-              comprometimentoRenda:
-                resultado.melhorOferta.comprometimentoRenda || null,
-            },
-            ofertas: resultado.ofertas.slice(0, 10).map((o) => ({
-              nomeBanco: o.nomeBanco,
-              modalidade: o.modalidade,
-              valorEmprestimo: o.valorEmprestimo,
-              prazoMeses: o.prazoMeses,
-              parcelaMensal: o.parcelaMensal,
-              taxaMensal: o.taxaMensal,
-              taxaAnual: o.taxaAnual,
-              totalPago: o.totalPago,
-              totalJuros: o.totalJuros,
-              taxaEfetivaAnual: o.taxaEfetivaAnual,
-              comprometimentoRenda: o.comprometimentoRenda || null,
-            })),
-          },
+      const simulationData = {
+        simulatorType: SimulatorType.EMPRESTIMO,
+        nome: dto.nome,
+        email: dto.email,
+        inputData: {
+          tipoPessoa: dto.tipoPessoa,
+          tipoEmprego: dto.tipoEmprego || null,
+          valorDesejado: dto.valorDesejado,
+          prazoMeses: dto.prazoMeses,
+          renda: dto.renda || null,
+          compartilharDados: dto.compartilharDados || true,
+          origem: dto.origem || null,
         },
+        outputData: {
+          totalOfertas: resultado.totalOfertas,
+          melhorOferta: {
+            nomeBanco: resultado.melhorOferta.nomeBanco,
+            modalidade: resultado.melhorOferta.modalidade,
+            valorEmprestimo: resultado.melhorOferta.valorEmprestimo,
+            prazoMeses: resultado.melhorOferta.prazoMeses,
+            parcelaMensal: resultado.melhorOferta.parcelaMensal,
+            taxaMensal: resultado.melhorOferta.taxaMensal,
+            taxaAnual: resultado.melhorOferta.taxaAnual,
+            totalPago: resultado.melhorOferta.totalPago,
+            totalJuros: resultado.melhorOferta.totalJuros,
+            taxaEfetivaAnual: resultado.melhorOferta.taxaEfetivaAnual,
+            comprometimentoRenda:
+              resultado.melhorOferta.comprometimentoRenda || null,
+          },
+          ofertas: resultado.ofertas.slice(0, 10).map((o) => ({
+            nomeBanco: o.nomeBanco,
+            modalidade: o.modalidade,
+            valorEmprestimo: o.valorEmprestimo,
+            prazoMeses: o.prazoMeses,
+            parcelaMensal: o.parcelaMensal,
+            taxaMensal: o.taxaMensal,
+            taxaAnual: o.taxaAnual,
+            totalPago: o.totalPago,
+            totalJuros: o.totalJuros,
+            taxaEfetivaAnual: o.taxaEfetivaAnual,
+            comprometimentoRenda: o.comprometimentoRenda || null,
+          })),
+        },
+        email_opt_in_simulation: dto.email_opt_in_simulation,
+        email_opt_in_at: dto.email_opt_in_simulation ? new Date() : null,
+      };
+
+      await this.prisma.simulation.create({
+        data: simulationData,
       });
+
+      if (dto.email_opt_in_simulation) {
+        await this.emailService.sendSimulationResult({
+          simulationType: SimulatorType.EMPRESTIMO,
+          userEmail: dto.email,
+          userName: dto.nome,
+          input: simulationData.inputData,
+          output: simulationData.outputData,
+          summary: `Simulação de Empréstimo: ${resultado.totalOfertas} ofertas encontradas. Melhor taxa: ${resultado.melhorOferta.taxaMensal}% a.m.`,
+          createdAt: new Date(),
+        });
+      }
 
       this.logger.log(
         `Simulation saved successfully for ${dto.email} (${dto.tipoPessoa})`,

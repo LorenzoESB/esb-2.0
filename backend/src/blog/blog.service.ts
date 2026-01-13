@@ -105,7 +105,12 @@ export class BlogService {
 
   async getPosts(options: GetPostsQueryDto): Promise<BlogPostListResponseDto> {
     if (this.useStrapi) {
-      return this.contentService.getPosts(options);
+      const result = await this.contentService.getPosts(options);
+      return {
+        posts: result.posts,
+        totalPosts: result.total,
+        totalPages: result.totalPages,
+      };
     }
 
     const perPage =

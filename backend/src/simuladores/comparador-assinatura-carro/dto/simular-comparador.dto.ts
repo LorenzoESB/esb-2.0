@@ -1,6 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsString, IsNumber, IsEmail, Min, Max } from 'class-validator';
+import {
+  IsString,
+  IsNumber,
+  IsEmail,
+  Min,
+  Max,
+  IsBoolean,
+  IsNotEmpty,
+} from 'class-validator';
 
 /**
  * DTO para simulação de comparação entre compra, financiamento e assinatura de veículos
@@ -90,4 +98,12 @@ export class SimularComparadorDto {
   })
   @IsEmail()
   email: string;
+
+  @ApiProperty({
+    description: 'Opt-in to receive simulation results via email',
+    example: true,
+  })
+  @IsBoolean()
+  @IsNotEmpty()
+  email_opt_in_simulation: boolean;
 }

@@ -8,12 +8,16 @@ import {
 } from './dto/resultado-comparador.dto';
 import { compararCenarios } from './calc/comparador.calc';
 import { URLS_REDIRECIONAMENTO } from './constants/comparador.constants';
+import { EmailService } from '../../email/email.service';
 
 @Injectable()
 export class ComparadorAssinaturaCarroService {
   private readonly logger = new Logger(ComparadorAssinaturaCarroService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly emailService: EmailService,
+  ) {}
 
   /**
    * Compara três cenários de aquisição de veículo
@@ -33,7 +37,8 @@ export class ComparadorAssinaturaCarroService {
   async simular(dto: SimularComparadorDto): Promise<ResultadoComparadorDto> {
     try {
       this.logger.log('Starting car subscription comparator simulation');
-      this.logger.debug(`Input: ${JSON.stringify(dto)}`);
+      const redactedDto = { ...dto, email: '***', nome: '***' };
+      this.logger.debug(`Input: ${JSON.stringify(redactedDto)}`);
 
       // Validar entrada
       this.validarDados(dto);
@@ -133,40 +138,56 @@ export class ComparadorAssinaturaCarroService {
     resultado: ResultadoComparadorDto,
   ): Promise<void> {
     try {
-      await this.prisma.simulation.create({
-        data: {
-          simulatorType: SimulatorType.COMPARADOR_ASSINATURA_CARRO,
-          nome: dto.nome,
-          email: dto.email,
-          inputData: {
-            valorVeiculo: dto.valorVeiculo,
-            entradaFinanciamento: dto.entradaFinanciamento,
-            prazoFinanciamentoMeses: dto.prazoFinanciamentoMeses,
-            valorAssinaturaMensal: dto.valorAssinaturaMensal,
-            prazoAssinaturaMeses: dto.prazoAssinaturaMeses,
-            tempoUsoCarroMeses: dto.tempoUsoCarroMeses,
+      const simulationData = {
+        simulatorType: SimulatorType.COMPARADOR_ASSINATURA_CARRO,
+        nome: dto.nome,
+        email: dto.email,
+        inputData: {
+          valorVeiculo: dto.valorVeiculo,
+          entradaFinanciamento: dto.entradaFinanciamento,
+          prazoFinanciamentoMeses: dto.prazoFinanciamentoMeses,
+          valorAssinaturaMensal: dto.valorAssinaturaMensal,
+          prazoAssinaturaMeses: dto.prazoAssinaturaMeses,
+          tempoUsoCarroMeses: dto.tempoUsoCarroMeses,
+        },
+        outputData: {
+          melhorOpcao: resultado.melhorOpcao,
+          economiaMaxima: resultado.economiaMaxima,
+          compraVista: {
+            custoTotal: resultado.compraVista.custoTotal,
+            custoLiquido: resultado.compraVista.custoLiquido,
+            valorRevenda: resultado.compraVista.valorRevenda,
           },
-          outputData: {
-            melhorOpcao: resultado.melhorOpcao,
-            economiaMaxima: resultado.economiaMaxima,
-            compraVista: {
-              custoTotal: resultado.compraVista.custoTotal,
-              custoLiquido: resultado.compraVista.custoLiquido,
-              valorRevenda: resultado.compraVista.valorRevenda,
-            },
-            financiamento: {
-              custoTotal: resultado.financiamento.custoTotal,
-              custoLiquido: resultado.financiamento.custoLiquido,
-              valorRevenda: resultado.financiamento.valorRevenda,
-            },
-            assinatura: {
-              custoTotal: resultado.assinatura.custoTotal,
-              custoLiquido: resultado.assinatura.custoLiquido,
-              valorRevenda: resultado.assinatura.valorRevenda,
-            },
+          financiamento: {
+            custoTotal: resultado.financiamento.custoTotal,
+            custoLiquido: resultado.financiamento.custoLiquido,
+            valorRevenda: resultado.financiamento.valorRevenda,
+          },
+          assinatura: {
+            custoTotal: resultado.assinatura.custoTotal,
+            custoLiquido: resultado.assinatura.custoLiquido,
+            valorRevenda: resultado.assinatura.valorRevenda,
           },
         },
+        email_opt_in_simulation: dto.email_opt_in_simulation,
+        email_opt_in_at: dto.email_opt_in_simulation ? new Date() : null,
+      };
+
+      await this.prisma.simulation.create({
+        data: simulationData,
       });
+
+      if (dto.email_opt_in_simulation) {
+        await this.emailService.sendSimulationResult({
+          simulationType: SimulatorType.COMPARADOR_ASSINATURA_CARRO,
+          userEmail: dto.email,
+          userName: dto.nome,
+          input: simulationData.inputData,
+          output: simulationData.outputData,
+          summary: `Melhor opção: ${resultado.melhorOpcao}, Economia: R$ ${resultado.economiaMaxima.toFixed(2)}`,
+          createdAt: new Date(),
+        });
+      }
 
       this.logger.log(
         `Simulation saved successfully for ${dto.email} (Vehicle: R$ ${dto.valorVeiculo})`,

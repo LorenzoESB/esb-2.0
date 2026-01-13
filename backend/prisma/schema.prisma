@@ -35,6 +35,10 @@ model Simulation {
   inputData     Json
   outputData    Json
 
+  email_opt_in_simulation Boolean   @default(false)
+  email_opt_in_content    Boolean   @default(false)
+  email_opt_in_at         DateTime?
+
   @@map("simulations")
   @@schema("simuladores_rankings")
 }

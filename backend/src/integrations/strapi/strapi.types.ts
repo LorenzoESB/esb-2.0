@@ -62,13 +62,13 @@ export interface StrapiArticle {
   excerpt: string;
   content: string; // richtext
   featuredImage: { data: StrapiMedia };
-  author: { data: StrapiAuthor };
-  categories: { data: StrapiCategory[] };
+  author: { data: { id: number; attributes: StrapiAuthor } };
+  categories: { data: { id: number; attributes: StrapiCategory }[] };
   seo: any; // Component
   aeoBlocks: any[]; // Dynamic zone
   originalId: number;
   originalLink: string;
-  comments: { data: StrapiComment[] };
+  comments: { data: { id: number; attributes: StrapiComment }[] };
   createdAt: string;
   updatedAt: string;
   publishedAt: string;
@@ -84,9 +84,9 @@ export interface StrapiCategory {
   name: string;
   slug: string;
   description: string;
-  parent: { data: StrapiCategory };
-  children: { data: StrapiCategory[] };
-  articles: { data: StrapiArticle[] }; // usually not needed in full
+  parent: { data: { id: number; attributes: StrapiCategory } };
+  children: { data: { id: number; attributes: StrapiCategory }[] };
+  articles: { data: { id: number; attributes: StrapiArticle }[] }; // usually not needed in full
   seo: any;
   originalId: number;
   createdAt: string;
@@ -98,9 +98,9 @@ export interface StrapiComment {
   authorName: string;
   authorEmail: string;
   status: 'pending' | 'approved' | 'rejected';
-  parent: { data: StrapiComment };
-  children: { data: StrapiComment[] };
-  article: { data: StrapiArticle };
+  parent: { data: { id: number; attributes: StrapiComment } };
+  children: { data: { id: number; attributes: StrapiComment }[] };
+  article: { data: { id: number; attributes: StrapiArticle } };
   isAuthorReply: boolean;
   ipAddress: string;
   userAgent: string;
