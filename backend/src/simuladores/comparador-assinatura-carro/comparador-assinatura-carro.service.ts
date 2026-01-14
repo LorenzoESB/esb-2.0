@@ -170,6 +170,7 @@ export class ComparadorAssinaturaCarroService {
           },
         },
         email_opt_in_simulation: dto.email_opt_in_simulation,
+        email_opt_in_content: dto.email_opt_in_content || false,
         email_opt_in_at: dto.email_opt_in_simulation ? new Date() : null,
       };
 

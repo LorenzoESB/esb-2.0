@@ -59,6 +59,15 @@ export class AmortizacaoInputDto {
   @IsNotEmpty()
   email_opt_in_simulation: boolean;
 
+  @ApiPropertyOptional({
+    description: 'Opt-in to receive marketing content',
+    example: false,
+    default: false,
+  })
+  @IsOptional()
+  @IsBoolean()
+  email_opt_in_content?: boolean;
+
   @ApiProperty({
     description: 'Original loan amount',
     example: 128000,

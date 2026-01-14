@@ -389,6 +389,7 @@ export class RendaFixaService {
         nome: input.nome,
         email: input.email,
         email_opt_in_simulation: input.email_opt_in_simulation,
+        email_opt_in_content: input.email_opt_in_content || false,
         email_opt_in_at: input.email_opt_in_simulation ? new Date() : null,
       };
 

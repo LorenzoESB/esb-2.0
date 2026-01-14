@@ -109,6 +109,15 @@ export class SimularEmprestimoDto {
   email_opt_in_simulation: boolean;
 
   @ApiProperty({
+    description: 'Opt-in to receive marketing content',
+    example: false,
+    required: false,
+  })
+  @IsOptional()
+  @IsBoolean()
+  email_opt_in_content?: boolean;
+
+  @ApiProperty({
     description: 'Indica se o usuário permite compartilhar seus dados',
     example: true,
     required: false,

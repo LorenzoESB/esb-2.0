@@ -100,6 +100,7 @@ export class JurosCompostosService {
       inputData: JSON.parse(JSON.stringify(input)),
       outputData: JSON.parse(JSON.stringify(output)),
       email_opt_in_simulation: input.email_opt_in_simulation,
+      email_opt_in_content: input.email_opt_in_content || false,
       email_opt_in_at: input.email_opt_in_simulation ? new Date() : null,
     };
 
