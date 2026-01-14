@@ -20,8 +20,8 @@ async function main() {
   try {
     await prisma.$connect();
     console.log('Connected!');
-    const users = await prisma.adminUser.findMany();
-    console.log('Users:', users);
+    // const users = await prisma.adminUser.findMany();
+    // console.log('Users:', users);
   } catch (e) {
     console.error('Error:', e);
   } finally {
