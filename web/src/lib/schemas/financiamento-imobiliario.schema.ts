@@ -28,6 +28,8 @@ export const FinanciamentoImobiliarioInputSchema = z.object({
   nome: z.string().min(1, 'Nome é obrigatório'),
 
   email: z.string().email('Email inválido'),
+
+  email_opt_in_simulation: z.boolean().default(false),
 });
 
 /**

@@ -1,0 +1,21 @@
+{
+  "simulator": "aposentadoria",
+  "input": {
+    "idadeAtual": 30,
+    "idadeAposentadoria": 50,
+    "valorJaAcumulado": 0,
+    "contribuicaoMensal": 2000,
+    "mesesContribuicao": 240,
+    "mesesUsufruto": 240,
+    "taxaMensal": 0.005
+  },
+  "legacy_output": {
+    "valorFuturoContribuicoes": 924000,
+    "rendaMensal": 6620
+  },
+  "tolerance": {
+    "currency_abs": 0.01,
+    "percent_abs": 0.01,
+    "relative": 0.0005
+  }
+}

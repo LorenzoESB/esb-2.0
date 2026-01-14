@@ -11,12 +11,16 @@ import {
   MaquininhaOpcaoDto,
 } from './dto/maquininha-opcao.dto';
 import { MAQUININHAS } from '../taxa-maquininha/data/maquininhas.data';
+import { EmailService } from '../../email/email.service';
 
 @Injectable()
 export class ComparadorMaquininhaService {
   private readonly logger = new Logger(ComparadorMaquininhaService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly emailService: EmailService,
+  ) {}
 
   /**
    * Retorna lista de maquininhas disponíveis para comparação
@@ -70,7 +74,8 @@ export class ComparadorMaquininhaService {
       this.logger.log(
         `Starting card machine comparison for ${dto.maquininhas_ids.length} machines`,
       );
-      this.logger.debug(`Input: ${JSON.stringify(dto)}`);
+      const redactedDto = { ...dto, email: '***', nome: '***' };
+      this.logger.debug(`Input: ${JSON.stringify(redactedDto)}`);
 
       // Buscar maquininhas por ID
       const maquininhas = MAQUININHAS.filter(
@@ -178,28 +183,44 @@ export class ComparadorMaquininhaService {
     resultado: ResultadoComparacaoDto,
   ): Promise<void> {
     try {
-      await this.prisma.simulation.create({
-        data: {
-          simulatorType: SimulatorType.COMPARADOR_MAQUININHA,
-          nome: dto.nome,
-          email: dto.email,
-          inputData: {
-            maquininhas_ids: dto.maquininhas_ids,
-            compartilharDados: dto.compartilharDados || true,
-            origem: dto.origem || null,
-          },
-          outputData: {
-            total: resultado.total,
-            maquininhas: resultado.maquininhas.map((m) => ({
-              id: m.id,
-              nome: m.nome,
-              empresa: m.empresa,
-              preco: m.preco,
-              mensalidade: m.mensalidade,
-            })),
-          },
+      const simulationData = {
+        simulatorType: SimulatorType.COMPARADOR_MAQUININHA,
+        nome: dto.nome,
+        email: dto.email,
+        inputData: {
+          maquininhas_ids: dto.maquininhas_ids,
+          compartilharDados: dto.compartilharDados || true,
+          origem: dto.origem || null,
         },
+        outputData: {
+          total: resultado.total,
+          maquininhas: resultado.maquininhas.map((m) => ({
+            id: m.id,
+            nome: m.nome,
+            empresa: m.empresa,
+            preco: m.preco,
+            mensalidade: m.mensalidade,
+          })),
+        },
+        email_opt_in_simulation: dto.email_opt_in_simulation,
+        email_opt_in_at: dto.email_opt_in_simulation ? new Date() : null,
+      };
+
+      await this.prisma.simulation.create({
+        data: simulationData,
       });
+
+      if (dto.email_opt_in_simulation) {
+        await this.emailService.sendSimulationResult({
+          simulationType: SimulatorType.COMPARADOR_MAQUININHA,
+          userEmail: dto.email,
+          userName: dto.nome,
+          input: simulationData.inputData,
+          output: simulationData.outputData,
+          summary: `Comparação de ${resultado.total} maquininhas`,
+          createdAt: new Date(),
+        });
+      }
 
       this.logger.log(
         `Comparison saved successfully for ${dto.email} (${resultado.total} machines)`,

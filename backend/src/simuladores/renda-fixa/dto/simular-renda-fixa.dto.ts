@@ -5,6 +5,7 @@ import {
   IsString,
   IsEmail,
   IsOptional,
+  IsBoolean,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
@@ -25,6 +26,14 @@ export class SimularRendaFixaDto {
   @IsEmail({}, { message: 'E-mail inválido' })
   @IsNotEmpty({ message: 'E-mail é obrigatório' })
   email: string;
+
+  @ApiProperty({
+    description: 'Opt-in to receive simulation results via email',
+    example: true,
+  })
+  @IsBoolean()
+  @IsNotEmpty()
+  email_opt_in_simulation: boolean;
 
   @ApiProperty({
     description: 'Valor inicial do investimento em reais',

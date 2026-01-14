@@ -28,7 +28,7 @@ export class SimulatorResolver {
       throw new NotFoundException(`Simulator not found: ${slug}`);
     }
 
-    const type = metadata.attributes.type;
+    const type = metadata.type;
     this.logger.debug(`Simulator type identified: ${type}`);
 
     // 2. Find Strategy
@@ -40,6 +40,6 @@ export class SimulatorResolver {
 
     // 3. Execute Strategy
     this.logger.log(`Executing strategy ${type} for ${slug}`);
-    return strategy.execute(input, metadata.attributes.parameters);
+    return strategy.execute(input, metadata.parameters);
   }
 }

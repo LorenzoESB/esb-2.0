@@ -24,6 +24,7 @@ import {
   OfertaTesouro,
   API_TO_SYSTEM_MAP,
 } from './clients/renda-fixa-api.client';
+import { EmailService } from '../../email/email.service';
 
 /**
  * Interface para resposta da API do Banco Central
@@ -41,6 +42,7 @@ export class RendaFixaService {
     private readonly httpService: HttpService,
     private readonly prisma: PrismaService,
     private readonly rendaFixaApiClient: RendaFixaApiClient,
+    private readonly emailService: EmailService,
   ) {}
 
   /**
@@ -58,7 +60,8 @@ export class RendaFixaService {
   async simular(dto: SimularRendaFixaDto): Promise<ResultadoRendaFixaDto> {
     try {
       this.logger.log('Starting fixed income simulation');
-      this.logger.debug(`Input: ${JSON.stringify(dto)}`);
+      const redactedDto = { ...dto, email: '***', nome: '***' };
+      this.logger.debug(`Input: ${JSON.stringify(redactedDto)}`);
 
       // Buscar taxas atualizadas das APIs do Banco Central
       const [selicAnual, cdiAnual, trMensal] = await Promise.all([
@@ -379,15 +382,31 @@ export class RendaFixaService {
     output: ResultadoRendaFixaDto,
   ): Promise<void> {
     try {
+      const simulationData = {
+        simulatorType: SimulatorType.RENDA_FIXA,
+        inputData: JSON.parse(JSON.stringify(input)),
+        outputData: JSON.parse(JSON.stringify(output)),
+        nome: input.nome,
+        email: input.email,
+        email_opt_in_simulation: input.email_opt_in_simulation,
+        email_opt_in_at: input.email_opt_in_simulation ? new Date() : null,
+      };
+
       await this.prisma.simulation.create({
-        data: {
-          simulatorType: SimulatorType.RENDA_FIXA,
-          inputData: JSON.parse(JSON.stringify(input)),
-          outputData: JSON.parse(JSON.stringify(output)),
-          nome: input.nome,
-          email: input.email,
-        },
+        data: simulationData,
       });
+
+      if (input.email_opt_in_simulation) {
+        await this.emailService.sendSimulationResult({
+          simulationType: SimulatorType.RENDA_FIXA,
+          userEmail: input.email,
+          userName: input.nome,
+          input: simulationData.inputData,
+          output: simulationData.outputData,
+          summary: `Simulação de Renda Fixa: Melhor opção ${output.melhorInvestimento} com rendimento de R$ ${output.melhorRendimento}`,
+          createdAt: new Date(),
+        });
+      }
 
       this.logger.log('Fixed income simulation saved to database');
     } catch (error) {

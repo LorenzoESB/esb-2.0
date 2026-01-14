@@ -1,0 +1,25 @@
+{
+  "simulator": "juros-compostos",
+  "input": {
+    "nome": "Teste",
+    "email": "teste@example.com",
+    "valorInicial": 10000,
+    "aporteMensal": 0,
+    "tempoAplicacao": 12,
+    "tempoAplicacaoUnidade": "meses",
+    "taxaJuros": 12
+  },
+  "legacy_output": {
+    "valorTotalFinalBruto": 11200,
+    "totalInvestido": 10000,
+    "totalEmJurosBruto": 1200
+  },
+  "external_output": {
+    "valorTotalFinalBruto": 11200
+  },
+  "tolerance": {
+    "currency_abs": 0.01,
+    "percent_abs": 0.01,
+    "relative": 0.0005
+  }
+}

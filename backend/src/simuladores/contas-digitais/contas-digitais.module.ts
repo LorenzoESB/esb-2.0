@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ContasDigitaisController } from './contas-digitais.controller';
 import { ContasDigitaisService } from './contas-digitais.service';
 import { ContasDigitaisData } from './data/contas-digitais.data';
+import { EmailModule } from '../../email/email.module';
 
 /**
  * Módulo de simulação de contas digitais
@@ -14,6 +15,7 @@ import { ContasDigitaisData } from './data/contas-digitais.data';
  * - Filtra por funcionalidades requeridas
  */
 @Module({
+  imports: [EmailModule],
   controllers: [ContasDigitaisController],
   providers: [ContasDigitaisService, ContasDigitaisData],
   exports: [ContasDigitaisService],

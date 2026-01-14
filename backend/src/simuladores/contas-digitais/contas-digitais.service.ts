@@ -12,6 +12,7 @@ import {
   DadosSimulacaoFisica,
   DadosSimulacaoJuridica,
 } from './calc/contas-digitais.calc';
+import { EmailService } from '../../email/email.service';
 
 /**
  * Serviço de simulação de contas digitais
@@ -26,6 +27,7 @@ export class ContasDigitaisService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly contasDigitaisData: ContasDigitaisData,
+    private readonly emailService: EmailService,
   ) {}
 
   /**
@@ -48,7 +50,8 @@ export class ContasDigitaisService {
   ): Promise<ResultadoContasDigitaisDto[]> {
     try {
       this.logger.log('Starting digital accounts simulation (Pessoa Física)');
-      this.logger.debug(`Input: ${JSON.stringify(dto)}`);
+      const redactedDto = { ...dto, email: '***' };
+      this.logger.debug(`Input: ${JSON.stringify(redactedDto)}`);
 
       // Preparar dados de simulação
       const dadosSimulacao: DadosSimulacaoFisica = {
@@ -176,56 +179,74 @@ export class ContasDigitaisService {
     try {
       const melhorOpcao = resultados[0];
 
-      await this.prisma.simulation.create({
-        data: {
-          simulatorType: SimulatorType.CONTAS_DIGITAIS,
-          nome: dto.nome,
-          email: dto.email,
-          inputData: {
-            tipoPessoa: dto.tipoPessoa,
-            temConta: dto.temConta,
-            tarifa: dto.tarifa,
-            saques: dto.saques,
-            nDocs: dto.nDocs,
-            nTeds: dto.nTeds,
-            debito: dto.debito,
-            // Campos específicos de PF
-            ...(dto.tipoPessoa === TipoPessoa.FISICA && {
-              nDepositos: dto.nDepositos,
-              credito: dto.credito,
-              investimentos: dto.investimentos,
-              transferencias: dto.transferencias,
-              depCheque: dto.depCheque,
-            }),
-            // Campos específicos de PJ
-            ...(dto.tipoPessoa === TipoPessoa.JURIDICA && {
-              boletos: dto.boletos,
-              maquininha: dto.maquininha,
-              folhaPagamento: dto.folhaPagamento,
-              cartaoVirtual: dto.cartaoVirtual,
-            }),
-          },
-          outputData: {
-            totalContas: resultados.length,
-            melhorOpcao: melhorOpcao
-              ? {
-                  contaId: melhorOpcao.contaId,
-                  nome: melhorOpcao.nome,
-                  nomeBanco: melhorOpcao.nomeBanco,
-                  tarifaTotal: melhorOpcao.tarifaTotal,
-                  economia: melhorOpcao.economia,
-                }
-              : null,
-            contas: resultados.slice(0, 10).map((r) => ({
-              contaId: r.contaId,
-              nome: r.nome,
-              nomeBanco: r.nomeBanco,
-              tarifaTotal: r.tarifaTotal,
-              economia: r.economia,
-            })),
-          },
+      const simulationData = {
+        simulatorType: SimulatorType.CONTAS_DIGITAIS,
+        nome: dto.nome,
+        email: dto.email,
+        inputData: {
+          tipoPessoa: dto.tipoPessoa,
+          temConta: dto.temConta,
+          tarifa: dto.tarifa,
+          saques: dto.saques,
+          nDocs: dto.nDocs,
+          nTeds: dto.nTeds,
+          debito: dto.debito,
+          // Campos específicos de PF
+          ...(dto.tipoPessoa === TipoPessoa.FISICA && {
+            nDepositos: (dto as any).nDepositos,
+            credito: (dto as any).credito,
+            investimentos: (dto as any).investimentos,
+            transferencias: (dto as any).transferencias,
+            depCheque: (dto as any).depCheque,
+          }),
+          // Campos específicos de PJ
+          ...(dto.tipoPessoa === TipoPessoa.JURIDICA && {
+            boletos: (dto as any).boletos,
+            maquininha: (dto as any).maquininha,
+            folhaPagamento: (dto as any).folhaPagamento,
+            cartaoVirtual: (dto as any).cartaoVirtual,
+          }),
         },
+        outputData: {
+          totalContas: resultados.length,
+          melhorOpcao: melhorOpcao
+            ? {
+                contaId: melhorOpcao.contaId,
+                nome: melhorOpcao.nome,
+                nomeBanco: melhorOpcao.nomeBanco,
+                tarifaTotal: melhorOpcao.tarifaTotal,
+                economia: melhorOpcao.economia,
+              }
+            : null,
+          contas: resultados.slice(0, 10).map((r) => ({
+            contaId: r.contaId,
+            nome: r.nome,
+            nomeBanco: r.nomeBanco,
+            tarifaTotal: r.tarifaTotal,
+            economia: r.economia,
+          })),
+        },
+        email_opt_in_simulation: dto.email_opt_in_simulation,
+        email_opt_in_at: dto.email_opt_in_simulation ? new Date() : null,
+      };
+
+      await this.prisma.simulation.create({
+        data: simulationData,
       });
+
+      if (dto.email_opt_in_simulation) {
+        await this.emailService.sendSimulationResult({
+          simulationType: SimulatorType.CONTAS_DIGITAIS,
+          userEmail: dto.email,
+          userName: dto.nome,
+          input: simulationData.inputData,
+          output: simulationData.outputData,
+          summary: melhorOpcao
+            ? `Melhor opção: ${melhorOpcao.nomeBanco} - ${melhorOpcao.nome} (R$ ${melhorOpcao.tarifaTotal.toFixed(2)}/mês)`
+            : 'Simulação de Contas Digitais',
+          createdAt: new Date(),
+        });
+      }
 
       this.logger.log(
         `Simulation saved successfully for ${dto.email} (${dto.tipoPessoa})`,

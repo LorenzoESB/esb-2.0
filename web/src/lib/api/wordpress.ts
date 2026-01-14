@@ -1,3 +1,5 @@
+import * as blogService from "./blog-service";
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 function requireApiUrl() {
@@ -13,6 +15,16 @@ export async function getAllPosts(
   currentPage: number = 1,
   categoryId?: number,
 ) {
+  // Use service directly on server to avoid ECONNREFUSED during build
+  if (typeof window === "undefined") {
+    return blogService.getPosts({
+      perPage: maxPosts,
+      page: currentPage,
+      search,
+      categoryId,
+    });
+  }
+
   const baseUrl = requireApiUrl();
 
   if (!maxPosts || maxPosts <= 0) {
@@ -66,6 +78,9 @@ export async function getAllPosts(
 }
 
 export async function getPostBySlug(slug: string) {
+  if (typeof window === "undefined") {
+    return blogService.getPostBySlug(slug);
+  }
   const baseUrl = requireApiUrl();
   try {
     if (baseUrl) {
@@ -94,17 +109,28 @@ export async function getPostBySlug(slug: string) {
 }
 
 export async function getPageBySlug(slug: string) {
-  const baseUrl = requireApiUrl();
-  const res = await fetch(`${baseUrl}/blog/pages/${slug}`, {
-    next: { revalidate: 60 },
-  });
-  if (!res.ok) {
-    throw new Error("Failed to fetch page");
+  if (typeof window === "undefined") {
+    return blogService.getPageBySlug(slug);
   }
-  return res.json();
+  const baseUrl = requireApiUrl();
+  try {
+    const res = await fetch(`${baseUrl}/blog/pages/${slug}`, {
+      next: { revalidate: 60 },
+    });
+    if (!res.ok) {
+      throw new Error("Failed to fetch page");
+    }
+    return res.json();
+  } catch (error) {
+    console.error(`getPageBySlug: ${(error as Error).message}`);
+    return blogService.getPageBySlug(slug);
+  }
 }
 
 export async function getCategories() {
+  if (typeof window === "undefined") {
+    return blogService.getCategories();
+  }
   const baseUrl = requireApiUrl();
   try {
     if (baseUrl) {
@@ -139,17 +165,22 @@ export async function getCategories() {
 }
 
 export async function getPostsByCategory(categoryId: number) {
-  const baseUrl = requireApiUrl();
-  const res = await fetch(
-    `${baseUrl}/blog/posts?categoryId=${categoryId}`,
-    {
-      next: { revalidate: 60 },
-    }
-  );
-  if (!res.ok) {
-    throw new Error("Failed to fetch posts");
+  if (typeof window === "undefined") {
+    return blogService.getPosts({ categoryId });
   }
-  return res.json();
+  const baseUrl = requireApiUrl();
+  try {
+    const res = await fetch(`${baseUrl}/blog/posts?categoryId=${categoryId}`, {
+      next: { revalidate: 60 },
+    });
+    if (!res.ok) {
+      throw new Error("Failed to fetch posts");
+    }
+    return res.json();
+  } catch (error) {
+    console.error(`getPostsByCategory: ${(error as Error).message}`);
+    return blogService.getPosts({ categoryId });
+  }
 }
 
 export function getPostCategories(post: any) {
@@ -168,11 +199,16 @@ export function getPostCategories(post: any) {
 
 export async function getMedia() {
   const baseUrl = requireApiUrl();
-  const res = await fetch(`${baseUrl}/blog/media`);
-  if (!res.ok) {
-    throw new Error("Failed to fetch media");
+  try {
+    const res = await fetch(`${baseUrl}/blog/media`);
+    if (!res.ok) {
+      throw new Error("Failed to fetch media");
+    }
+    return res.json();
+  } catch (error) {
+    console.error(`getMedia: ${(error as Error).message}`);
+    return [];
   }
-  return res.json();
 }
 
 export function getFeaturedImage(post: any) {

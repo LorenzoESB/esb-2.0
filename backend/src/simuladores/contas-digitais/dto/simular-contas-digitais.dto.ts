@@ -8,6 +8,7 @@ import {
   IsEnum,
   Min,
   ValidateIf,
+  IsNotEmpty,
 } from 'class-validator';
 import { TipoPessoa } from '../data/contas-digitais.data';
 
@@ -93,6 +94,14 @@ export class SimularContasDigitaisBaseDto {
   })
   @IsEmail()
   email: string;
+
+  @ApiProperty({
+    description: 'Opt-in to receive simulation results via email',
+    example: true,
+  })
+  @IsBoolean()
+  @IsNotEmpty()
+  email_opt_in_simulation: boolean;
 }
 
 /**

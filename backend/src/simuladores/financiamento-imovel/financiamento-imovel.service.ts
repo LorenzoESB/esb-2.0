@@ -11,6 +11,7 @@ import {
 import { SimulatorMetadataService } from '../metadata/simulator-metadata.service';
 import { ISimulatorStrategy } from '../interfaces/simulator-strategy.interface';
 import { SimulatorRegistry } from '../registry/simulator.registry';
+import { EmailService } from '../../email/email.service';
 
 @Injectable()
 export class FinanciamentoImovelService implements ISimulatorStrategy, OnModuleInit {
@@ -21,6 +22,7 @@ export class FinanciamentoImovelService implements ISimulatorStrategy, OnModuleI
     private readonly taxasFinanciamentoData: TaxasFinanciamentoData,
     private readonly metadataService: SimulatorMetadataService,
     private readonly registry: SimulatorRegistry,
+    private readonly emailService: EmailService,
   ) {}
 
   onModuleInit() {
@@ -60,7 +62,8 @@ export class FinanciamentoImovelService implements ISimulatorStrategy, OnModuleI
   ): Promise<ResultadoFinanciamentoImovelDto[]> {
     try {
       this.logger.log('Starting real estate financing simulation');
-      this.logger.debug(`Input: ${JSON.stringify(dto)}`);
+      const redactedDto = { ...dto, email: '***', nome: '***' };
+      this.logger.debug(`Input: ${JSON.stringify(redactedDto)}`);
 
       // Validar entrada
       this.validarDados(dto);
@@ -85,8 +88,8 @@ export class FinanciamentoImovelService implements ISimulatorStrategy, OnModuleI
       } else {
         // Fallback fetch
         const fetchedMetadata = await this.metadataService.getMetadataByType('financing');
-        if (fetchedMetadata && fetchedMetadata.length > 0 && fetchedMetadata[0].attributes.parameters) {
-            const fetchedParams = fetchedMetadata[0].attributes.parameters;
+        if (fetchedMetadata && fetchedMetadata.length > 0 && fetchedMetadata[0].parameters) {
+            const fetchedParams = fetchedMetadata[0].parameters;
             if (fetchedParams.realEstateRates && Array.isArray(fetchedParams.realEstateRates) && fetchedParams.realEstateRates.length > 0) {
                taxas = fetchedParams.realEstateRates;
             } else if (fetchedParams.rates && Array.isArray(fetchedParams.rates) && fetchedParams.rates.length > 0) {
@@ -225,44 +228,60 @@ export class FinanciamentoImovelService implements ISimulatorStrategy, OnModuleI
     try {
       const melhorOferta = ofertas[0];
 
-      await this.prisma.simulation.create({
-        data: {
-          simulatorType: SimulatorType.FINANCIAMENTO_IMOVEL,
-          nome: dto.nome,
-          email: dto.email,
-          inputData: {
-            valorImovel: dto.valorImovel,
-            valorEntrada: dto.valorEntrada,
-            prazoMeses: dto.prazoMeses,
-            rendaMensal: dto.rendaMensal,
-          },
-          outputData: {
-            totalOfertas: ofertas.length,
-            melhorOferta: melhorOferta
-              ? {
-                  nomeBanco: melhorOferta.nomeBanco,
-                  modalidade: melhorOferta.modalidade,
-                  parcelaInicial: melhorOferta.parcelaInicial,
-                  parcelaFinal: melhorOferta.parcelaFinal,
-                  valorTotal: melhorOferta.valorTotal,
-                  taxaJurosAnual: melhorOferta.taxaJurosAnual,
-                  taxaJurosMensal: melhorOferta.taxaJurosMensal,
-                  comprometimentoRenda: melhorOferta.comprometimentoRenda,
-                }
-              : null,
-            ofertas: ofertas.slice(0, 10).map((o) => ({
-              nomeBanco: o.nomeBanco,
-              modalidade: o.modalidade,
-              parcelaInicial: o.parcelaInicial,
-              parcelaFinal: o.parcelaFinal,
-              valorTotal: o.valorTotal,
-              taxaJurosAnual: o.taxaJurosAnual,
-              taxaJurosMensal: o.taxaJurosMensal,
-              comprometimentoRenda: o.comprometimentoRenda,
-            })),
-          },
+      const simulationData = {
+        simulatorType: SimulatorType.FINANCIAMENTO_IMOVEL,
+        nome: dto.nome,
+        email: dto.email,
+        inputData: {
+          valorImovel: dto.valorImovel,
+          valorEntrada: dto.valorEntrada,
+          prazoMeses: dto.prazoMeses,
+          rendaMensal: dto.rendaMensal,
         },
+        outputData: {
+          totalOfertas: ofertas.length,
+          melhorOferta: melhorOferta
+            ? {
+                nomeBanco: melhorOferta.nomeBanco,
+                modalidade: melhorOferta.modalidade,
+                parcelaInicial: melhorOferta.parcelaInicial,
+                parcelaFinal: melhorOferta.parcelaFinal,
+                valorTotal: melhorOferta.valorTotal,
+                taxaJurosAnual: melhorOferta.taxaJurosAnual,
+                taxaJurosMensal: melhorOferta.taxaJurosMensal,
+                comprometimentoRenda: melhorOferta.comprometimentoRenda,
+              }
+            : null,
+          ofertas: ofertas.slice(0, 10).map((o) => ({
+            nomeBanco: o.nomeBanco,
+            modalidade: o.modalidade,
+            parcelaInicial: o.parcelaInicial,
+            parcelaFinal: o.parcelaFinal,
+            valorTotal: o.valorTotal,
+            taxaJurosAnual: o.taxaJurosAnual,
+            taxaJurosMensal: o.taxaJurosMensal,
+            comprometimentoRenda: o.comprometimentoRenda,
+          })),
+        },
+        email_opt_in_simulation: dto.email_opt_in_simulation,
+        email_opt_in_at: dto.email_opt_in_simulation ? new Date() : null,
+      };
+
+      await this.prisma.simulation.create({
+        data: simulationData,
       });
+
+      if (dto.email_opt_in_simulation) {
+        await this.emailService.sendSimulationResult({
+          simulationType: SimulatorType.FINANCIAMENTO_IMOVEL,
+          userEmail: dto.email,
+          userName: dto.nome,
+          input: simulationData.inputData,
+          output: simulationData.outputData,
+          summary: `Simulação de Financiamento Imobiliário: ${ofertas.length} ofertas. Melhor taxa: ${melhorOferta?.taxaJurosAnual}% a.a.`,
+          createdAt: new Date(),
+        });
+      }
 
       this.logger.log(
         `Simulation saved successfully for ${dto.email} (Property: R$ ${dto.valorImovel})`,

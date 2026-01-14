@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ComparadorAssinaturaCarroController } from './comparador-assinatura-carro.controller';
 import { ComparadorAssinaturaCarroService } from './comparador-assinatura-carro.service';
+import { EmailModule } from '../../email/email.module';
 
 /**
  * Módulo de comparação entre compra, financiamento e assinatura de veículos
@@ -13,6 +14,7 @@ import { ComparadorAssinaturaCarroService } from './comparador-assinatura-carro.
  * - Custos de assinatura com reajuste anual
  */
 @Module({
+  imports: [EmailModule],
   controllers: [ComparadorAssinaturaCarroController],
   providers: [ComparadorAssinaturaCarroService],
   exports: [ComparadorAssinaturaCarroService],

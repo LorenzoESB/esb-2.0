@@ -7,12 +7,16 @@ import {
 import { SimulacaoComparativaDto } from './dto/amortizacao-output.dto';
 import { PrismaService } from '../../prisma/prisma.service';
 import { SimulatorType } from '@prisma/client';
+import { EmailService } from '../../email/email.service';
 
 @Injectable()
 export class AmortizacaoService {
   private readonly logger = new Logger(AmortizacaoService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly emailService: EmailService,
+  ) {}
 
   async calcularAmortizacao(
     input: AmortizacaoInputDto,
@@ -31,9 +35,23 @@ export class AmortizacaoService {
         nome: input.nome,
         inputData: JSON.parse(JSON.stringify(input)),
         outputData: JSON.parse(JSON.stringify(output)),
+        email_opt_in_simulation: input.email_opt_in_simulation,
+        email_opt_in_at: input.email_opt_in_simulation ? new Date() : null,
       };
 
       await this.prisma.simulation.create({ data: simulationData });
+
+      if (input.email_opt_in_simulation) {
+        await this.emailService.sendSimulationResult({
+          simulationType: SimulatorType.AMORTIZACAO,
+          userEmail: input.email,
+          userName: input.nome,
+          input: simulationData.inputData,
+          output: simulationData.outputData,
+          summary: output.mensagem || 'Simulação de Amortização',
+          createdAt: new Date(),
+        });
+      }
     } catch (error) {
       this.logger.warn(
         'Failed to save simplified simulation, continuing',
@@ -73,7 +91,8 @@ export class AmortizacaoService {
   async calcularAmortizacaoSimples(
     input: AmortizacaoInputDto,
   ): Promise<AmortizacaoSimplesOutputDto> {
-    this.logger.debug('Calculating simplified amortization', { input });
+    const redactedInput = { ...input, email: '***', nome: '***' };
+    this.logger.debug('Calculating simplified amortization', { input: redactedInput });
 
     const taxaMensal = this.calcularTaxaJurosMensal(input.taxaJurosAnual || 0);
     const saldoInicial = input.saldoDevedorAtual ?? input.valorFinanciamento;
@@ -122,7 +141,8 @@ export class AmortizacaoService {
   async compararSistemas(
     input: AmortizacaoInputDto,
   ): Promise<SimulacaoComparativaDto> {
-    this.logger.debug('Calculating simplified comparison', { input });
+    const redactedInput = { ...input, email: '***', nome: '***' };
+    this.logger.debug('Calculating simplified comparison', { input: redactedInput });
 
     const taxaMensal = this.calcularTaxaJurosMensal(input.taxaJurosAnual || 0);
     const saldoInicial = input.saldoDevedorAtual ?? input.valorFinanciamento;

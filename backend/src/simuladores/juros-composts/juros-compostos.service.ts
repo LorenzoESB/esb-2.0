@@ -11,12 +11,16 @@ import {
 } from './interfaces/juros-compostos.interface';
 import { PrismaService } from '../../prisma/prisma.service';
 import { SimulatorType } from '@prisma/client';
+import { EmailService } from '../../email/email.service';
 
 @Injectable()
 export class JurosCompostosService {
   private readonly logger = new Logger(JurosCompostosService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly emailService: EmailService,
+  ) {}
 
   private readonly aliquotasIR: AliquotasIR = {
     ate180: 0.225, // 22.5%
@@ -28,7 +32,8 @@ export class JurosCompostosService {
   async calculaJurosCompostos(
     input: JurosCompostosInputDto,
   ): Promise<JurosCompostosDetalhadoOutputDto> {
-    this.logger.debug('Calculating compound interest', { input });
+    const redactedInput = { ...input, email: '***', nome: '***' };
+    this.logger.debug('Calculating compound interest', { input: redactedInput });
 
     const periodoMeses = this.calcularPeriodoMeses(
       input.tempoAplicacao,
@@ -94,6 +99,8 @@ export class JurosCompostosService {
       nome: input.nome,
       inputData: JSON.parse(JSON.stringify(input)),
       outputData: JSON.parse(JSON.stringify(output)),
+      email_opt_in_simulation: input.email_opt_in_simulation,
+      email_opt_in_at: input.email_opt_in_simulation ? new Date() : null,
     };
 
     this.logger.debug('Saving simulation to database', {
@@ -105,6 +112,18 @@ export class JurosCompostosService {
     const saved = await this.prisma.simulation.create({
       data: simulationData,
     });
+
+    if (input.email_opt_in_simulation) {
+      await this.emailService.sendSimulationResult({
+        simulationType: SimulatorType.JUROS_COMPOSTOS,
+        userEmail: input.email,
+        userName: input.nome,
+        input: simulationData.inputData,
+        output: simulationData.outputData,
+        summary: `Simulação de Juros Compostos: Total investido: R$ ${output.resumo.totalInvestido}, Valor final: R$ ${output.resumo.valorTotalFinalBruto}`,
+        createdAt: new Date(),
+      });
+    }
 
     this.logger.log('Simulation saved to database', {
       id: saved.id,

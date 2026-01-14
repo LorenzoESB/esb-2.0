@@ -586,6 +586,29 @@ export function ContasDigitaisForm({
                   </FormItem>
                 )}
               />
+
+              <FormField
+                  control={form.control}
+                  name="email_opt_in_simulation"
+                  render={({ field }) => (
+                      <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                          <FormControl>
+                              <Checkbox
+                                  checked={field.value}
+                                  onCheckedChange={field.onChange}
+                              />
+                          </FormControl>
+                          <div className="space-y-1 leading-none">
+                              <FormLabel>
+                                  Receber resultado por e-mail
+                              </FormLabel>
+                              <CardDescription>
+                                  Marque esta opção para receber os detalhes da simulação no seu e-mail.
+                              </CardDescription>
+                          </div>
+                      </FormItem>
+                  )}
+              />
             </div>
 
             <Button type="submit" className="w-full" disabled={isLoading}>

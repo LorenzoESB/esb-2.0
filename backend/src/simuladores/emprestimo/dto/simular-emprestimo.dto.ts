@@ -8,6 +8,7 @@ import {
   IsOptional,
   Min,
   IsBoolean,
+  IsNotEmpty,
 } from 'class-validator';
 
 /**
@@ -98,6 +99,14 @@ export class SimularEmprestimoDto {
   })
   @IsEmail()
   email: string;
+
+  @ApiProperty({
+    description: 'Opt-in to receive simulation results via email',
+    example: true,
+  })
+  @IsBoolean()
+  @IsNotEmpty()
+  email_opt_in_simulation: boolean;
 
   @ApiProperty({
     description: 'Indica se o usuário permite compartilhar seus dados',

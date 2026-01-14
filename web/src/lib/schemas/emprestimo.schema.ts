@@ -45,6 +45,8 @@ export const EmprestimoInputSchema = z.object({
 
   email: z.string().email('Email inválido'),
 
+  email_opt_in_simulation: z.boolean().default(false),
+
   origem: z.string(),
 });
 
