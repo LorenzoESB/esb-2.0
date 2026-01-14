@@ -77,6 +77,7 @@ export function ContasDigitaisForm({
       depCheque: false,
       nome: '',
       email: '',
+      email_opt_in_simulation: false,
     },
   });
 
@@ -96,6 +97,7 @@ export function ContasDigitaisForm({
       cartaoVirtual: true,
       nome: '',
       email: '',
+      email_opt_in_simulation: false,
     },
   });
 

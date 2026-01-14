@@ -11,7 +11,7 @@ export const AmortizacaoSacInputSchema = z.object({
     amortizacaoExtraordinaria: z.number().min(0, 'Amortização extraordinária deve ser positiva'),
     nome: z.string().min(1, 'Nome é obrigatório'),
     email: z.string().email('Email inválido'),
-    email_opt_in_simulation: z.boolean().default(false),
+    email_opt_in_simulation: z.boolean(),
 });
 
 export const GraficoProgressaoSchema = z.object({

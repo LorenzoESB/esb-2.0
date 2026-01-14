@@ -13,6 +13,7 @@ import {
     FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Switch } from '@/components/ui/switch';
@@ -40,6 +41,7 @@ export function AposentadoriaForm({ onSubmit, isLoading }: AposentadoriaFormProp
             incluirCenariosSaque: true,
             nome: '',
             email: '',
+            email_opt_in_simulation: false,
         },
     });
 
