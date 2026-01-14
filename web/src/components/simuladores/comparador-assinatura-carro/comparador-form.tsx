@@ -20,6 +20,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Select,
   SelectContent,
@@ -68,6 +69,7 @@ export function ComparadorForm({
       tempoUsoCarroMeses: 36,
       nome: '',
       email: '',
+      email_opt_in_simulation: false,
     },
   });
 

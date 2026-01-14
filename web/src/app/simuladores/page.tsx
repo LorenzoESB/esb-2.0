@@ -49,7 +49,7 @@ const simulators = [
         title: "Simulador de Contas Digitais",
         description: "Descubra a conta digital ideal para a sua necessidade",
         icon: Building2,
-        href: "/simuladores/conta-digital",
+        href: "/simuladores/contas-digitais",
         status: "Disponível",
         color: "bg-green-50 text-green-600 border-green-200",
         features: ["Gratuidade", "Benefícios", "Reviews", "Pontuação"],

@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage, Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import { CombustivelInput, CombustivelInputSchema } from "@/lib/schemas/combustivel.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Fuel, Loader2 } from "lucide-react";

@@ -13,6 +13,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { RendaFixaInput, RendaFixaInputSchema } from '@/lib/schemas/renda-fixa.schema';
 import { TrendingUp, DollarSign } from 'lucide-react';
@@ -31,6 +32,7 @@ export function RendaFixaForm({ onSubmit, isLoading }: RendaFixaFormProps) {
       prazoMeses: 24,
       nome: '',
       email: '',
+      email_opt_in_simulation: false,
     },
   });
 

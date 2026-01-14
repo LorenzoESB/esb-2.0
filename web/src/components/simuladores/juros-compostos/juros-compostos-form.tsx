@@ -41,8 +41,9 @@ export function JurosCompostosForm({ onSubmit, isLoading }: JurosCompostosFormPr
             tempoAplicacaoUnidade: 'anos',
             taxaJuros: 11,
             nome: '',
-            email: '',
-        },
+      email: '',
+      email_opt_in_simulation: false,
+    },
     });
 
     const handleSubmit = async (data: JurosCompostosInput) => {
