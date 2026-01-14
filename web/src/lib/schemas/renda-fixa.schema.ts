@@ -9,6 +9,7 @@ export const RendaFixaInputSchema = z.object({
     .min(1, 'Prazo deve ser pelo menos 1 mês'),
   nome: z.string().min(1, 'Nome é obrigatório'),
   email: z.string().email('Email inválido'),
+  email_opt_in_simulation: z.boolean().default(false),
 });
 
 export const ResultadoModalidadeSchema = z.object({

@@ -23,6 +23,7 @@ export const JurosCompostosInputSchema = z.object({
         .transform((val) => Number(val)),
     nome: z.string().min(1, 'Nome é obrigatório'),
     email: z.string().email('Email inválido'),
+    email_opt_in_simulation: z.boolean().default(false),
 });
 
 export const JurosCompostosMensalSchema = z.object({

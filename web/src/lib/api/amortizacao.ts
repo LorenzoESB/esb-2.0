@@ -12,6 +12,9 @@ export const amortizacaoSacApi = {
             taxaAdministracao: d.taxaAdministracaoMensal ?? 0,
             parcelaAtual: d.numeroParcela,
             saldoDevedorAtual: d.saldoDevedorAtual,
+            nome: d.nome,
+            email: d.email,
+            email_opt_in_simulation: d.email_opt_in_simulation,
         };
 
         const extra = (d as any).amortizacaoExtraordinaria ?? 0;
