@@ -1,0 +1,10 @@
+{
+  "nome": "Test User",
+  "email": "test@example.com",
+  "email_opt_in_simulation": false,
+  "valorInicial": 1000,
+  "aporteMensal": 100,
+  "tempoAplicacao": 12,
+  "tempoAplicacaoUnidade": "meses",
+  "taxaJuros": 10
+}

@@ -9,6 +9,7 @@ import {
   Max,
   IsBoolean,
   IsNotEmpty,
+  IsOptional,
 } from 'class-validator';
 
 /**

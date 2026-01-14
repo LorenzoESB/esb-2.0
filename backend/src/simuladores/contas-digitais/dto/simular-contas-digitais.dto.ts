@@ -9,6 +9,7 @@ import {
   Min,
   ValidateIf,
   IsNotEmpty,
+  IsOptional,
 } from 'class-validator';
 import { TipoPessoa } from '../data/contas-digitais.data';
 
