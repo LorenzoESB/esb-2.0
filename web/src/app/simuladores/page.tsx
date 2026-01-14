@@ -168,7 +168,7 @@ export default function SimuladoresHub() {
                                     <CardContent className="flex flex-col gap-3 flex-1 pt-0">
                                         <div className="flex flex-wrap gap-2">
                                             {simulator.features.map((feature) => (
-                                                <Badge key={feature} variant="secondary" className="text-xs">
+                                                <Badge key={feature} variant="secondary" className="bg-accent text-accent-foreground">
                                                     {feature}
                                                 </Badge>
                                             ))}

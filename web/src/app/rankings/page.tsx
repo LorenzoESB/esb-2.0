@@ -105,7 +105,7 @@ export default function RankingsHubPage() {
                   <div className={`p-3 rounded-lg ${ranking.bgColor}`}>
                     <Icon className={`h-6 w-6 ${ranking.color}`} />
                   </div>
-                  <Badge className="bg-green-600">Disponível</Badge>
+                  <Badge className="bg-accent text-accent-foreground">Disponível</Badge>
                 </div>
                 <CardTitle className="text-xl">{ranking.title}</CardTitle>
                 <CardDescription className="min-h-[48px]">
