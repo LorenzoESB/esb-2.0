@@ -45,6 +45,15 @@ export class SimularAposentadoriaDto {
   email_opt_in_simulation: boolean;
 
   @ApiProperty({
+    description: 'Opt-in to receive marketing content',
+    example: false,
+    required: false,
+  })
+  @IsOptional()
+  @IsBoolean()
+  email_opt_in_content?: boolean;
+
+  @ApiProperty({
     enum: ModoCalculoAposentadoria,
     description:
       'Modo de cálculo: RECEBER (calcula contribuição necessária) ou CONTRIBUIR (calcula renda futura)',

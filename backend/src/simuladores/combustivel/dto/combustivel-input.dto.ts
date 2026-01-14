@@ -35,6 +35,14 @@ export class CombustivelInputDto {
   @IsNotEmpty()
   email_opt_in_simulation: boolean;
 
+  @ApiPropertyOptional({
+    description: 'Opt-in to receive marketing content',
+    example: false,
+  })
+  @IsOptional()
+  @IsBoolean()
+  email_opt_in_content?: boolean;
+
   @ApiProperty({
     description: 'Price of gasoline per liter',
     example: 5.49,
